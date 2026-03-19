@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowUpRight, ArrowDownLeft, Search, Filter, Trash2, Plus, X, Loader2, Check } from 'lucide-react'
 import clsx from 'clsx'

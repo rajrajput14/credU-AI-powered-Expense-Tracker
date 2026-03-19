@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Mic } from 'lucide-react'
+import clsx from 'clsx'
 import { parseTransactionIntent } from '../services/gemini'
 import { useTransactionStore } from '../store/useTransactionStore'
 import { supabase } from '../services/supabase'

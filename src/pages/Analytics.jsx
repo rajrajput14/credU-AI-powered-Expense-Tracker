@@ -5,6 +5,10 @@ import { PieChart, Sparkles, TrendingUp, Wallet } from 'lucide-react'
 import { useTransactionStore } from '../store/useTransactionStore'
 import { useTheme } from '../context/ThemeContext'
 import clsx from 'clsx'
+import AnalyticsSnapshot from '../components/analytics/AnalyticsSnapshot'
+import AnalyticsInsights from '../components/analytics/AnalyticsInsights'
+import MerchantList from '../components/analytics/MerchantList'
+import SpendingForecast from '../components/analytics/SpendingForecast'
 
 const Analytics = () => {
     const { transactions, loading } = useTransactionStore()
@@ -28,6 +32,7 @@ const Analytics = () => {
             backgroundColor: 'transparent',
             tooltip: { 
                 trigger: 'item', 
+                formatter: '{b}: ${c} ({d}%)',
                 backgroundColor: isDark ? '#121826' : '#fff', 
                 borderColor: isDark ? '#1E293B' : '#E5E7EB', 
                 textStyle: { color: isDark ? '#fff' : '#111827' } 
@@ -76,7 +81,9 @@ const Analytics = () => {
 
     return (
         <div className="mx-auto max-w-6xl space-y-8">
+            <AnalyticsSnapshot transactions={transactions} />
             <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+                <div className="space-y-8">
                 {/* Distribution Chart */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -104,8 +111,20 @@ const Analytics = () => {
                         )}
                     </div>
                 </motion.div>
+                
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+                    <MerchantList transactions={transactions} />
+                </motion.div>
+                </div>
 
                 <div className="space-y-8">
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+                        <AnalyticsInsights transactions={transactions} />
+                    </motion.div>
+
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+                        <SpendingForecast transactions={transactions} />
+                    </motion.div>
                     {/* Insights Panel */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
