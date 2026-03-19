@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+@theme {
+  --color-voxa-primary: var(--primary);
+  --color-voxa-secondary: var(--secondary);
+  --color-voxa-bg: var(--bg);
+  --color-voxa-card: var(--card);
+  --color-voxa-text: var(--text);
+  --color-voxa-muted: var(--text-muted);
+  --color-voxa-border: var(--border);
+}
+
+:root {
+  /* Dark Theme (Default) */
+  --bg: #0B0F1A;
+  --card: #121826;
+  --text: #FFFFFF;
+  --text-muted: #94A3B8;
+  --border: #1E293B;
+  --primary: #6366F1;
+  --secondary: #8B5CF6;
+
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: dark;
+}
+
+:root.light-theme {
+  --bg: #F5F7FA;
+  --card: #FFFFFF;
+  --text: #111827;
+  --text-muted: #6B7280;
+  --border: #E5E7EB;
+  color-scheme: light;
+}
+
+@layer base {
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    margin: 0;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+}
