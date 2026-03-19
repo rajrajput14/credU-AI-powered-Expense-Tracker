@@ -7,6 +7,7 @@ import Transactions from './pages/Transactions'
 import Layout from './components/Layout'
 import Auth from './pages/Auth'
 import Settings from './pages/Settings'
+import LandingPage from './pages/LandingPage'
 import SplashScreen from './components/SplashScreen'
 import { supabase, getCurrentUser } from './services/supabase'
 import { useTransactionStore } from './store/useTransactionStore'
@@ -86,8 +87,9 @@ function App() {
         >
           <Router>
             <Routes>
-              <Route path="/auth" element={!user ? <Auth /> : <Navigate to="/" />} />
-              <Route path="/" element={user ? <Layout /> : <Navigate to="/auth" />}>
+              <Route path="/auth" element={!user ? <Auth /> : <Navigate to="/app-dashboard" />} />
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/app-dashboard" element={user ? <Layout /> : <Navigate to="/auth" />}>
                 <Route index element={<Dashboard />} />
                 <Route path="transactions" element={<Transactions />} />
                 <Route path="analytics" element={<Analytics />} />

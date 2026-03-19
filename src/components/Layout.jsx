@@ -26,10 +26,10 @@ const Layout = () => {
     }
 
     const navItems = [
-        { path: '/', icon: 'dashboard', label: 'Dashboard' },
-        { path: '/transactions', icon: 'transactions', label: 'Transactions' },
-        { path: '/analytics', icon: 'analytics', label: 'Analytics' },
-        { path: '/settings', icon: 'settings', label: 'Settings' }
+        { path: '/app-dashboard', icon: 'dashboard', label: 'Dashboard' },
+        { path: '/app-dashboard/transactions', icon: 'transactions', label: 'Transactions' },
+        { path: '/app-dashboard/analytics', icon: 'analytics', label: 'Analytics' },
+        { path: '/app-dashboard/settings', icon: 'settings', label: 'Settings' }
     ]
 
     return (
