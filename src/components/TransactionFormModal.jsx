@@ -1,0 +1,156 @@
+import { useState, useEffect } from 'react';
+import Modal from './Modal';
+import { useAppStore } from '../store/useAppStore';
+
+const TransactionFormModal = ({ isOpen, onClose, transaction = null }) => {
+    const { addTransaction, updateTransaction, user } = useAppStore();
+    const [formData, setFormData] = useState({
+        name: '',
+        amount: '',
+        type: 'expense',
+        category: 'Food',
+        date: new Date().toISOString().split('T')[0],
+        status: 'completed'
+    });
+
+    const categories = [
+        'Food', 'Transport', 'Shopping', 'Entertainment', 'Health', 
+        'Bills', 'Education', 'Investment', 'Salary', 'Other'
+    ];
+
+    useEffect(() => {
+        if (transaction) {
+            setFormData({
+                name: transaction.name || '',
+                amount: transaction.amount || '',
+                type: transaction.type || 'expense',
+                category: transaction.category || 'Food',
+                date: transaction.date ? new Date(transaction.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+                status: transaction.status || 'completed'
+            });
+        } else {
+            setFormData({
+                name: '',
+                amount: '',
+                type: 'expense',
+                category: 'Food',
+                date: new Date().toISOString().split('T')[0],
+                status: 'completed'
+            });
+        }
+    }, [transaction, isOpen]);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const data = {
+            ...formData,
+            amount: parseFloat(formData.amount),
+            user_id: user?.id
+        };
+
+        if (transaction?.id) {
+            await updateTransaction(transaction.id, data);
+        } else {
+            await addTransaction(user?.id, data);
+        }
+        onClose();
+    };
+
+    const handleDelete = async () => {
+        if (window.confirm('Are you sure you want to delete this transaction?')) {
+            await deleteTransaction(transaction.id);
+            onClose();
+        }
+    };
+
+    return (
+        <Modal isOpen={isOpen} onClose={onClose} title={transaction ? 'Refine Transaction' : 'Record Capital'}>
+            <form onSubmit={handleSubmit} className="space-y-4 font-body">
+                <div>
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60 mb-2 italic">Instruction / Purpose</label>
+                    <input
+                        type="text"
+                        required
+                        className="w-full px-4 py-3 rounded-xl border border-outline-variant/10 bg-surface-container/10 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all text-on-surface font-headline text-sm"
+                        placeholder="e.g. Strategic Acquisition / Groceries"
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60 mb-2 italic">Capital Amount</label>
+                        <div className="relative">
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/40 font-bold">$</span>
+                            <input
+                                type="number"
+                                step="0.01"
+                                required
+                                className="w-full pl-8 pr-4 py-3 rounded-xl border border-outline-variant/10 bg-surface-container/10 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all text-on-surface font-headline text-sm"
+                                placeholder="0.00"
+                                value={formData.amount}
+                                onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                            />
+                        </div>
+                    </div>
+                    <div>
+                        <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60 mb-2 italic">Flow Type</label>
+                        <select
+                            className="w-full px-4 py-3 rounded-xl border border-outline-variant/10 bg-surface-container/10 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all text-on-surface font-black uppercase tracking-widest text-[10px] appearance-none cursor-pointer"
+                            value={formData.type}
+                            onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                        >
+                            <option value="expense">Outflow (Expense)</option>
+                            <option value="income">Inflow (Income)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60 mb-2 italic">Sphere / Category</label>
+                    <select
+                        className="w-full px-4 py-3 rounded-xl border border-outline-variant/10 bg-surface-container/10 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all text-on-surface font-black uppercase tracking-widest text-[10px] appearance-none cursor-pointer"
+                        value={formData.category}
+                        onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                    >
+                        {categories.map(cat => (
+                            <option key={cat} value={cat}>{cat}</option>
+                        ))}
+                    </select>
+                </div>
+
+                <div>
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60 mb-2 italic">Temporal Marker</label>
+                    <input
+                        type="date"
+                        required
+                        className="w-full px-4 py-3 rounded-xl border border-outline-variant/10 bg-surface-container/10 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all text-on-surface font-black uppercase tracking-widest text-[10px]"
+                        value={formData.date}
+                        onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                    />
+                </div>
+
+                <div className="pt-6 flex flex-col gap-3">
+                    <button
+                        type="submit"
+                        className="w-full py-4 bg-primary hover:bg-primary/90 text-surface font-black uppercase tracking-widest text-xs rounded-2xl transition-all shadow-lg shadow-primary/20 active:scale-[0.98]"
+                    >
+                        {transaction ? 'Sync Changes' : 'Execute Record'}
+                    </button>
+                    {transaction && (
+                        <button
+                            type="button"
+                            onClick={handleDelete}
+                            className="w-full py-4 bg-surface-container-lowest border border-error/10 text-error hover:bg-error/5 font-black uppercase tracking-widest text-xs rounded-2xl transition-all active:scale-[0.98]"
+                        >
+                            Purge Record
+                        </button>
+                    )}
+                </div>
+            </form>
+        </Modal>
+    );
+};
+
+export default TransactionFormModal;

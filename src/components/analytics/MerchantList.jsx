@@ -24,22 +24,22 @@ const MerchantList = ({ transactions }) => {
     if (merchants.length === 0) return null
 
     return (
-        <div className="rounded-3xl border border-voxa-border bg-voxa-card p-8 shadow-sm">
+        <div className="rounded-3xl border border-outline-variant bg-surface-container-lowest p-8 shadow-sm">
             <div className="mb-6 flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-500/10 text-orange-500">
                     <Store size={24} />
                 </div>
                 <div>
-                    <h3 className="text-xl font-bold text-voxa-text">Top Merchants</h3>
-                    <p className="text-sm font-medium text-voxa-muted mt-1">Places where you spend the most</p>
+                    <h3 className="text-xl font-bold text-on-surface">Top Merchants</h3>
+                    <p className="text-sm font-medium text-on-surface-variant mt-1">Places where you spend the most</p>
                 </div>
             </div>
             <div className="space-y-4">
                 {merchants.map((m, i) => (
-                    <div key={i} className="flex items-center justify-between p-4 rounded-2xl bg-voxa-bg border border-voxa-border transition-colors hover:border-voxa-border/80">
+                    <div key={i} className="flex items-center justify-between p-4 rounded-2xl bg-surface border border-outline-variant transition-colors hover:border-outline-variant/80">
                         <div className="flex items-center gap-3">
-                            <span className="font-bold text-voxa-muted">#{i + 1}</span>
-                            <span className="font-semibold text-voxa-text truncate max-w-[150px]">{m.name}</span>
+                            <span className="font-bold text-on-surface-variant">#{i + 1}</span>
+                            <span className="font-semibold text-on-surface truncate max-w-[150px]">{m.name}</span>
                         </div>
                         <span className="font-bold text-rose-500 flex items-center gap-1">
                             <TrendingDown size={14} />

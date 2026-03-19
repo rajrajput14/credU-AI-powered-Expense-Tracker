@@ -4,35 +4,45 @@ import { AnimatePresence, motion } from 'framer-motion'
 import Dashboard from './pages/Dashboard'
 import Analytics from './pages/Analytics'
 import Transactions from './pages/Transactions'
+import Goals from './pages/Goals'
 import Layout from './components/Layout'
 import Auth from './pages/Auth'
 import Settings from './pages/Settings'
 import LandingPage from './pages/LandingPage'
 import SplashScreen from './components/SplashScreen'
 import { supabase, getCurrentUser } from './services/supabase'
-import { useTransactionStore } from './store/useTransactionStore'
+import { useAppStore } from './store/useAppStore'
 
 function App() {
   const [user, setUser] = useState(null)
   const [initializing, setInitializing] = useState(true)
   const [showSplash, setShowSplash] = useState(true)
-  const { fetchTransactions, subscribeToTransactions } = useTransactionStore()
+  const { fetchInitialData, subscribeToDatabase, setUser: setGlobalUser } = useAppStore()
 
   useEffect(() => {
     let unsubscribe = null
     const startTime = Date.now()
     const MIN_SPLASH_TIME = 1500
+    const { darkMode } = useAppStore.getState();
+
+    // Initialize Dark Mode
+    if (darkMode) {
+        document.documentElement.classList.add('dark');
+    } else {
+        document.documentElement.classList.remove('dark');
+    }
 
     const init = async () => {
       try {
         // 1. Check active session
         const u = await getCurrentUser()
         setUser(u)
+        setGlobalUser(u)
 
         if (u) {
           // 2. Fetch initial data
-          await fetchTransactions(u.id)
-          unsubscribe = subscribeToTransactions(u.id)
+          await fetchInitialData(u.id)
+          unsubscribe = subscribeToDatabase(u.id)
         }
 
         // 3. Ensure minimum display time
@@ -58,12 +68,13 @@ function App() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       const u = session?.user || null
       setUser(u)
+      setGlobalUser(u)
       
       if (unsubscribe) unsubscribe()
       
       if (u) {
-        fetchTransactions(u.id)
-        unsubscribe = subscribeToTransactions(u.id)
+        fetchInitialData(u.id)
+        unsubscribe = subscribeToDatabase(u.id)
       }
     })
 
@@ -83,7 +94,7 @@ function App() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="min-h-screen bg-voxa-bg"
+          className="min-h-screen bg-surface"
         >
           <Router>
             <Routes>
@@ -93,6 +104,7 @@ function App() {
                 <Route index element={<Dashboard />} />
                 <Route path="transactions" element={<Transactions />} />
                 <Route path="analytics" element={<Analytics />} />
+                <Route path="goals" element={<Goals />} />
                 <Route path="settings" element={<Settings />} />
               </Route>
             </Routes>

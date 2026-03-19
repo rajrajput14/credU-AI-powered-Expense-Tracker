@@ -44,17 +44,17 @@ const CurrencySelector = () => {
         <div className="relative" ref={dropdownRef}>
             <button 
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center gap-2 rounded-xl border border-voxa-border bg-voxa-bg px-3 py-2 text-sm font-bold text-voxa-text hover:bg-white/5 transition-colors"
+                className="flex items-center gap-2 rounded-xl border border-outline-variant/10 bg-surface-container-lowest/50 backdrop-blur-md px-3 py-2 text-[10px] font-black uppercase tracking-widest text-on-surface hover:bg-surface-container/20 transition-all border-outline-variant/5 shadow-sm"
             >
                 {ratesLoading ? (
-                    <Icon name="loading" size="sm" className="animate-spin text-voxa-muted" />
+                    <Icon name="loading" size="sm" className="animate-spin text-on-surface-variant/40" />
                 ) : (
-                    <span className="flex h-5 w-5 items-center justify-center rounded-md bg-voxa-primary/20 text-voxa-primary">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-md bg-primary/10 text-primary">
                         {selectedCurrency.symbol}
                     </span>
                 )}
                 <span>{selectedCurrency.code}</span>
-                <ChevronDown size={14} className={clsx("text-voxa-muted transition-transform", isOpen && "rotate-180")} />
+                <ChevronDown size={14} className={clsx("text-on-surface-variant/40 transition-transform", isOpen && "rotate-180")} />
             </button>
 
             <AnimatePresence>
@@ -64,26 +64,28 @@ const CurrencySelector = () => {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 10, scale: 0.95 }}
                         transition={{ duration: 0.15 }}
-                        className="absolute right-0 top-full mt-2 w-48 overflow-hidden rounded-2xl border border-voxa-border bg-voxa-card shadow-2xl z-50 p-1"
+                        className="absolute right-0 top-full mt-2 w-48 overflow-hidden rounded-2xl border border-outline-variant/10 bg-surface-container-lowest/90 backdrop-blur-xl shadow-2xl z-50 p-1"
                     >
                         {AVAILABLE_CURRENCIES.map(curr => (
                             <button
                                 key={curr.code}
                                 onClick={() => handleSelect(curr)}
                                 className={clsx(
-                                    "flex w-full items-center justify-between rounded-xl px-3 py-2 text-sm font-medium transition-colors",
+                                    "flex w-full items-center justify-between rounded-xl px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-all",
                                     selectedCurrency.code === curr.code 
-                                        ? "bg-indigo-500/10 text-voxa-primary" 
-                                        : "text-voxa-muted hover:bg-voxa-bg hover:text-voxa-text"
+                                        ? "bg-primary/10 text-primary" 
+                                        : "text-on-surface-variant/60 hover:bg-surface-container/50 hover:text-on-surface"
                                 )}
                             >
                                 <div className="flex items-center gap-3">
-                                    <span className="flex h-6 w-6 items-center justify-center rounded-md bg-white/5 font-bold text-voxa-text">
+                                    <span className={clsx("flex h-6 w-6 items-center justify-center rounded-md font-bold transition-colors",
+                                        selectedCurrency.code === curr.code ? "bg-primary/20" : "bg-on-surface/5"
+                                    )}>
                                         {curr.symbol}
                                     </span>
                                     <span>{curr.code}</span>
                                 </div>
-                                {selectedCurrency.code === curr.code && <Icon name="success" size="sm" />}
+                                {selectedCurrency.code === curr.code && <Icon name="success" size="sm" className="text-primary" />}
                             </button>
                         ))}
                     </motion.div>

@@ -1,38 +1,68 @@
 @import "tailwindcss";
 
 @theme {
-  --color-voxa-primary: var(--primary);
-  --color-voxa-secondary: var(--secondary);
-  --color-voxa-bg: var(--bg);
-  --color-voxa-card: var(--card);
-  --color-voxa-text: var(--text);
-  --color-voxa-muted: var(--text-muted);
-  --color-voxa-border: var(--border);
+  --color-primary: #4647d3;
+  --color-primary-container: #9396ff;
+  --color-secondary: #0057bd;
+  --color-secondary-container: #bfd1ff;
+  --color-tertiary: #815100;
+  --color-tertiary-container: #f8a010;
+  
+  --color-surface: #f5f7f9;
+  --color-surface-bright: #f5f7f9;
+  --color-surface-dim: #d0d5d8;
+  --color-surface-container-low: #eef1f3;
+  --color-surface-container: #e5e9eb;
+  --color-surface-container-high: #dfe3e6;
+  --color-surface-container-highest: #d9dde0;
+  --color-surface-container-lowest: #ffffff;
+  
+  --color-on-surface: #2c2f31;
+  --color-on-surface-variant: #595c5e;
+  --color-outline: #747779;
+  --color-outline-variant: #abadaf;
+  
+  --color-error: #b41340;
+  --color-error-container: #f74b6d;
+
+  --font-headline: "Manrope", sans-serif;
+  --font-body: "Inter", sans-serif;
+  
+  --radius-lg: 2rem;
+  --radius-xl: 3rem;
 }
 
 :root {
-  /* Dark Theme (Default) */
-  --bg: #0B0F1A;
-  --card: #121826;
-  --text: #FFFFFF;
-  --text-muted: #94A3B8;
-  --border: #1E293B;
-  --primary: #6366F1;
-  --secondary: #8B5CF6;
+  --primary: #4647d3;
+  --secondary: #0057bd;
+  --bg: #f5f7f9;
+  --card: #ffffff;
+  --text: #2c2f31;
+  --text-muted: #595c5e;
+  --border: #e5e9eb;
 
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   line-height: 1.6;
   font-weight: 400;
-  color-scheme: dark;
+  color-scheme: light;
 }
 
-:root.light-theme {
-  --bg: #F5F7FA;
-  --card: #FFFFFF;
-  --text: #111827;
-  --text-muted: #6B7280;
-  --border: #E5E7EB;
-  color-scheme: light;
+/* Base utility classes for credU aesthetic */
+@layer utilities {
+  .fluid-gradient {
+    background: linear-gradient(135deg, #4647d3 0%, #9396ff 100%);
+  }
+  
+  .glass-card {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .soft-glow {
+    box-shadow: 0 24px 40px -4px rgba(44, 47, 49, 0.06);
+  }
 }
 
 @layer base {
@@ -41,30 +71,12 @@
     color: var(--text);
     margin: 0;
     transition: background-color 0.2s ease, color 0.2s ease;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Inter', sans-serif;
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
   }
   
-  h1 {
-    font-weight: 700;
-    letter-spacing: -0.03em;
-    line-height: 1.1;
-  }
-  
-  h2, h3, h4, h5, h6 {
-    font-weight: 600;
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Manrope', sans-serif;
     letter-spacing: -0.02em;
-    line-height: 1.2;
-  }
-  
-  p {
-    font-weight: 400;
-    line-height: 1.6;
-  }
-  
-  small {
-    color: var(--text-muted);
-    font-weight: 400;
   }
 }

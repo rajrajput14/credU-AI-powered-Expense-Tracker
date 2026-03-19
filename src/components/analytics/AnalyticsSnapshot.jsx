@@ -36,14 +36,14 @@ const AnalyticsSnapshot = ({ transactions }) => {
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 mt-4">
             {stats.map(s => (
-                <div key={s.id} className="rounded-3xl border border-voxa-border bg-voxa-card p-6 flex flex-col justify-between shadow-sm">
+                <div key={s.id} className="rounded-3xl border border-outline-variant bg-surface-container-lowest p-6 flex flex-col justify-between shadow-sm">
                     <div className="flex justify-between items-center mb-4">
-                        <span className="text-sm font-medium text-voxa-muted uppercase tracking-widest">{s.label}</span>
+                        <span className="text-sm font-medium text-on-surface-variant uppercase tracking-widest">{s.label}</span>
                         <div className={clsx("h-10 w-10 flex items-center justify-center rounded-xl", s.color)}>
                         <Icon name={s.icon} size="md" />
                         </div>
                     </div>
-                    <h2 className="text-3xl font-black text-voxa-text">{s.value}</h2>
+                    <h2 className="text-3xl font-black text-on-surface">{s.value}</h2>
                 </div>
             ))}
         </div>

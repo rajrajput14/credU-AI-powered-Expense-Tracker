@@ -5,7 +5,7 @@ const ThemeContext = createContext()
 export const ThemeProvider = ({ children }) => {
     const [theme, setTheme] = useState(() => {
         // 1. Check localStorage
-        const saved = localStorage.getItem('voxa-theme')
+        const saved = localStorage.getItem('credu-theme')
         if (saved) return saved
         
         // 2. Check system preference
@@ -23,7 +23,7 @@ export const ThemeProvider = ({ children }) => {
         } else {
             root.classList.remove('light-theme')
         }
-        localStorage.setItem('voxa-theme', theme)
+        localStorage.setItem('credu-theme', theme)
     }, [theme])
 
     const toggleTheme = () => {

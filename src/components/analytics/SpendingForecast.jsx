@@ -38,28 +38,28 @@ const SpendingForecast = ({ transactions }) => {
     if (!forecast) return null
 
     return (
-        <div className="rounded-3xl border border-voxa-border bg-voxa-card p-8 shadow-sm flex flex-col justify-between">
+        <div className="rounded-3xl border border-outline-variant bg-surface-container-lowest p-8 shadow-sm flex flex-col justify-between">
             <div className="flex items-center gap-3 mb-6">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 text-blue-500">
                     <Icon name="clock" size="lg" />
                 </div>
                 <div>
-                    <h3 className="text-xl font-bold text-voxa-text">End of Month Forecast</h3>
-                    <p className="text-sm font-medium text-voxa-muted mt-1">Based on {forecast.daysElapsed} days of data</p>
+                    <h3 className="text-xl font-bold text-on-surface">End of Month Forecast</h3>
+                    <p className="text-sm font-medium text-on-surface-variant mt-1">Based on {forecast.daysElapsed} days of data</p>
                 </div>
             </div>
             
             <div className="space-y-6">
-                <div className="flex justify-between items-center rounded-2xl bg-voxa-bg border border-voxa-border p-4">
-                    <span className="text-sm font-bold text-voxa-muted uppercase tracking-widest">Daily Burn Rate</span>
-                    <span className="font-bold text-voxa-text">${forecast.avgDaily.toLocaleString(undefined, {maximumFractionDigits: 0})} / day</span>
+                <div className="flex justify-between items-center rounded-2xl bg-surface border border-outline-variant p-4">
+                    <span className="text-sm font-bold text-on-surface-variant uppercase tracking-widest">Daily Burn Rate</span>
+                    <span className="font-bold text-on-surface">${forecast.avgDaily.toLocaleString(undefined, {maximumFractionDigits: 0})} / day</span>
                 </div>
                 
                 <div>
-                    <span className="text-xs font-bold text-voxa-muted uppercase tracking-widest block mb-2">Projected Total Spend</span>
+                    <span className="text-xs font-bold text-on-surface-variant uppercase tracking-widest block mb-2">Projected Total Spend</span>
                     <div className="flex items-center gap-3">
-                        <Icon name="forecast" size="lg" className="text-voxa-primary" />
-                        <h2 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-voxa-primary to-voxa-secondary tracking-tight">
+                        <Icon name="forecast" size="lg" className="text-primary" />
+                        <h2 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary tracking-tight">
                             ${forecast.projectedTotal.toLocaleString(undefined, {maximumFractionDigits: 0})}
                         </h2>
                     </div>

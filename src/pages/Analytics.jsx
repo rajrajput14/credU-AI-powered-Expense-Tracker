@@ -1,202 +1,297 @@
-import { useMemo } from 'react'
-import { motion } from 'framer-motion'
-import ReactECharts from 'echarts-for-react'
-import { PieChart, Sparkles, TrendingUp, Wallet } from 'lucide-react'
-import { useTransactionStore } from '../store/useTransactionStore'
-import { useTheme } from '../context/ThemeContext'
-import clsx from 'clsx'
-import AnalyticsSnapshot from '../components/analytics/AnalyticsSnapshot'
-import AnalyticsInsights from '../components/analytics/AnalyticsInsights'
-import MerchantList from '../components/analytics/MerchantList'
-import SpendingForecast from '../components/analytics/SpendingForecast'
-import { useCurrencyStore } from '../store/useCurrencyStore'
-import { convertAmount, formatCurrency } from '../utils/currencyUtils'
+import { useAppStore } from '../store/useAppStore';
+import { analyticsService } from '../services/analyticsService';
+import { useMemo, useState } from 'react';
+import clsx from 'clsx';
 
 const Analytics = () => {
-    const { transactions, loading } = useTransactionStore()
-    const { selectedCurrency, rates, baseCurrency } = useCurrencyStore()
-    const { theme } = useTheme()
-    const isDark = theme === 'dark'
+    const { transactions, budget } = useAppStore();
+    const [period, setPeriod] = useState('All Time');
 
-    const pieOption = useMemo(() => {
-        const categories = {}
-        transactions
-            .filter(t => t.type === 'expense')
-            .forEach(t => {
-                categories[t.category] = (categories[t.category] || 0) + Number(t.amount)
-            })
+    const filteredByPeriod = useMemo(() => {
+        const now = new Date();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const startOfYear = new Date(now.getFullYear(), 0, 1);
+
+        return transactions.filter(t => {
+            const d = new Date(t.date);
+            if (period === 'This Month') return d >= startOfMonth;
+            if (period === 'This Year') return d >= startOfYear;
+            return true;
+        });
+    }, [transactions, period]);
+
+    const { totalIncome, monthlySpending: totalExpenses } = useMemo(() => 
+        analyticsService.computeDashboardMetrics(filteredByPeriod), 
+    [filteredByPeriod]);
+
+    const cashFlow = useMemo(() => 
+        analyticsService.computeCashFlow(transactions), 
+    [transactions]);
+
+    const activeInsight = useMemo(() => 
+        analyticsService.generateInsight(transactions, budget), 
+    [transactions, budget]);
+
+    const categoryBreakdown = useMemo(() => 
+        analyticsService.computeCategoryBreakdown(filteredByPeriod), 
+    [filteredByPeriod]);
+
+    const topCategories = categoryBreakdown.slice(0, 4);
+    const colorPalette = ['orange', 'blue', 'purple', 'emerald', 'rose'];
+
+    const pieGradient = useMemo(() => {
+        let currentP = 0;
+        const colors = ['#f97316', '#3b82f6', '#a855f7', '#10b981'];
+        if (topCategories.length === 0) return 'transparent';
         
-        const data = Object.entries(categories).map(([name, value]) => ({
-            name,
-            value: convertAmount(value, rates, baseCurrency, selectedCurrency.code)
-        }))
+        const stops = topCategories.map((cat, i) => {
+            const start = currentP;
+            currentP += cat.percentage;
+            return `${colors[i % colors.length]} ${start}% ${currentP}%`;
+        });
+        return `conic-gradient(${stops.join(', ')})`;
+    }, [topCategories]);
 
-        return {
-            backgroundColor: 'transparent',
-            tooltip: { 
-                trigger: 'item', 
-                formatter: (params) => {
-                    const valueFormatted = formatCurrency(params.value, selectedCurrency.symbol)
-                    return `${params.name}: ${valueFormatted} (${params.percent}%)`
-                },
-                backgroundColor: isDark ? '#121826' : '#fff', 
-                borderColor: isDark ? '#1E293B' : '#E5E7EB', 
-                textStyle: { color: isDark ? '#fff' : '#111827' } 
-            },
-            legend: { 
-                bottom: '0%', 
-                left: 'center', 
-                textStyle: { color: isDark ? '#94A3B8' : '#6B7280' } 
-            },
-            series: [
-                {
-                    name: 'Spending',
-                    type: 'pie',
-                    radius: ['45%', '75%'],
-                    center: ['50%', '45%'],
-                    avoidLabelOverlap: true,
-                    itemStyle: {
-                        borderRadius: 12,
-                        borderColor: isDark ? '#121826' : '#fff',
-                        borderWidth: 2
-                    },
-                    label: { show: false },
-                    emphasis: {
-                        label: { 
-                            show: true, 
-                            fontSize: 16, 
-                            fontWeight: 'bold', 
-                            color: isDark ? '#fff' : '#111827' 
-                        }
-                    },
-                    data: data.length > 0 ? data : [{ value: 0, name: 'No data' }]
-                }
-            ],
-            color: ['#6366F1', '#8B5CF6', '#EC4899', '#F59E0B', '#10B981', '#3B82F6']
-        }
-    }, [transactions, isDark, rates, baseCurrency, selectedCurrency])
+    const cashFlowPoints = useMemo(() => {
+        const max = Math.max(...cashFlow.map(d => Math.max(d.income, d.expense)), 1);
+        const incomePath = cashFlow.map((d, i) => `${i * 20},${100 - (d.income / max * 80)}`).join(' L ');
+        const expensePath = cashFlow.map((d, i) => `${i * 20},${100 - (d.expense / max * 80)}`).join(' L ');
+        return { incomePath, expensePath };
+    }, [cashFlow]);
 
-    if (loading && transactions.length === 0) {
-        return (
-            <div className="flex h-[60vh] flex-col items-center justify-center gap-4">
-                <div className="h-12 w-12 animate-spin rounded-full border-4 border-voxa-primary border-t-transparent" />
-                <p className="text-voxa-muted font-medium">Analyzing your finances...</p>
-            </div>
-        )
-    }
+    const savingsRate = totalIncome > 0 ? ((totalIncome - totalExpenses) / totalIncome) * 100 : 0;
+    
+    // Quick heuristic for "Fixed Bills" - housing, rent, utilities, subscriptions
+    const fixedBills = filteredByPeriod
+        .filter(t => t.type === 'expense' && ['housing', 'rent', 'utilities', 'subscriptions', 'bills'].includes(t.category?.toLowerCase()))
+        .reduce((sum, t) => sum + Number(t.amount || 0), 0);
+
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount || 0);
+    };
 
     return (
-        <div className="mx-auto max-w-6xl space-y-8">
-            <AnalyticsSnapshot transactions={transactions} />
-            <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-                <div className="space-y-8">
-                {/* Distribution Chart */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="rounded-3xl border border-voxa-border bg-voxa-card p-8 shadow-sm"
-                >
-                    <div className="mb-8 flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/10 text-voxa-primary">
-                                <PieChart size={24} />
-                            </div>
-                            <h3 className="text-xl font-bold text-voxa-text">Spending Split</h3>
-                        </div>
-                        <span className="text-xs font-bold text-voxa-muted uppercase tracking-widest">30 Day View</span>
+        <div className="flex-1 flex flex-col w-full font-body">
+            <header className="h-16 bg-surface-container-lowest/80 backdrop-blur-md border-b border-outline-variant/10 flex items-center justify-between px-8 shrink-0 z-10 w-full lg:flex hidden">
+                <div className="flex items-center gap-2 text-sm">
+                    <span className="text-on-surface-variant hover:text-on-surface cursor-pointer font-medium transition-colors">App</span>
+                    <span className="text-on-surface-variant/40">/</span>
+                    <span className="text-on-surface font-black">Analytics</span>
+                </div>
+                
+                <div className="flex items-center gap-4">
+                    <button className="material-symbols-outlined text-on-surface-variant/60 hover:text-on-surface transition-colors">notifications</button>
+                    <div className="w-8 h-8 rounded-full bg-surface-container border border-outline-variant/10 overflow-hidden cursor-pointer">
+                        <img src={`https://api.dicebear.com/7.x/notionists/svg?seed=${user?.email || 'Felix'}&backgroundColor=e2e8f0`} alt="Profile" className="w-full h-full object-cover" />
+                    </div>
+                </div>
+            </header>
+
+            <div className="flex-1 overflow-x-hidden overflow-y-auto p-6 md:p-8 space-y-8 max-w-7xl mx-auto w-full">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                    <div>
+                        <h1 className="text-2xl font-bold tracking-tight text-on-surface mb-1 font-headline">Financial Analytics</h1>
+                        <p className="text-on-surface-variant text-sm font-medium">Deep dive into your spending patterns and habits.</p>
                     </div>
                     
-                    <div className="h-[400px] w-full">
-                        {transactions.length === 0 ? (
-                            <div className="flex h-full flex-col items-center justify-center gap-3 text-voxa-muted italic">
-                                <Wallet size={48} className="opacity-20" />
-                                <p>Add transactions to view charts</p>
-                            </div>
-                        ) : (
-                            <ReactECharts option={pieOption} style={{ height: '100%', width: '100%' }} />
-                        )}
+                    <div className="flex items-center gap-2 bg-surface-container-lowest p-1 rounded-xl border border-outline-variant/10 shadow-sm">
+                        {['All Time', 'This Month', 'This Year'].map(p => (
+                            <button 
+                                key={p}
+                                onClick={() => setPeriod(p)}
+                                className={clsx(
+                                    "px-4 py-1.5 rounded-lg text-sm font-bold transition-all",
+                                    period === p ? "bg-primary/10 text-primary shadow-sm" : "text-on-surface-variant hover:text-on-surface"
+                                )}
+                            >
+                                {p}
+                            </button>
+                        ))}
                     </div>
-                </motion.div>
-                
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-                    <MerchantList transactions={transactions} />
-                </motion.div>
                 </div>
 
-                <div className="space-y-8">
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-                        <AnalyticsInsights transactions={transactions} />
-                    </motion.div>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div className="bg-surface-container-lowest p-5 rounded-2xl border border-outline-variant/10 shadow-sm flex flex-col justify-between hover:border-primary/30 transition-colors group">
+                        <div className="flex justify-between items-start mb-4">
+                            <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary/20 transition-colors"><span className="material-symbols-outlined">shopping_bag</span></div>
+                        </div>
+                        <div>
+                            <p className="text-on-surface-variant text-sm font-bold mb-1 uppercase tracking-widest text-[10px]">Total Expenses</p>
+                            <h3 className="text-2xl font-bold text-on-surface tracking-tight font-headline">{formatCurrency(totalExpenses)}</h3>
+                        </div>
+                    </div>
+                    <div className="bg-surface-container-lowest p-5 rounded-2xl border border-outline-variant/10 shadow-sm flex flex-col justify-between hover:border-secondary/30 transition-colors group">
+                        <div className="flex justify-between items-start mb-4">
+                            <div className="w-10 h-10 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center group-hover:bg-secondary/20 transition-colors"><span className="material-symbols-outlined">payments</span></div>
+                        </div>
+                        <div>
+                            <p className="text-on-surface-variant text-sm font-bold mb-1 uppercase tracking-widest text-[10px]">Total Income</p>
+                            <h3 className="text-2xl font-bold text-on-surface tracking-tight font-headline">{formatCurrency(totalIncome)}</h3>
+                        </div>
+                    </div>
+                    <div className="bg-surface-container-lowest p-5 rounded-2xl border border-outline-variant/10 shadow-sm flex flex-col justify-between hover:border-tertiary/30 transition-colors group">
+                        <div className="flex justify-between items-start mb-4">
+                            <div className="w-10 h-10 rounded-xl bg-tertiary/10 text-tertiary flex items-center justify-center group-hover:bg-tertiary/20 transition-colors"><span className="material-symbols-outlined">savings</span></div>
+                        </div>
+                        <div>
+                            <p className="text-on-surface-variant text-sm font-bold mb-1 uppercase tracking-widest text-[10px]">Savings Rate</p>
+                            <h3 className="text-2xl font-bold text-on-surface tracking-tight font-headline">{savingsRate.toFixed(1)}%</h3>
+                        </div>
+                    </div>
+                    <div className="bg-surface-container-lowest p-5 rounded-2xl border border-outline-variant/10 shadow-sm flex flex-col justify-between hover:border-primary/30 transition-colors group">
+                        <div className="flex justify-between items-start mb-4">
+                            <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary/20 transition-colors"><span className="material-symbols-outlined">receipt_long</span></div>
+                        </div>
+                        <div>
+                            <p className="text-on-surface-variant text-sm font-bold mb-1 uppercase tracking-widest text-[10px]">Fixed Bills</p>
+                            <h3 className="text-2xl font-bold text-on-surface tracking-tight font-headline">{formatCurrency(fixedBills)}</h3>
+                        </div>
+                    </div>
+                </div>
 
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-                        <SpendingForecast transactions={transactions} />
-                    </motion.div>
-                    {/* Insights Panel */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 }}
-                        className="rounded-3xl border border-voxa-border bg-voxa-card p-8 shadow-sm"
-                    >
-                        <div className="mb-6 flex items-center gap-3">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-500">
-                                <TrendingUp size={24} />
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    
+                    {/* Cash Flow Chart */}
+                    <div className="bg-surface-container-lowest rounded-3xl p-6 border border-outline-variant/10 shadow-sm lg:col-span-2 flex flex-col">
+                        <div className="flex justify-between items-start mb-6">
+                            <div>
+                                <h3 className="font-bold text-on-surface tracking-tight text-lg mb-1 font-headline">Cash Flow</h3>
+                                <p className="text-on-surface-variant text-sm font-medium">Income vs Expenses over time</p>
                             </div>
-                            <h3 className="text-xl font-bold text-voxa-text">Voxa Insights</h3>
+                            <div className="flex items-center gap-4 text-xs font-bold uppercase tracking-widest">
+                                <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-secondary"></span><span className="text-on-surface-variant">Income</span></div>
+                                <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-on-surface"></span><span className="text-on-surface-variant">Expenses</span></div>
+                            </div>
                         </div>
                         
-                        <div className="space-y-4">
-                            {transactions.length > 0 ? (
-                                <>
-                                    <div className="group flex gap-4 rounded-2xl bg-voxa-bg border border-voxa-border p-5 hover:border-voxa-primary transition-all">
-                                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 text-voxa-primary">
-                                            <TrendingUp size={20} />
-                                        </div>
-                                        <div>
-                                            <p className="font-bold text-voxa-text">Activity Detected</p>
-                                            <p className="text-sm text-voxa-muted">You've recorded {transactions.length} transactions this period.</p>
-                                        </div>
+                        <div className="flex-1 w-full min-h-[300px] flex items-end gap-2 sm:gap-6 relative text-[10px] text-on-surface-variant/60 font-bold uppercase tracking-widest">
+                            <div className="flex flex-col justify-between h-full py-2 pr-2 col-span-1 absolute left-0 top-0 bottom-6 text-right w-10">
+                                <span>$8k</span><span>$6k</span><span>$4k</span><span>$2k</span><span>0</span>
+                            </div>
+                            
+                            <div className="ml-10 flex-1 h-full relative border-b border-outline-variant/10 pb-2 flex items-end justify-between">
+                                <svg className="absolute inset-x-0 bottom-2 w-full h-[80%] overflow-visible" preserveAspectRatio="none" viewBox="0 0 100 100">
+                                    <path 
+                                        d={`M ${cashFlowPoints.expensePath}`} 
+                                        fill="none" 
+                                        stroke="var(--on-surface)" 
+                                        strokeWidth="3" 
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        className="transition-all duration-700"
+                                    ></path>
+                                    <defs>
+                                        <linearGradient id="incomeGrad" x1="0" x2="0" y1="0" y2="1">
+                                            <stop offset="0%" stopColor="var(--secondary)" stopOpacity="0.2"></stop>
+                                            <stop offset="100%" stopColor="var(--secondary)" stopOpacity="0"></stop>
+                                        </linearGradient>
+                                    </defs>
+                                    <path 
+                                        d={`M ${cashFlowPoints.incomePath} L 100,100 L 0,100 Z`} 
+                                        fill="url(#incomeGrad)"
+                                        className="transition-all duration-700"
+                                    ></path>
+                                    <path 
+                                        d={`M ${cashFlowPoints.incomePath}`} 
+                                        fill="none" 
+                                        stroke="var(--secondary)" 
+                                        strokeWidth="3" 
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        className="transition-all duration-700"
+                                    ></path>
+                                </svg>
+                                
+                                {cashFlow.map((d, i) => (
+                                    <div key={i} className="flex flex-col items-center gap-1 w-full text-[10px] font-bold">
+                                        <span>{d.name}</span>
                                     </div>
-                                    <div className="group flex gap-4 rounded-2xl bg-voxa-bg border border-voxa-border p-5 hover:border-voxa-primary transition-all">
-                                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-500">
-                                            <Sparkles size={20} />
-                                        </div>
-                                        <div>
-                                            <p className="font-bold text-voxa-text">Top Spending</p>
-                                            <p className="text-sm text-voxa-muted">Your highest expense category is <span className="text-voxa-text font-bold">{pieOption.series[0].data[0]?.name || 'Unknown'}</span>.</p>
-                                        </div>
-                                    </div>
-                                </>
-                            ) : (
-                                <div className="py-10 text-center">
-                                    <p className="text-sm text-voxa-muted italic">Add transactions to unlock AI-powered insights.</p>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Expense Breakdown */}
+                    <div className="bg-surface-container-lowest rounded-3xl p-6 border border-outline-variant/10 shadow-sm flex flex-col">
+                        <div className="mb-8">
+                            <h3 className="font-bold text-on-surface tracking-tight text-lg mb-1 font-headline">Expense Breakdown</h3>
+                            <p className="text-on-surface-variant text-sm font-medium">Where your money goes</p>
+                        </div>
+                        
+                        <div className="flex-1 flex flex-col justify-center items-center">
+                            <div className="relative w-48 h-48 rounded-full border-[16px] border-surface-container flex items-center justify-center mb-8 shadow-inner">
+                                <div className="absolute inset-[-16px] rounded-full transition-all duration-1000" style={{ background: pieGradient, WebkitMaskImage: 'radial-gradient(transparent 58%, black 60%)', maskImage: 'radial-gradient(transparent 58%, black 60%)' }}></div>
+                                
+                                <div className="text-center bg-surface-container-lowest rounded-full w-32 h-32 flex flex-col items-center justify-center shadow-sm relative z-10">
+                                    <p className="text-on-surface-variant text-[10px] font-bold uppercase tracking-widest">Total</p>
+                                    <p className="text-xl font-bold text-on-surface truncate px-2 font-headline">{formatCurrency(totalExpenses)}</p>
                                 </div>
+                            </div>
+
+                            <div className="w-full space-y-3">
+                                {topCategories.map((cat, i) => (
+                                    <div key={cat.category} className="flex items-center justify-between text-sm">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: i % 2 === 0 ? 'var(--primary)' : 'var(--secondary)' }}></div>
+                                            <span className="font-bold text-on-surface-variant capitalize">{cat.category}</span>
+                                        </div>
+                                        <span className="font-bold text-on-surface">{cat.percentage.toFixed(0)}%</span>
+                                    </div>
+                                ))}
+                                {topCategories.length === 0 && (
+                                    <p className="text-on-surface-variant text-center italic mt-4 text-sm font-medium">No expenses yet.</p>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Smart Insights & Anomalies */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    
+                    <div className="bg-on-surface rounded-3xl p-6 text-white shadow-lg relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-48 h-48 bg-primary/20 rounded-full blur-3xl -mr-10 -mt-10"></div>
+                        <div className="flex items-center gap-3 mb-6 relative z-10">
+                            <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center border border-white/20 backdrop-blur-md">
+                                <span className="material-symbols-outlined text-primary">psychology</span>
+                            </div>
+                            <h3 className="font-bold text-lg tracking-tight font-headline">AI Financial Analysis</h3>
+                        </div>
+                        
+                        <div className="space-y-4 relative z-10">
+                            <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-4">
+                                <p className="text-sm text-surface font-medium leading-relaxed italic">
+                                    "{activeInsight}"
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-surface-container-lowest rounded-3xl p-6 border border-outline-variant/10 shadow-sm">
+                        <h3 className="font-bold text-on-surface tracking-tight text-lg mb-6 font-headline">Top Spending Categories</h3>
+                        
+                        <div className="space-y-5">
+                            {topCategories.map((cat, i) => (
+                                <div key={cat.category}>
+                                    <div className="flex justify-between text-sm mb-2">
+                                        <span className="font-bold text-on-surface-variant capitalize">{cat.category}</span>
+                                        <span className="font-bold text-on-surface">{formatCurrency(cat.amount)}</span>
+                                    </div>
+                                    <div className="w-full bg-surface-container rounded-full h-2">
+                                        <div className="h-2 rounded-full fluid-gradient transition-all duration-1000" style={{ width: `${cat.percentage}%` }}></div>
+                                    </div>
+                                </div>
+                            ))}
+                            {topCategories.length === 0 && (
+                                <p className="text-on-surface-variant text-center italic mt-4 text-sm font-medium">No recorded expenses.</p>
                             )}
                         </div>
-                    </motion.div>
-
-                    {/* Pro Call to Action */}
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.2 }}
-                        className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 to-purple-600 p-8 text-white shadow-xl shadow-indigo-500/20"
-                    >
-                        <div className="relative z-10">
-                            <h3 className="mb-2 text-2xl font-black italic tracking-tight">VOXA AI PRO</h3>
-                            <p className="mb-6 max-w-[200px] text-sm font-medium text-white/80">Get hyper-personalized financial advice and predictive budgeting.</p>
-                            <button className="rounded-xl bg-white px-8 py-3 text-sm font-bold text-indigo-600 shadow-lg active:scale-95 transition-all">
-                                Unlock AI Insights
-                            </button>
-                        </div>
-                        {/* Decorative blobs */}
-                        <div className="absolute -bottom-10 -right-10 h-40 w-40 rounded-full bg-white/10 blur-3xl group-hover:scale-150 transition-transform duration-700" />
-                        <div className="absolute -top-10 -left-10 h-32 w-32 rounded-full bg-indigo-400/20 blur-2xl" />
-                    </motion.div>
+                        
+                    </div>
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default Analytics
+export default Analytics;

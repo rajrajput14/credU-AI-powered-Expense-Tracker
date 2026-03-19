@@ -1,294 +1,351 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const LandingPage = () => {
-    const navigate = useNavigate()
-    const [email, setEmail] = useState('')
-    const [status, setStatus] = useState('idle')
+    const navigate = useNavigate();
+    const [openFaq, setOpenFaq] = useState(null);
 
-    const handleJoinWaitlist = (e) => {
-        e.preventDefault()
-        if (!email) return
-        setStatus('loading')
-        setTimeout(() => {
-            setStatus('success')
-        }, 800)
-    }
-
-    const scrollToWaitlist = () => {
-        document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' })
-    }
-    
-    const scrollToFeatures = () => {
-        document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })
-    }
+    const faqs = [
+        {
+            q: "How accurate is the voice tracking?",
+            a: "Our NLP engine has 99.2% accuracy in identifying amounts, currencies, and categories across various accents and naturally spoken sentences."
+        },
+        {
+            q: "Is my banking data secure?",
+            a: "We use bank-level AES-256 encryption. We utilize read-only tokens through trusted partners like Plaid, so we never have access to your money, only the data."
+        },
+        {
+            q: "Can I use credU in multiple currencies?",
+            a: "Yes! credU automatically detects the currency you mention or uses your location to convert expenses to your primary \"home\" currency using mid-market rates."
+        },
+        {
+            q: "Does it work offline?",
+            a: "Offline entries are saved locally and synced automatically as soon as you are back online. You'll never miss an expense."
+        },
+        {
+            q: "What is the pricing model?",
+            a: "We offer a generous free tier for manual and limited voice tracking. Our Pro plan includes full bank sync and advanced AI insights for a small monthly fee."
+        }
+    ];
 
     return (
-        <div className="bg-[#f8f9ff]  text-[#171c23] antialiased overflow-x-hidden selection:bg-[#e9ddff] selection:text-[#5516be] min-h-screen">
-            {/* Top Navigation */}
-            <nav className="fixed top-0 w-full z-50 bg-white/70 dark:bg-slate-950/70 backdrop-blur-xl transition-all">
-                <div className="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto">
-                    <div className="flex items-center gap-12">
-                        <button onClick={() => window.scrollTo(0,0)} className="text-2xl font-extrabold text-slate-900 dark:text-slate-50 tracking-tighter ">credU</button>
-                        <div className="hidden md:flex items-center gap-8">
-                            <button onClick={scrollToFeatures} className="text-slate-900 dark:text-slate-50 font-bold border-b-2 border-slate-900 dark:border-slate-50 pb-1  tracking-tight transition-colors duration-200">Features</button>
-                            <button className="text-slate-500 dark:text-slate-400 font-medium  tracking-tight hover:text-slate-900 dark:hover:text-slate-200 transition-colors duration-200">Security</button>
-                            <button className="text-slate-500 dark:text-slate-400 font-medium  tracking-tight hover:text-slate-900 dark:hover:text-slate-200 transition-colors duration-200">Pricing</button>
-                            <button className="text-slate-500 dark:text-slate-400 font-medium  tracking-tight hover:text-slate-900 dark:hover:text-slate-200 transition-colors duration-200">About</button>
-                        </div>
+        <div className="bg-surface font-body text-on-surface antialiased selection:bg-primary-container selection:text-on-primary-container min-h-screen">
+            {/* Navigation Header */}
+            <nav className="fixed top-0 w-full z-50 bg-white/60 backdrop-blur-lg shadow-sm">
+                <div className="flex items-center justify-between px-6 md:px-8 py-4 max-w-7xl mx-auto">
+                    <div className="font-headline text-2xl font-bold text-on-surface">credU</div>
+                    <div className="hidden md:flex items-center gap-8">
+                        <a className="text-primary font-semibold border-b-2 border-primary text-sm tracking-tight" href="#">Features</a>
+                        <a className="text-on-surface-variant hover:text-on-surface transition-all text-sm tracking-tight" href="#">How it Works</a>
+                        <a className="text-on-surface-variant hover:text-on-surface transition-all text-sm tracking-tight" href="#">Pricing</a>
+                        <a className="text-on-surface-variant hover:text-on-surface transition-all text-sm tracking-tight" href="#">Security</a>
                     </div>
-                    <div className="flex items-center gap-6">
-                        <button onClick={() => navigate('/auth')} className="text-slate-500 font-medium hover:text-[#000000] transition-colors">Login</button>
-                        <button onClick={scrollToWaitlist} className="bg-[#000000] text-[#ffffff] px-6 py-2.5 rounded-xl font-bold hover:scale-[1.03] transition-transform active:scale-95">Join Waitlist</button>
+                    <div className="flex items-center gap-4">
+                        <button 
+                            onClick={() => navigate('/auth')}
+                            className="px-4 md:px-5 py-2 text-sm font-medium text-on-surface-variant hover:bg-surface-container-low transition-all rounded-full"
+                        >
+                            Login
+                        </button>
+                        <button 
+                            onClick={() => navigate('/auth')}
+                            className="fluid-gradient text-white px-5 md:px-6 py-2.5 rounded-full text-sm font-semibold shadow-lg hover:opacity-90 transition-all"
+                        >
+                            Get Started
+                        </button>
                     </div>
                 </div>
             </nav>
 
-            <main className="pt-32 hero-gradient min-h-screen">
+            <main className="pt-24">
                 {/* Hero Section */}
-                <section className="max-w-7xl mx-auto px-6 text-center">
-                    <h1 className="text-[3.5rem] md:text-[5rem] font-extrabold  leading-[1.1] tracking-tighter text-[#000000] mb-6">
-                        Stop tracking. <br/>
-                        <span className="text-gradient">Start understanding</span> your money.
-                    </h1>
-                    <p className="text-xl text-[#444748] max-w-2xl mx-auto mb-10 leading-relaxed">
-                        AI-powered expense tracking that shows where your money goes—and how to fix it.
-                    </p>
-
-                    {/* Email Capture */}
-                    <div id="waitlist" className="max-w-md mx-auto mb-6 scroll-mt-32">
-                        {status === 'success' ? (
-                            <div className="flex items-center justify-center p-1.5 h-14 bg-emerald-500/10 text-emerald-600 rounded-xl  font-bold border border-emerald-500/20 shadow-lg">
-                                You're on the list! Keep an eye on your inbox.
-                            </div>
-                        ) : (
-                            <form onSubmit={handleJoinWaitlist} className="flex p-1.5 glass-card rounded-xl border border-white/40 shadow-[0_20px_40px_rgba(23,28,35,0.06)] transition-all focus-within:ring-2 focus-within:ring-[#6b38d4]/20">
-                                <input 
-                                    className="flex-grow bg-transparent border-none focus:ring-0 px-4 text-[#171c23] placeholder:text-[#c4c7c7] font-medium outline-none" 
-                                    placeholder="Enter your email" 
-                                    type="email"
-                                    value={email}
-                                    onChange={e => setEmail(e.target.value)}
-                                    required
-                                    disabled={status === 'loading'}
-                                />
+                <section className="relative px-6 md:px-8 pt-12 md:pt-20 pb-20 md:pb-32 overflow-hidden">
+                    <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 md:gap-16 items-center">
+                        <div className="z-10 text-center lg:text-left">
+                            <motion.span 
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="inline-block px-4 py-1.5 rounded-full bg-secondary-container text-on-secondary-container text-[11px] font-bold uppercase tracking-wider mb-6"
+                            >
+                                Introducing credU AI 2.0
+                            </motion.span>
+                            <motion.h1 
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.1 }}
+                                className="font-headline text-4xl md:text-5xl lg:text-7xl font-bold tracking-tight mb-8 leading-[1.1]"
+                            >
+                                You don’t need another expense tracker. <span className="text-primary">You need control.</span>
+                            </motion.h1>
+                            <motion.p 
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.2 }}
+                                className="text-on-surface-variant text-lg md:text-xl mb-10 leading-relaxed max-w-lg mx-auto lg:mx-0"
+                            >
+                                AI-powered expense tracking that shows where your money goes—and how to fix it.
+                            </motion.p>
+                            <motion.div 
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.3 }}
+                                className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
+                            >
                                 <button 
-                                    type="submit"
-                                    disabled={status === 'loading'}
-                                    className="bg-[#000000] text-[#ffffff] px-6 py-3 rounded-xl font-bold hover:scale-[1.03] transition-transform shadow-lg disabled:opacity-70"
+                                    onClick={() => navigate('/auth')}
+                                    className="fluid-gradient text-white px-8 py-4 rounded-full text-lg font-bold shadow-xl hover:scale-105 transition-transform"
                                 >
-                                    {status === 'loading' ? 'Processing...' : 'Join Waitlist'}
+                                    Get Started
                                 </button>
-                            </form>
-                        )}
-                    </div>
-                    
-                    <p className="text-sm text-[#444748] flex items-center justify-center gap-2 mb-20 md:mb-32">
-                        <span className="flex -space-x-2">
-                            <span className="w-6 h-6 rounded-full bg-[#d0bcff] border-2 border-[#f8f9ff]"></span>
-                            <span className="w-6 h-6 rounded-full bg-[#adc6ff] border-2 border-[#f8f9ff]"></span>
-                            <span className="w-6 h-6 rounded-full bg-[#c8c6c5] border-2 border-[#f8f9ff]"></span>
-                        </span>
-                        <span className="font-medium text-[#000000]">⭐ Join 1,200+ early users</span>
-                    </p>
-
-                    {/* Hero Visual Canvas */}
-                    <div className="relative max-w-5xl mx-auto mt-12 md:mt-24">
-                        {/* Floating Mobile UI Mockup */}
-                        <div className="relative z-10 mx-auto w-[320px] h-[650px] bg-white rounded-[3rem] p-4 shadow-2xl border-[8px] border-[#1c1b1b] overflow-hidden">
-                            <div className="h-full bg-[#eff3fe] rounded-[2rem] overflow-hidden flex flex-col">
-                                <div className="p-6 bg-white flex justify-between items-center">
-                                    <div className="text-left">
-                                        <p className="text-[10px] text-[#444748] uppercase tracking-widest font-bold">Total Balance</p>
-                                        <h3 className="text-2xl font-extrabold ">₹1,42,000</h3>
-                                    </div>
-                                    <div className="w-10 h-10 rounded-full bg-[#dee2ed] flex items-center justify-center">
-                                        <span className="material-symbols-outlined text-[#000000]" data-icon="account_balance_wallet">account_balance_wallet</span>
-                                    </div>
-                                </div>
-                                <div className="flex-grow p-4 space-y-4">
-                                    <div className="bg-white p-4 rounded-xl shadow-sm">
-                                        <div className="flex justify-between items-center mb-4">
-                                            <p className="text-xs font-bold ">Transactions</p>
-                                            <span className="text-[10px] text-[#6b38d4] font-bold">View All</span>
-                                        </div>
-                                        <div className="space-y-4">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center text-orange-600">
-                                                    <span className="material-symbols-outlined text-sm" data-icon="restaurant">restaurant</span>
-                                                </div>
-                                                <div className="flex-grow text-left">
-                                                    <p className="text-xs font-bold">Swiggy Delivery</p>
-                                                    <p className="text-[10px] text-[#444748]">Food & Drinks</p>
-                                                </div>
-                                                <p className="text-xs font-bold text-[#ba1a1a]">-₹450</p>
-                                            </div>
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600">
-                                                    <span className="material-symbols-outlined text-sm" data-icon="commute">commute</span>
-                                                </div>
-                                                <div className="flex-grow text-left">
-                                                    <p className="text-xs font-bold">Uber Ride</p>
-                                                    <p className="text-[10px] text-[#444748]">Transport</p>
-                                                </div>
-                                                <p className="text-xs font-bold text-[#ba1a1a]">-₹220</p>
-                                            </div>
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center text-green-600">
-                                                    <span className="material-symbols-outlined text-sm" data-icon="payments">payments</span>
-                                                </div>
-                                                <div className="flex-grow text-left">
-                                                    <p className="text-xs font-bold">Salary Credit</p>
-                                                    <p className="text-[10px] text-[#444748]">Income</p>
-                                                </div>
-                                                <p className="text-xs font-bold text-green-600">+₹85,000</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="bg-gradient-to-br from-[#6b38d4] to-[#8455ef] p-4 rounded-xl text-white shadow-xl">
-                                        <p className="text-[10px] opacity-80 uppercase tracking-widest font-bold text-left">Monthly Budget</p>
-                                        <div className="mt-2 h-2 w-full bg-white/20 rounded-full overflow-hidden">
-                                            <div className="h-full bg-white w-2/3"></div>
-                                        </div>
-                                        <p className="mt-2 text-[10px] font-medium text-left">₹24,000 of ₹40,000 spent</p>
-                                    </div>
-                                </div>
-                            </div>
+                                <button className="bg-surface-container-lowest text-on-surface px-8 py-4 rounded-full text-lg font-bold soft-glow border border-outline-variant/15 hover:bg-surface-container-low transition-all">
+                                    Book a Demo
+                                </button>
+                            </motion.div>
                         </div>
 
-                        {/* Floating Insight Cards */}
-                        <div className="hidden md:block absolute top-20 -left-20 glass-card p-5 rounded-xl shadow-2xl border border-white/50 w-64 text-left z-20 hover:scale-105 transition-transform duration-300">
-                            <div className="flex items-center gap-3 mb-2">
-                                <div className="w-8 h-8 rounded-lg bg-[#ffdad6] flex items-center justify-center">
-                                    <span className="material-symbols-outlined text-[#ba1a1a] text-lg" data-icon="warning" style={{fontVariationSettings: "'FILL' 1"}}>warning</span>
+                        {/* Visual: Mobile Mockup */}
+                        <div className="relative flex justify-center lg:justify-end">
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-primary/10 rounded-full blur-[100px]"></div>
+                            <div className="relative w-64 md:w-72 h-[520px] md:h-[580px] bg-on-surface rounded-[2.5rem] md:rounded-[3rem] p-2 md:p-3 shadow-2xl overflow-hidden border-[6px] md:border-[8px] border-on-surface">
+                                <div className="w-full h-full bg-surface-bright rounded-[1.8rem] md:rounded-[2.2rem] overflow-hidden flex flex-col">
+                                    {/* App Header */}
+                                    <div className="p-5 md:p-6 bg-white border-b border-surface-container">
+                                        <p className="text-[10px] font-bold text-on-surface-variant uppercase mb-1">Total Balance</p>
+                                        <p className="text-xl md:text-2xl font-bold text-on-surface">₹48,250.00</p>
+                                    </div>
+                                    {/* App List */}
+                                    <div className="p-4 space-y-3">
+                                        <div className="bg-white p-3 rounded-xl flex items-center justify-between shadow-sm">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-full bg-tertiary-container/20 flex items-center justify-center">
+                                                    <span className="material-symbols-outlined text-sm text-tertiary">restaurant</span>
+                                                </div>
+                                                <div>
+                                                    <p className="text-xs font-bold">Food</p>
+                                                    <p className="text-[10px] text-on-surface-variant">Today, 2:30 PM</p>
+                                                </div>
+                                            </div>
+                                            <p className="text-xs font-bold text-error">-₹250</p>
+                                        </div>
+                                        <div className="bg-white p-3 rounded-xl flex items-center justify-between shadow-sm">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-full bg-primary-container/20 flex items-center justify-center">
+                                                    <span className="material-symbols-outlined text-sm text-primary">subscriptions</span>
+                                                </div>
+                                                <div>
+                                                    <p className="text-xs font-bold">Netflix</p>
+                                                    <p className="text-[10px] text-on-surface-variant">Subscription</p>
+                                                </div>
+                                            </div>
+                                            <p className="text-xs font-bold text-error">-₹499</p>
+                                        </div>
+                                    </div>
+                                    {/* Glass Feedback inside Mockup */}
+                                    <div className="mt-auto p-4">
+                                        <div className="glass-card p-3 rounded-xl border border-white/40 shadow-sm">
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <span className="material-symbols-outlined text-primary text-xs">insights</span>
+                                                <span className="text-[8px] font-bold text-primary uppercase">Wealth Insight</span>
+                                            </div>
+                                            <p className="text-[10px] font-medium text-on-surface">You spent 20% more today compared to last week.</p>
+                                        </div>
+                                    </div>
                                 </div>
-                                <p className="font-bold text-sm">High Spend Alert</p>
                             </div>
-                            <p className="text-sm text-[#444748]">You spent <span className="font-bold text-[#000000]">₹4,200</span> on food this week.</p>
                         </div>
-                        <div className="hidden md:block absolute bottom-40 -right-24 glass-card p-5 rounded-xl shadow-2xl border border-white/50 w-64 text-left z-20 hover:scale-105 transition-transform duration-300">
-                            <div className="flex items-center gap-3 mb-2">
-                                <div className="w-8 h-8 rounded-lg bg-[#3980f4]/10 flex items-center justify-center">
-                                    <span className="material-symbols-outlined text-[#3980f4] text-lg" data-icon="insights">insights</span>
-                                </div>
-                                <p className="font-bold text-sm">Weekly Insight</p>
-                            </div>
-                            <p className="text-sm text-[#444748]">You're <span className="font-bold text-[#6b38d4]">18% over budget</span> compared to last month.</p>
-                        </div>
-                        <div className="hidden md:block absolute -top-10 right-0 glass-card p-5 rounded-xl shadow-2xl border border-white/50 w-64 text-left z-20 hover:scale-105 transition-transform duration-300">
-                            <div className="flex items-center gap-3 mb-2">
-                                <div className="w-8 h-8 rounded-lg bg-[#dee2ed] flex items-center justify-center">
-                                    <span className="material-symbols-outlined text-[#000000] text-lg" data-icon="subscriptions">subscriptions</span>
-                                </div>
-                                <p className="font-bold text-sm">Subscription</p>
-                            </div>
-                            <p className="text-sm text-[#444748]">Netflix <span className="font-bold text-[#000000]">₹499/month</span> due tomorrow.</p>
-                        </div>
-
-                        {/* Decorative Blur Orbs */}
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#8455ef]/10 rounded-full blur-[100px] -z-10"></div>
                     </div>
                 </section>
 
                 {/* Trust Section */}
-                <section className="py-20 md:py-32 bg-white mt-20 md:mt-0 relative z-30">
-                    <div className="max-w-7xl mx-auto px-6 text-center">
-                        <p className="text-sm font-bold uppercase tracking-[0.2em] text-[#444748] mb-12">Trusted by modern creators at</p>
-                        <div className="flex flex-wrap justify-center items-center gap-10 md:gap-24 opacity-40 grayscale contrast-125">
-                            <img alt="Notion" className="h-8 object-contain mix-blend-multiply" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqKaKE2E10jtsI4zYWxbg_smBgOI3jPqUdSeYpqk7Kz_uyxZ3AyiVvW4YHgUJxvZdnVjFi756VWYoAKpwtwtOmm_QrtL-kAxR8oH9ldpmtjVkUT4Xj2M_o-_WVLvTHRQPFjvrmFWPlPLQzUgKWd8xl_TwP3Jn9pavDcSJZt65BkxJnZkc-JfjkFdTiE3FmQhj7A5IDYmTsOSNNZxuhjxKWJTFODY37NJY00DjDECkp0ByUapRbtq5YUK5Un1hMJLdwb8ycGJNfVslp"/>
-                            <img alt="Spotify" className="h-8 object-contain mix-blend-multiply" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwFoT6gd4IXBCYk3eFN7UDw3dEgMlQG5sP0Q70tTvNjfe7Z0VSd7j3CVAcUajDKJtAheYnlnDPTeOSYpjSGusoJ6c-kPKWAKe6V8Tt7a5xlms67HoaFS3zrhSCIXsiTdcn3vmEU-5d1K6r40ZHNmAAskuUu_mtAsOZQIiCh_Wi_7oXCCtuVwgiNtxIOt1wex1Ids3AIxsHk4p4_XBRzZy61QFMI78eWhV6TNmyqi47z3O_E3YKeOp_rKyaMf1HwAEyLRLJAn7ydVhN"/>
-                            <img alt="Webflow" className="h-6 object-contain mix-blend-multiply" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDx0XGw8-SnP3_qPm9SI8gOZ5kMOzpUZl36TXwpTeFZ4IRloep9KlqKPQpc9wioIEE50STz7Xn8YYH17oZwajDpXb6LllDy0Z4NMkX1fDEaZAqGlW6poTTotRNHY5CnhUJmG7aKaSDKglQbnIE_sbleHDxzxp0ytDdIfNFdacfwJ1B3Oxe5Q9_rM7Ilg0I8KTsKqjRR8-3zZ5mhsWZWiyMIRPbtF6AyWy0915vX3B2NkPmSUxyM92fvpgJsLF2vnR8AW2TV6XgHl7VL"/>
-                            <img alt="Asana" className="h-6 object-contain mix-blend-multiply" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvg2gOTO1JKVO4kb2ZXll9Amx-O7I-HUjFYpH-HU1-kgp4VQSYrw0ic_2KBG9KfY1DoMeFs85PmpSioD2E0qozwT8-HCyyiq-4Kj0s-Ogm59qAO7h0H6p7juO7B30KqANsqsCZAaf_2t4qbVGm5Hp_4fvzEvVI_4zEbBkE_RIcFSy-s33EALOOAH3Ad_b-eQcFx6VXHNT23pDgfpZhQ8D3N8qsUOIbuTCKHffycKVAYW4APuhxc-5ELpZoliKrZgSgWoWNCb7pdtwk"/>
+                <section className="py-16 md:py-20 bg-surface-container-low/30 px-6">
+                    <div className="max-w-7xl mx-auto text-center">
+                        <p className="text-sm font-medium text-on-surface-variant/60 uppercase tracking-widest mb-12">Trusted by modern professionals</p>
+                        <div className="flex flex-wrap justify-center items-center gap-8 md:gap-24 opacity-40 grayscale">
+                            <span className="text-2xl font-bold font-headline">Notion</span>
+                            <span className="text-2xl font-bold font-headline">Spotify</span>
+                            <span className="text-2xl font-bold font-headline">Webflow</span>
+                            <span className="text-2xl font-bold font-headline">Gumroad</span>
+                            <span className="text-2xl font-bold font-headline">Asana</span>
                         </div>
                     </div>
                 </section>
 
-                {/* Bento Features Section */}
-                <section id="features" className="py-24 max-w-7xl mx-auto px-6 scroll-mt-24">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="md:col-span-2 p-10 rounded-3xl bg-[#eff3fe] flex flex-col justify-between border border-[#eff3fe] hover:border-[#6b38d4]/20 transition-all group">
+                {/* Features Section (Bento Grid Style) */}
+                <section className="py-20 md:py-32 px-6 md:px-8 max-w-7xl mx-auto">
+                    <div className="mb-16 md:mb-20">
+                        <h2 className="font-headline text-3xl md:text-4xl font-bold mb-4">Features for the Future of Finance</h2>
+                        <p className="text-on-surface-variant text-lg">Built to be as fast as your spending.</p>
+                    </div>
+                    <div className="grid md:grid-cols-3 gap-6">
+                        {/* Voice Entry */}
+                        <div className="md:col-span-2 bg-surface-container-lowest p-8 rounded-2xl soft-glow border border-outline-variant/10 relative overflow-hidden flex flex-col justify-between">
                             <div>
-                                <h4 className="text-2xl md:text-3xl font-extrabold  mb-4 text-[#000000]">Zero Data Entry</h4>
-                                <p className="text-[#444748] max-w-md text-lg">Connect your banks securely and let credU automatically categorize every transaction with 99% accuracy.</p>
-                            </div>
-                            <div className="mt-12 bg-white p-6 rounded-2xl shadow-sm border border-[#c4c7c7]/10 group-hover:shadow-md transition-shadow">
-                                <div className="flex justify-between items-center mb-6">
-                                    <span className="font-bold text-sm text-[#000000]">Real-time Sync</span>
-                                    <span className="text-xs px-3 py-1.5 bg-green-100 text-green-700 rounded-full font-bold">Active</span>
+                                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-6">
+                                    <span className="material-symbols-outlined text-primary">mic</span>
                                 </div>
-                                <div className="space-y-4">
-                                    <div className="h-2 w-full bg-[#eaeef9] rounded-full overflow-hidden">
-                                        <div className="h-full bg-gradient-to-r from-[#6b38d4] to-[#8455ef] w-3/4 rounded-full"></div>
+                                <h3 className="font-headline text-2xl font-bold mb-3">Voice Expense Entry</h3>
+                                <p className="text-on-surface-variant leading-relaxed">Just say "Spent ₹500 on dinner at Joey's" and credU handles the rest. No more manual data entry.</p>
+                            </div>
+                            <div className="mt-8 p-4 bg-surface rounded-xl border border-outline-variant/20 inline-flex items-center gap-3 w-fit">
+                                <div className="flex gap-1">
+                                    <div className="w-1 h-4 bg-primary rounded-full animate-pulse"></div>
+                                    <div className="w-1 h-6 bg-primary rounded-full animate-pulse"></div>
+                                    <div className="w-1 h-4 bg-primary rounded-full animate-pulse"></div>
+                                </div>
+                                <span className="text-xs font-medium text-primary uppercase tracking-wider">Processing voice...</span>
+                            </div>
+                        </div>
+                        {/* Smart Insights */}
+                        <div className="bg-surface-container-lowest p-8 rounded-2xl soft-glow border border-outline-variant/10">
+                            <div className="w-12 h-12 rounded-2xl bg-secondary/10 flex items-center justify-center mb-6">
+                                <span className="material-symbols-outlined text-secondary">psychology</span>
+                            </div>
+                            <h3 className="font-headline text-2xl font-bold mb-3">Smart Insights</h3>
+                            <p className="text-on-surface-variant">Our AI identifies recurring patterns and suggests where you can save up to 15% monthly.</p>
+                        </div>
+                        {/* Real-Time Tracking */}
+                        <div className="bg-surface-container-lowest p-8 rounded-2xl soft-glow border border-outline-variant/10">
+                            <div className="w-12 h-12 rounded-2xl bg-tertiary/10 flex items-center justify-center mb-6">
+                                <span className="material-symbols-outlined text-tertiary">bolt</span>
+                            </div>
+                            <h3 className="font-headline text-2xl font-bold mb-3">Real-Time Tracking</h3>
+                            <p className="text-on-surface-variant">Sync with your bank for instant updates. Watch your net worth grow in real-time.</p>
+                        </div>
+                        {/* Goal Planning */}
+                        <div className="md:col-span-2 bg-surface-container-lowest p-8 rounded-2xl soft-glow border border-outline-variant/10">
+                            <div className="flex flex-col md:flex-row gap-8 items-center">
+                                <div className="flex-1">
+                                    <div className="w-12 h-12 rounded-2xl bg-error/10 flex items-center justify-center mb-6">
+                                        <span className="material-symbols-outlined text-error">target</span>
                                     </div>
-                                    <div className="h-2 w-full bg-[#eaeef9] rounded-full overflow-hidden">
-                                        <div className="h-full bg-gradient-to-r from-[#6b38d4] to-[#8455ef] w-1/2 rounded-full"></div>
+                                    <h3 className="font-headline text-2xl font-bold mb-3">Goal Planning</h3>
+                                    <p className="text-on-surface-variant">Whether it’s a vacation or a new home, we help you set milestones and stick to them.</p>
+                                </div>
+                                <div className="w-full md:w-64 bg-surface p-6 rounded-22xl border border-outline-variant/10">
+                                    <p className="text-xs font-bold mb-2">New Macbook Pro</p>
+                                    <div className="flex justify-between text-xs mb-1 font-medium">
+                                        <span>₹85,000 / ₹1,20,000</span>
+                                        <span className="text-primary font-bold">70%</span>
+                                    </div>
+                                    <div className="w-full h-2.5 bg-surface-container rounded-full overflow-hidden">
+                                        <div className="w-[70%] h-full fluid-gradient"></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-                        <div className="p-10 rounded-3xl bg-gradient-to-tr from-[#6b38d4] to-[#8455ef] text-[#ffffff] flex flex-col shadow-xl">
-                            <span className="material-symbols-outlined text-4xl mb-8 opacity-90" data-icon="security" style={{fontVariationSettings: "'FILL' 1"}}>security</span>
-                            <h4 className="text-2xl font-extrabold  mb-4 leading-tight">Bank-Grade Security</h4>
-                            <p className="opacity-90 leading-relaxed">AES-256 encryption. Read-only access. Your data never leaves our secure encrypted vault.</p>
-                        </div>
-
-                        <div className="p-10 rounded-3xl bg-white shadow-sm border border-[#c4c7c7]/10 flex flex-col justify-center hover:shadow-md transition-all">
-                            <span className="material-symbols-outlined text-[#6b38d4] text-4xl mb-6">lightbulb</span>
-                            <h4 className="text-2xl font-extrabold  mb-4 text-[#000000]">Smart Budgets</h4>
-                            <p className="text-[#444748] leading-relaxed">We learn your habits and suggest dynamic budgets that actually work for your lifestyle effortlessly.</p>
-                        </div>
-
-                        <div className="md:col-span-2 p-10 rounded-3xl bg-[#dee2ed] flex flex-col md:flex-row items-center justify-between gap-8 overflow-hidden hover:bg-[#dee2ed]/80 transition-colors">
-                            <div className="max-w-xs text-center md:text-left">
-                                <h4 className="text-2xl font-extrabold  mb-4 text-[#000000]">Export Everywhere</h4>
-                                <p className="text-[#444748] leading-relaxed">One-click export to CSV, PDF, or direct headless sync with Notion and modern Excel workflows.</p>
-                            </div>
-                            <div className="flex gap-4 md:-mr-20 mt-6 md:mt-0">
-                                <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center rotate-[-5deg] hover:rotate-0 transition-transform">
-                                    <span className="material-symbols-outlined text-3xl text-[#3980f4]" data-icon="description">description</span>
+                        {/* Secure & Private */}
+                        <div className="bg-primary px-8 py-10 rounded-2xl shadow-xl flex flex-col justify-between text-white md:col-span-3 lg:col-span-1">
+                            <div>
+                                <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center mb-6">
+                                    <span className="material-symbols-outlined">shield</span>
                                 </div>
-                                <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center -translate-y-4 hover:-translate-y-6 transition-transform">
-                                    <span className="material-symbols-outlined text-3xl text-emerald-500" data-icon="table_chart">table_chart</span>
-                                </div>
-                                <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center rotate-[5deg] hover:rotate-0 transition-transform">
-                                    <span className="material-symbols-outlined text-3xl text-[#6b38d4]" data-icon="sync">sync</span>
-                                </div>
+                                <h3 className="font-headline text-2xl font-bold mb-3">Secure & Private</h3>
+                                <p className="text-white/80 leading-relaxed">Bank-grade 256-bit encryption. Your data is yours alone. We never sell your personal information.</p>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                <section className="mt-10 mb-20 px-6 max-w-lg mx-auto">
-                    <div className="glass-card border border-white/50 p-10 rounded-3xl text-center shadow-2xl">
-                        <h2 className="text-3xl  font-extrabold text-[#000000] mb-6">Ready to evolve?</h2>
-                        <button 
-                            onClick={scrollToWaitlist}
-                            className="w-full bg-[#8455ef] text-[#ffffff] h-14 rounded-xl  font-bold text-lg shadow-xl shadow-[#8455ef]/30 active:scale-95 transition-transform"
-                        >
-                            Get Early Access
-                        </button>
+                {/* FAQ Section */}
+                <section className="py-20 md:py-32 bg-white px-6 md:px-8">
+                    <div className="max-w-3xl mx-auto">
+                        <h2 className="font-headline text-3xl md:text-4xl font-bold mb-12 md:16 text-center">Frequently Asked Questions</h2>
+                        <div className="space-y-4">
+                            {faqs.map((faq, index) => (
+                                <div 
+                                    key={index}
+                                    className="group p-6 rounded-2xl border border-outline-variant/15 hover:border-primary/30 transition-all bg-surface cursor-pointer"
+                                    onClick={() => setOpenFaq(openFaq === index ? null : index)}
+                                >
+                                    <h4 className="font-bold text-lg flex justify-between items-center text-on-surface">
+                                        {faq.q}
+                                        <span className={`material-symbols-outlined transition-transform duration-300 ${openFaq === index ? 'rotate-180' : ''}`}>expand_more</span>
+                                    </h4>
+                                    <AnimatePresence>
+                                        {openFaq === index && (
+                                            <motion.p 
+                                                initial={{ height: 0, opacity: 0, marginTop: 0 }}
+                                                animate={{ height: 'auto', opacity: 1, marginTop: 8 }}
+                                                exit={{ height: 0, opacity: 0, marginTop: 0 }}
+                                                className="text-on-surface-variant overflow-hidden"
+                                            >
+                                                {faq.a}
+                                            </motion.p>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+
+                {/* Final CTA */}
+                <section className="py-20 md:py-24 px-6 md:px-8">
+                    <div className="max-w-7xl mx-auto fluid-gradient rounded-[2.5rem] md:rounded-[3rem] p-10 md:p-24 text-center text-white shadow-2xl relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-64 md:w-96 h-64 md:h-96 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
+                        <h2 className="font-headline text-3xl md:text-6xl font-bold mb-8 relative z-10 leading-[1.1]">Take control of your money today</h2>
+                        <p className="text-white/80 text-lg md:text-xl mb-12 max-w-2xl mx-auto relative z-10">Join 50,000+ professionals using credU to build real wealth.</p>
+                        <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center relative z-10">
+                            <button 
+                                onClick={() => navigate('/auth')}
+                                className="bg-white text-primary px-10 py-5 rounded-full text-xl font-bold shadow-xl hover:scale-105 transition-transform"
+                            >
+                                Get Started for Free
+                            </button>
+                            <button className="bg-white/10 backdrop-blur-md text-white border border-white/20 px-10 py-5 rounded-full text-xl font-bold hover:bg-white/20 transition-all text-sm md:text-xl">
+                                Schedule Demo
+                            </button>
+                        </div>
                     </div>
                 </section>
             </main>
 
             {/* Footer */}
-            <footer className="w-full py-12 border-t border-slate-200/50 bg-white">
-                <div className="flex flex-col md:flex-row justify-between items-center px-8 max-w-7xl mx-auto gap-6 text-center md:text-left">
-                    <div className="flex flex-col gap-2 relative z-10">
-                        <span className="text-lg font-bold text-slate-900  tracking-tighter">credU</span>
-                        <p className=" text-sm leading-relaxed text-slate-500 mt-1">© 2024 credU Atelier. All rights reserved.</p>
+            <footer className="w-full border-t border-slate-200 bg-slate-50 mt-12 md:mt-20">
+                <div className="grid grid-cols-2 lg:grid-cols-5 gap-10 md:gap-8 px-6 md:px-8 py-16 max-w-7xl mx-auto">
+                    <div className="col-span-2">
+                        <div className="font-headline text-2xl font-bold text-on-surface mb-6">credU</div>
+                        <p className="text-on-surface-variant text-sm max-w-xs mb-8">AI-powered financial clarity for the modern professional. Built for humans, powered by machine intelligence.</p>
+                        <div className="flex gap-4">
+                            <div className="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center cursor-pointer hover:bg-primary/10 transition-colors">
+                                <span className="material-symbols-outlined text-sm">public</span>
+                            </div>
+                            <div className="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center cursor-pointer hover:bg-primary/10 transition-colors">
+                                <span className="material-symbols-outlined text-sm">mail</span>
+                            </div>
+                        </div>
                     </div>
-                    <div className="flex flex-wrap justify-center md:justify-end gap-x-8 gap-y-4">
-                        <span className="text-slate-500  text-sm hover:text-[#000000] transition-colors cursor-pointer">Privacy Policy</span>
-                        <span className="text-slate-500  text-sm hover:text-[#000000] transition-colors cursor-pointer">Terms of Service</span>
-                        <span className="text-slate-500  text-sm hover:text-[#000000] transition-colors cursor-pointer">Cookie Settings</span>
-                        <span className="text-slate-500  text-sm hover:text-[#000000] transition-colors cursor-pointer">Contact</span>
+                    <div>
+                        <h5 className="font-bold text-xs uppercase tracking-widest text-on-surface mb-6">Product</h5>
+                        <ul className="space-y-4 text-sm text-on-surface-variant">
+                            <li><a className="hover:text-primary transition-colors" href="#">Features</a></li>
+                            <li><a className="hover:text-primary transition-colors" href="#">Pricing</a></li>
+                            <li><a className="hover:text-primary transition-colors" href="#">Security</a></li>
+                        </ul>
                     </div>
+                    <div>
+                        <h5 className="font-bold text-xs uppercase tracking-widest text-on-surface mb-6">Company</h5>
+                        <ul className="space-y-4 text-sm text-on-surface-variant">
+                            <li><a className="hover:text-primary transition-colors" href="#">About Us</a></li>
+                            <li><a className="hover:text-primary transition-colors" href="#">Blog</a></li>
+                            <li><a className="hover:text-primary transition-colors" href="#">Careers</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h5 className="font-bold text-xs uppercase tracking-widest text-on-surface mb-6">Legal</h5>
+                        <ul className="space-y-4 text-sm text-on-surface-variant">
+                            <li><a className="hover:text-primary transition-colors" href="#">Privacy</a></li>
+                            <li><a className="hover:text-primary transition-colors" href="#">Terms</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div className="max-w-7xl mx-auto px-8 py-8 border-t border-surface-container">
+                    <p className="font-body text-xs text-on-surface-variant/60 tracking-wider">© 2024 credU. All rights reserved.</p>
                 </div>
             </footer>
         </div>
-    )
-}
+    );
+};
 
-export default LandingPage
+export default LandingPage;

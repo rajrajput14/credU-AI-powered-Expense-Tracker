@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Mic } from 'lucide-react'
 import clsx from 'clsx'
 import { parseTransactionIntent } from '../services/gemini'
-import { useTransactionStore } from '../store/useTransactionStore'
+import { useAppStore } from '../store/useAppStore'
 import { supabase } from '../services/supabase'
 import { playSuccessSound, playErrorSound, playListeningStart } from '../services/audioService'
 import { useNavigate } from 'react-router-dom'
@@ -11,10 +11,16 @@ import VoiceOverlay from './VoiceOverlay'
 
 const VoiceButton = () => {
     const navigate = useNavigate()
-    const { addTransaction, deleteTransaction, updateTransaction, setVoiceEntry } = useTransactionStore()
+    const { addTransaction, setVoiceEntry, voiceTrigger } = useAppStore()
     
     // UI States: IDLE, LISTENING, PROCESSING, CONFIRMATION, ERROR
     const [uiState, setUiState] = useState('IDLE')
+
+    useEffect(() => {
+        if (voiceTrigger > 0 && uiState === 'IDLE') {
+            startVoice()
+        }
+    }, [voiceTrigger])
     const [transcript, setTranscript] = useState("")
     const [result, setResult] = useState(null)
     const [error, setError] = useState(null)
@@ -197,8 +203,8 @@ const VoiceButton = () => {
                     className={clsx(
                         "relative flex h-16 w-16 items-center justify-center rounded-full shadow-2xl transition-all duration-500",
                         uiState === 'IDLE' 
-                            ? "bg-gradient-to-br from-voxa-primary to-voxa-secondary text-white shadow-indigo-500/40" 
-                            : "bg-voxa-card text-voxa-primary scale-125"
+                            ? "bg-gradient-to-br from-primary to-secondary text-surface shadow-primary/40 border border-white/10" 
+                            : "bg-surface-container-lowest text-primary scale-125 border border-primary/20"
                     )}
                 >
                     {/* Pulsing ring for IDLE state */}
@@ -206,7 +212,7 @@ const VoiceButton = () => {
                         <motion.div 
                             animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0, 0.3] }}
                             transition={{ repeat: Infinity, duration: 2 }}
-                            className="absolute inset-0 rounded-full bg-voxa-primary"
+                            className="absolute inset-0 rounded-full bg-primary"
                         />
                     )}
                     
@@ -217,7 +223,7 @@ const VoiceButton = () => {
                         <motion.div 
                             animate={{ scale: [1, 1.2, 1] }}
                             transition={{ repeat: Infinity, duration: 1 }}
-                            className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-rose-500 border-2 border-voxa-card"
+                            className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-error border-2 border-surface-container-lowest"
                         />
                     )}
                 </motion.button>
