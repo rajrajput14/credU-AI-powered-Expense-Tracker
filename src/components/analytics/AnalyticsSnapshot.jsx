@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { DollarSign, PiggyBank, Activity } from 'lucide-react'
+import Icon from '../Icon'
 import clsx from 'clsx'
 
 const AnalyticsSnapshot = ({ transactions }) => {
@@ -20,9 +20,9 @@ const AnalyticsSnapshot = ({ transactions }) => {
         }
 
         return [
-            { id: '1', label: 'Total Spending', value: `$${expenses.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, icon: DollarSign, color: 'bg-rose-500/10 text-rose-500' },
-            { id: '2', label: 'Net Savings', value: `$${savings.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, icon: PiggyBank, color: savings >= 0 ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500' },
-            { id: '3', label: 'Financial Score', value: `${score}/100`, icon: Activity, color: score >= 70 ? 'bg-indigo-500/10 text-indigo-500' : score >= 50 ? 'bg-amber-500/10 text-amber-500' : 'bg-rose-500/10 text-rose-500' },
+            { id: '1', label: 'Total Spending', value: `$${expenses.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, icon: 'dollar', color: 'bg-rose-500/10 text-rose-500' },
+            { id: '2', label: 'Net Savings', value: `$${savings.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, icon: 'savings', color: savings >= 0 ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500' },
+            { id: '3', label: 'Financial Score', value: `${score}/100`, icon: 'score', color: score >= 70 ? 'bg-indigo-500/10 text-indigo-500' : score >= 50 ? 'bg-amber-500/10 text-amber-500' : 'bg-rose-500/10 text-rose-500' },
         ]
     }, [transactions])
 
@@ -33,7 +33,7 @@ const AnalyticsSnapshot = ({ transactions }) => {
                     <div className="flex justify-between items-center mb-4">
                         <span className="text-sm font-medium text-voxa-muted uppercase tracking-widest">{s.label}</span>
                         <div className={clsx("h-10 w-10 flex items-center justify-center rounded-xl", s.color)}>
-                            <s.icon size={20} />
+                        <Icon name={s.icon} size="md" />
                         </div>
                     </div>
                     <h2 className="text-3xl font-black text-voxa-text">{s.value}</h2>

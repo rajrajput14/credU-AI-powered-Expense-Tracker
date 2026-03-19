@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { Clock, TrendingUp } from 'lucide-react'
+import Icon from '../Icon'
 
 const SpendingForecast = ({ transactions }) => {
     const forecast = useMemo(() => {
@@ -41,7 +41,7 @@ const SpendingForecast = ({ transactions }) => {
         <div className="rounded-3xl border border-voxa-border bg-voxa-card p-8 shadow-sm flex flex-col justify-between">
             <div className="flex items-center gap-3 mb-6">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 text-blue-500">
-                    <Clock size={24} />
+                    <Icon name="clock" size="lg" />
                 </div>
                 <div>
                     <h3 className="text-xl font-bold text-voxa-text">End of Month Forecast</h3>
@@ -58,7 +58,7 @@ const SpendingForecast = ({ transactions }) => {
                 <div>
                     <span className="text-xs font-bold text-voxa-muted uppercase tracking-widest block mb-2">Projected Total Spend</span>
                     <div className="flex items-center gap-3">
-                        <TrendingUp size={28} className="text-voxa-primary" />
+                        <Icon name="forecast" size="lg" className="text-voxa-primary" />
                         <h2 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-voxa-primary to-voxa-secondary tracking-tight">
                             ${forecast.projectedTotal.toLocaleString(undefined, {maximumFractionDigits: 0})}
                         </h2>

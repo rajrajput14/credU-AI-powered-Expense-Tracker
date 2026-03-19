@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowUpRight, ArrowDownLeft, Search, Filter, Trash2, Plus, X, Loader2, Check } from 'lucide-react'
+import Icon from '../components/Icon'
 import clsx from 'clsx'
 import { useTransactionStore } from '../store/useTransactionStore'
 import { supabase } from '../services/supabase'
@@ -70,7 +70,7 @@ const Transactions = () => {
         <div className="space-y-6 font-inter">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="relative flex-1 max-w-md">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-voxa-muted" size={18} />
+                    <Icon name="search" size="sm" className="absolute left-4 top-1/2 -translate-y-1/2 text-voxa-muted" />
                     <input 
                         type="text" 
                         placeholder="Search transactions..." 
@@ -85,11 +85,11 @@ const Transactions = () => {
                             showAddForm ? "bg-rose-500/10 text-rose-500" : "bg-voxa-primary text-white shadow-lg hover:opacity-90 active:scale-95"
                         )}
                     >
-                        {showAddForm ? <X size={18} /> : <Plus size={18} />}
+                        <Icon name={showAddForm ? 'close' : 'add'} size="sm" />
                         {showAddForm ? 'Cancel' : 'Add Entry'}
                     </button>
                     <button className="flex items-center gap-2 rounded-2xl border border-voxa-border bg-voxa-card px-6 py-3 text-sm font-bold text-voxa-muted hover:text-voxa-text">
-                        <Filter size={18} />
+                        <Icon name="filter" size="sm" />
                     </button>
                 </div>
             </div>
@@ -156,7 +156,7 @@ const Transactions = () => {
                                         disabled={isSubmitting}
                                         className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-voxa-primary to-voxa-secondary py-3.5 font-bold shadow-lg transition-all hover:opacity-90 active:scale-95 disabled:opacity-50 text-white"
                                     >
-                                        {isSubmitting ? <Loader2 className="animate-spin" /> : success ? <Check size={20} /> : <Plus size={20} />}
+                                        {isSubmitting ? <Icon name="loading" className="animate-spin" /> : success ? <Icon name="success" /> : <Icon name="add" />}
                                         {success ? "Added Successfully!" : "Confirm Entry"}
                                     </button>
                                 </div>
@@ -196,14 +196,15 @@ const Transactions = () => {
                                             "flex h-10 w-10 items-center justify-center rounded-xl",
                                             t.type === 'income' ? "bg-emerald-500/10 text-emerald-500" : "bg-rose-500/10 text-rose-500"
                                         )}>
-                                            {t.type === 'income' ? <ArrowUpRight size={18} /> : <ArrowDownLeft size={18} />}
+                                            <Icon name={t.type === 'income' ? 'arrowUpRight' : 'arrowDownLeft'} size="sm" active />
                                         </div>
                                         <span className="font-bold text-voxa-text">{t.note || 'Untitled Transaction'}</span>
                                     </div>
                                 </td>
                                 <td className="px-8 py-6">
-                                    <span className="rounded-full bg-voxa-bg px-3 py-1 text-xs font-medium text-voxa-muted border border-voxa-border">
-                                        {t.category}
+                                    <span className="inline-flex items-center gap-1.5 rounded-full bg-voxa-bg px-3 py-1 text-xs font-medium text-voxa-muted border border-voxa-border transition-colors group-hover:border-voxa-border/80">
+                                        <Icon name={t.category} size="sm" className="text-voxa-primary opacity-80" />
+                                        {t.category.charAt(0).toUpperCase() + t.category.slice(1)}
                                     </span>
                                 </td>
                                 <td className="px-8 py-6 text-sm text-voxa-muted">
@@ -220,7 +221,7 @@ const Transactions = () => {
                                         onClick={() => deleteTransaction(t.id)}
                                         className="text-voxa-muted hover:text-rose-500 transition-colors"
                                     >
-                                        <Trash2 size={18} />
+                                        <Icon name="delete" size="sm" />
                                     </button>
                                 </td>
                             </motion.tr>

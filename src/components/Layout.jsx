@@ -1,4 +1,4 @@
-import { LayoutDashboard, Receipt, BarChart3, Settings, Mic, LogOut, Sun, Moon } from 'lucide-react'
+import Icon from './Icon'
 import { motion } from 'framer-motion'
 import { useLocation, useNavigate, Link, Outlet } from 'react-router-dom'
 import clsx from 'clsx'
@@ -25,10 +25,10 @@ const Layout = () => {
     }
 
     const navItems = [
-        { path: '/', icon: LayoutDashboard, label: 'Dashboard' },
-        { path: '/transactions', icon: Receipt, label: 'Transactions' },
-        { path: '/analytics', icon: BarChart3, label: 'Analytics' },
-        { path: '/settings', icon: Settings, label: 'Settings' }
+        { path: '/', icon: 'dashboard', label: 'Dashboard' },
+        { path: '/transactions', icon: 'transactions', label: 'Transactions' },
+        { path: '/analytics', icon: 'analytics', label: 'Analytics' },
+        { path: '/settings', icon: 'settings', label: 'Settings' }
     ]
 
     return (
@@ -45,24 +45,23 @@ const Layout = () => {
                         onClick={toggleTheme}
                         className="p-2 rounded-xl hover:bg-white/5 text-voxa-muted hover:text-voxa-text transition-all"
                     >
-                        {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+                        {theme === 'dark' ? <Icon name="sun" size="md" /> : <Icon name="moon" size="md" />}
                     </button>
                 </div>
 
                 <nav className="flex flex-1 flex-col gap-2">
                     {navItems.map((item) => {
-                        const Icon = item.icon
                         const isActive = location.pathname === item.path
                         return (
                             <Link
                                 key={item.path}
                                 to={item.path}
                                 className={clsx(
-                                    "flex items-center gap-3 rounded-xl px-4 py-3 transition-all",
+                                    "flex items-center gap-3 rounded-xl px-4 py-3 transition-all group",
                                     isActive ? "bg-indigo-500/10 text-voxa-primary" : "text-voxa-muted hover:bg-white/5 hover:text-voxa-text"
                                 )}
                             >
-                                <Icon size={20} className={isActive ? "fill-current" : ""} />
+                                <Icon name={item.icon} size="md" active={isActive} className={isActive ? "text-voxa-primary" : ""} />
                                 <span className="font-medium">{item.label}</span>
                             </Link>
                         )
@@ -83,7 +82,7 @@ const Layout = () => {
                         onClick={handleSignOut}
                         className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-rose-400 hover:bg-rose-500/10 transition-all"
                     >
-                        <LogOut size={20} />
+                        <Icon name="logout" size="md" />
                         <span className="font-medium">Sign Out</span>
                     </button>
                 </div>
@@ -109,19 +108,18 @@ const Layout = () => {
 
             {/* Mobile Bottom Nav */}
             <nav className="fixed bottom-0 left-0 flex h-20 w-full items-center justify-around border-t border-voxa-border bg-voxa-card/80 px-4 backdrop-blur-xl lg:hidden z-50">
-                {navItems.map((item) => {
-                    const Icon = item.icon
+                    {navItems.map((item) => {
                     const isActive = location.pathname === item.path
                     return (
                         <Link
                             key={item.path}
                             to={item.path}
                             className={clsx(
-                                "flex flex-col items-center gap-1",
+                                "flex flex-col items-center gap-1 group",
                                 isActive ? "text-voxa-primary" : "text-voxa-muted"
                             )}
                         >
-                            <Icon size={24} />
+                            <Icon name={item.icon} size="lg" active={isActive} />
                         </Link>
                     )
                 })}
