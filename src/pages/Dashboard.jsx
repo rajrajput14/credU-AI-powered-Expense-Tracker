@@ -4,27 +4,34 @@ import ReactECharts from 'echarts-for-react'
 import { TrendingUp, TrendingDown, DollarSign } from 'lucide-react'
 import clsx from 'clsx'
 import { useTransactionStore } from '../store/useTransactionStore'
+import { useCurrencyStore } from '../store/useCurrencyStore'
+import { formatCurrency, convertAmount } from '../utils/currencyUtils'
 
 const Dashboard = () => {
     const { transactions, loading } = useTransactionStore()
+    const { selectedCurrency, rates, baseCurrency } = useCurrencyStore()
 
     const statsData = useMemo(() => {
-        const income = transactions
+        const incomeRaw = transactions
             .filter(t => t.type === 'income')
             .reduce((sum, t) => sum + Number(t.amount), 0)
         
-        const expenses = transactions
+        const expensesRaw = transactions
             .filter(t => t.type === 'expense')
             .reduce((sum, t) => sum + Number(t.amount), 0)
         
-        const balance = income - expenses
+        const balanceRaw = incomeRaw - expensesRaw
+
+        const income = convertAmount(incomeRaw, rates, baseCurrency, selectedCurrency.code)
+        const expenses = convertAmount(expensesRaw, rates, baseCurrency, selectedCurrency.code)
+        const balance = convertAmount(balanceRaw, rates, baseCurrency, selectedCurrency.code)
 
         return {
-            balance: `$${balance.toLocaleString()}`,
-            income: `$${income.toLocaleString()}`,
-            expenses: `$${expenses.toLocaleString()}`
+            balance: formatCurrency(balance, selectedCurrency.symbol),
+            income: formatCurrency(income, selectedCurrency.symbol),
+            expenses: formatCurrency(expenses, selectedCurrency.symbol)
         }
-    }, [transactions])
+    }, [transactions, rates, baseCurrency, selectedCurrency])
 
     const stats = [
         { label: 'Total Balance', value: statsData.balance, icon: DollarSign, trend: '+2.4%', color: 'bg-indigo-500/10 text-indigo-500' },
@@ -41,9 +48,10 @@ const Dashboard = () => {
         })
 
         const dataByMonth = last6Months.map(month => {
-            return transactions
+            const rawSum = transactions
                 .filter(t => new Date(t.date).toLocaleString('default', { month: 'short' }) === month)
                 .reduce((sum, t) => sum + (t.type === 'income' ? Number(t.amount) : -Number(t.amount)), 0)
+            return convertAmount(rawSum, rates, baseCurrency, selectedCurrency.code)
         })
 
         return {
@@ -75,9 +83,15 @@ const Dashboard = () => {
                 },
                 symbol: 'none'
             }],
-            tooltip: { trigger: 'axis', backgroundColor: '#121826', borderColor: '#1E293B', textStyle: { color: '#fff' } }
+            tooltip: { 
+                trigger: 'axis', 
+                backgroundColor: '#121826', 
+                borderColor: '#1E293B', 
+                textStyle: { color: '#fff' },
+                valueFormatter: (val) => formatCurrency(val, selectedCurrency.symbol)
+            }
         }
-    }, [transactions])
+    }, [transactions, rates, baseCurrency, selectedCurrency])
 
     if (loading && transactions.length === 0) {
         return <div className="p-10 text-center text-slate-500">Loading your financial data...</div>

@@ -4,9 +4,12 @@ import Icon from '../components/Icon'
 import clsx from 'clsx'
 import { useTransactionStore } from '../store/useTransactionStore'
 import { supabase } from '../services/supabase'
+import { useCurrencyStore } from '../store/useCurrencyStore'
+import { convertAmount, formatCurrency } from '../utils/currencyUtils'
 
 const Transactions = () => {
     const { transactions, loading, deleteTransaction, addTransaction, voiceEntry, clearVoiceEntry } = useTransactionStore()
+    const { selectedCurrency, rates, baseCurrency } = useCurrencyStore()
     const [showAddForm, setShowAddForm] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [success, setSuccess] = useState(false)
@@ -214,7 +217,8 @@ const Transactions = () => {
                                     "px-8 py-6 text-right font-bold text-lg",
                                     t.type === 'income' ? "text-emerald-500" : "text-voxa-text"
                                 )}>
-                                    {t.type === 'income' ? `+${Number(t.amount).toFixed(2)}` : `-${Number(t.amount).toFixed(2)}`}
+                                    {t.type === 'income' ? '+' : '-'}
+                                    {formatCurrency(convertAmount(t.amount, rates, baseCurrency, selectedCurrency.code), selectedCurrency.symbol)}
                                 </td>
                                 <td className="px-8 py-6 text-right">
                                     <button 

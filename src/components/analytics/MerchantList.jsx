@@ -1,7 +1,11 @@
 import { useMemo } from 'react'
 import { Store, TrendingDown } from 'lucide-react'
+import { useCurrencyStore } from '../../store/useCurrencyStore'
+import { convertAmount, formatCurrency } from '../../utils/currencyUtils'
 
 const MerchantList = ({ transactions }) => {
+    const { selectedCurrency, rates, baseCurrency } = useCurrencyStore()
+
     const merchants = useMemo(() => {
         const groups = transactions
             .filter(t => t.type === 'expense' && t.note)
@@ -39,7 +43,7 @@ const MerchantList = ({ transactions }) => {
                         </div>
                         <span className="font-bold text-rose-500 flex items-center gap-1">
                             <TrendingDown size={14} />
-                            ${m.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            {formatCurrency(convertAmount(m.amount, rates, baseCurrency, selectedCurrency.code), selectedCurrency.symbol)}
                         </span>
                     </div>
                 ))}

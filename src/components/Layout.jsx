@@ -6,6 +6,7 @@ import VoiceButton from './VoiceButton'
 import { supabase } from '../services/supabase'
 import { useState, useEffect } from 'react'
 import { useTheme } from '../context/ThemeContext'
+import CurrencySelector from './CurrencySelector'
 
 const Layout = () => {
     const location = useLocation()
@@ -96,11 +97,11 @@ const Layout = () => {
                     transition={{ duration: 0.4 }}
                     className="mx-auto max-w-7xl p-6 lg:p-10"
                 >
-                    <header className="mb-8 flex items-center justify-between">
+                    <header className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <h1 className="text-2xl font-bold">
                             {navItems.find(i => i.path === location.pathname)?.label || 'Dashboard'}
                         </h1>
-                        {/* Mobile Theme Toggle can be here if needed, but let's stick to sidebar for now */}
+                        <CurrencySelector />
                     </header>
                     <Outlet />
                 </motion.div>

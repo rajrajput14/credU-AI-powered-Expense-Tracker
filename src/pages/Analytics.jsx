@@ -9,9 +9,12 @@ import AnalyticsSnapshot from '../components/analytics/AnalyticsSnapshot'
 import AnalyticsInsights from '../components/analytics/AnalyticsInsights'
 import MerchantList from '../components/analytics/MerchantList'
 import SpendingForecast from '../components/analytics/SpendingForecast'
+import { useCurrencyStore } from '../store/useCurrencyStore'
+import { convertAmount, formatCurrency } from '../utils/currencyUtils'
 
 const Analytics = () => {
     const { transactions, loading } = useTransactionStore()
+    const { selectedCurrency, rates, baseCurrency } = useCurrencyStore()
     const { theme } = useTheme()
     const isDark = theme === 'dark'
 
@@ -25,14 +28,17 @@ const Analytics = () => {
         
         const data = Object.entries(categories).map(([name, value]) => ({
             name,
-            value
+            value: convertAmount(value, rates, baseCurrency, selectedCurrency.code)
         }))
 
         return {
             backgroundColor: 'transparent',
             tooltip: { 
                 trigger: 'item', 
-                formatter: '{b}: ${c} ({d}%)',
+                formatter: (params) => {
+                    const valueFormatted = formatCurrency(params.value, selectedCurrency.symbol)
+                    return `${params.name}: ${valueFormatted} (${params.percent}%)`
+                },
                 backgroundColor: isDark ? '#121826' : '#fff', 
                 borderColor: isDark ? '#1E293B' : '#E5E7EB', 
                 textStyle: { color: isDark ? '#fff' : '#111827' } 
@@ -68,7 +74,7 @@ const Analytics = () => {
             ],
             color: ['#6366F1', '#8B5CF6', '#EC4899', '#F59E0B', '#10B981', '#3B82F6']
         }
-    }, [transactions, isDark])
+    }, [transactions, isDark, rates, baseCurrency, selectedCurrency])
 
     if (loading && transactions.length === 0) {
         return (
