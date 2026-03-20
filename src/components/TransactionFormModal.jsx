@@ -3,7 +3,7 @@ import Modal from './Modal';
 import { useAppStore } from '../store/useAppStore';
 
 const TransactionFormModal = ({ isOpen, onClose, transaction = null }) => {
-    const { addTransaction, updateTransaction, user } = useAppStore();
+    const { addTransaction, updateTransaction, deleteTransaction, user } = useAppStore();
     const [formData, setFormData] = useState({
         name: '',
         amount: '',

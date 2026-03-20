@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useAppStore } from '../store/useAppStore';
 import { analyticsService } from '../services/analyticsService';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import clsx from 'clsx';
 import SkeletonCard from '../components/skeletons/SkeletonCard';
 import SkeletonChart from '../components/skeletons/SkeletonChart';
@@ -21,17 +21,34 @@ const getCategoryIcon = (category) => {
 
 const Dashboard = () => {
     const { user, transactions, goals, budget, setTransactionModal, loading } = useAppStore();
+    const [period, setPeriod] = useState('This Month');
+    
+    const filteredByPeriod = useMemo(() => {
+        const now = new Date();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const startOfYear = new Date(now.getFullYear(), 0, 1);
+        const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
+
+        return transactions.filter(t => {
+            const d = new Date(t.date);
+            if (period === 'This Month') return d >= startOfMonth;
+            if (period === 'This Year') return d >= startOfYear;
+            if (period === 'This Week') return d >= startOfWeek;
+            return true;
+        });
+    }, [transactions, period]);
+
     const { totalBalance, monthlySpending } = useMemo(() => 
-        analyticsService.computeDashboardMetrics(transactions), 
-    [transactions]);
+        analyticsService.computeDashboardMetrics(filteredByPeriod), 
+    [filteredByPeriod]);
 
     const spendingTrend = useMemo(() => 
-        analyticsService.computeSpendingTrend(transactions), 
-    [transactions]);
+        analyticsService.computeSpendingTrend(filteredByPeriod), 
+    [filteredByPeriod]);
 
     const aiInsight = useMemo(() => 
-        analyticsService.generateInsight(transactions, budget), 
-    [transactions, budget]);
+        analyticsService.generateInsight(filteredByPeriod, budget), 
+    [filteredByPeriod, budget]);
 
     const savings = useMemo(() => 
         goals.reduce((sum, g) => sum + (g.current_amount || 0), 0),
@@ -53,7 +70,22 @@ const Dashboard = () => {
     };
 
     return (
-        <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-8 w-full font-body"> 
+        <div className="flex-1 flex flex-col w-full font-body">
+            <header className="h-16 bg-surface-container-lowest/80 backdrop-blur-md border-b border-outline-variant/10 flex items-center justify-between px-8 shrink-0 z-10 w-full lg:flex hidden">
+                <div className="flex items-center gap-2 text-sm">
+                    <span className="text-on-surface-variant hover:text-on-surface cursor-pointer font-medium transition-colors">App</span>
+                    <span className="text-on-surface-variant/40">/</span>
+                    <span className="text-on-surface font-black">Home</span>
+                </div>
+                <div className="flex items-center gap-4">
+                    <button className="material-symbols-outlined text-on-surface-variant/60 hover:text-on-surface transition-colors">notifications</button>
+                    <Link to="/app-dashboard/settings" className="w-8 h-8 rounded-full bg-surface-container border border-outline-variant/10 overflow-hidden cursor-pointer hover:ring-2 hover:ring-primary/20 transition-all">
+                        <img src={`https://api.dicebear.com/7.x/notionists/svg?seed=${user?.user_metadata?.avatar_seed || user?.email || 'Felix'}&backgroundColor=e2e8f0`} alt="Profile" className="w-full h-full object-cover" />
+                    </Link>
+                </div>
+            </header>
+
+            <div className="flex-1 overflow-x-hidden overflow-y-auto p-6 md:p-8 space-y-8 max-w-7xl mx-auto w-full">
             {/* Greeting Section */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
@@ -67,12 +99,19 @@ const Dashboard = () => {
                 </div>
                 
                 {/* Date Selector */}
-                <div className="flex items-center gap-2 bg-surface-container-lowest px-3 py-2 rounded-xl border border-outline-variant/10 shadow-sm">
-                    <button className="p-1 hover:bg-surface-container rounded-lg text-on-surface-variant transition-colors"><span className="material-symbols-outlined">chevron_left</span></button>
-                    <span className="text-sm font-semibold text-on-surface px-2 min-w-[100px] text-center">
-                        {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-                    </span>
-                    <button className="p-1 hover:bg-surface-container rounded-lg text-on-surface-variant transition-colors"><span className="material-symbols-outlined">chevron_right</span></button>
+                <div className="flex items-center gap-2 bg-surface-container-lowest p-1 rounded-xl border border-outline-variant/10 shadow-sm">
+                    {['This Week', 'This Month', 'This Year', 'All'].map(p => (
+                        <button 
+                            key={p}
+                            onClick={() => setPeriod(p)}
+                            className={clsx(
+                                "px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all",
+                                period === p ? "bg-primary/10 text-primary shadow-sm" : "text-on-surface-variant hover:text-on-surface"
+                            )}
+                        >
+                            {p === 'All' ? 'Everything' : p}
+                        </button>
+                    ))}
                 </div>
             </div>
 
@@ -392,6 +431,7 @@ const Dashboard = () => {
                 </div>
             </div>
 
+            </div>
         </div>
     );
 };

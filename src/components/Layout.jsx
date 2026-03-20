@@ -107,16 +107,18 @@ const Layout = () => {
 
                 {/* Profile Section */}
                 <div className="p-4 border-t border-outline-variant/10 bg-surface-container-lowest">
-                    <div className="flex items-center gap-3 p-2 rounded-xl hover:bg-surface-container cursor-pointer transition-colors group">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-secondary p-[2px]">
-                            <div className="w-full h-full bg-white rounded-full border-2 border-white flex items-center justify-center">
-                                <img src={`https://api.dicebear.com/7.x/notionists/svg?seed=${user?.email || 'Felix'}&backgroundColor=e2e8f0`} alt="Profile" className="w-full h-full rounded-full object-cover" />
+                    <div className="flex items-center gap-3 p-2 rounded-xl hover:bg-surface-container group transition-colors">
+                        <Link to="/app-dashboard/settings" className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-secondary p-[2px]">
+                                <div className="w-full h-full bg-white rounded-full border-2 border-white flex items-center justify-center">
+                                    <img src={`https://api.dicebear.com/7.x/notionists/svg?seed=${user?.user_metadata?.avatar_seed || user?.email || 'Felix'}&backgroundColor=e2e8f0`} alt="Profile" className="w-full h-full rounded-full object-cover" />
+                                </div>
                             </div>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold text-on-surface truncate group-hover:text-primary transition-colors uppercase">{user?.email?.split('@')[0] || 'User'}</p>
-                            <p className="text-[10px] text-on-surface-variant/60 font-bold uppercase tracking-wider truncate">Premium member</p>
-                        </div>
+                            <div className="flex-1 min-w-0">
+                                <p className="text-sm font-semibold text-on-surface truncate group-hover:text-primary transition-colors uppercase">{user?.email?.split('@')[0] || 'User'}</p>
+                                <p className="text-[10px] text-on-surface-variant/60 font-bold uppercase tracking-wider truncate">Premium member</p>
+                            </div>
+                        </Link>
                         <motion.button 
                             whileHover={{ scale: 1.1, color: '#b41340' }}
                             whileTap={{ scale: 0.9 }}
@@ -133,11 +135,11 @@ const Layout = () => {
             <main className="flex-1 flex flex-col relative w-full lg:w-[calc(100%-16rem)] lg:h-screen lg:overflow-y-auto bg-surface">
                 {/* MOBILE TOP BAR */}
                 <div className="w-full bg-white/60 backdrop-blur-xl border-b border-outline-variant/10 flex items-center justify-between px-6 py-4 sticky top-0 z-50 lg:hidden">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-secondary p-[2px]">
-                        <div className="w-full h-full bg-white rounded-full border-2 border-white overflow-hidden">
-                            <img src={`https://api.dicebear.com/7.x/notionists/svg?seed=${user?.email || 'Felix'}&backgroundColor=e2e8f0`} alt="Profile" className="w-full h-full object-cover" />
-                        </div>
+                <Link to="/app-dashboard/settings" className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-secondary p-[2px] cursor-pointer hover:ring-2 hover:ring-primary/20 transition-all shadow-sm">
+                    <div className="w-full h-full bg-white rounded-full border-2 border-white overflow-hidden">
+                        <img src={`https://api.dicebear.com/7.x/notionists/svg?seed=${user?.user_metadata?.avatar_seed || user?.email || 'Felix'}&backgroundColor=e2e8f0`} alt="Profile" className="w-full h-full object-cover" />
                     </div>
+                </Link>
                     <div className="flex items-center gap-1">
                         <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-primary/20">c</div>
                         <span className="text-xl font-bold tracking-tight text-on-surface font-headline">credU.</span>

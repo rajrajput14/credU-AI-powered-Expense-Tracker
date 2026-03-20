@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../services/supabase';
 import { useAppStore } from '../store/useAppStore';
 import clsx from 'clsx';
@@ -40,9 +40,9 @@ const Settings = () => {
                 </div>
                 <div className="flex items-center gap-4">
                     <button className="material-symbols-outlined text-on-surface-variant/60 hover:text-on-surface transition-colors">notifications</button>
-                    <div className="w-8 h-8 rounded-full bg-surface-container border border-outline-variant/10 overflow-hidden cursor-pointer">
+                    <Link to="/app-dashboard/settings" className="w-8 h-8 rounded-full bg-surface-container border border-outline-variant/10 overflow-hidden cursor-pointer hover:ring-2 hover:ring-primary/20 transition-all">
                         <img src={`https://api.dicebear.com/7.x/notionists/svg?seed=${user?.email || 'Felix'}&backgroundColor=e2e8f0`} alt="Profile" className="w-full h-full object-cover" />
-                    </div>
+                    </Link>
                 </div>
             </header>
 
@@ -82,32 +82,8 @@ const Settings = () => {
                         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -mr-20 -mt-20 z-0"></div>
                     </AnimatedCard>
 
-                    <div className="bg-surface-container-lowest rounded-3xl border border-outline-variant/10 shadow-sm overflow-hidden">
-                        <div className="px-6 py-5 border-b border-outline-variant/5 flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center"><span className="material-symbols-outlined text-[20px]">account_balance</span></div>
-                            <h3 className="font-bold text-on-surface font-headline uppercase tracking-widest text-sm">Linked accounts</h3>
-                        </div>
-                        <div className="divide-y divide-outline-variant/5">
-                            <div className="p-6 flex items-center justify-between hover:bg-surface-container/10 transition-colors cursor-not-allowed opacity-40">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 rounded-xl bg-on-surface text-surface flex items-center justify-center font-bold text-xl shadow-sm font-headline">P</div>
-                                    <div>
-                                        <p className="font-bold text-on-surface mb-0.5 font-headline">Bank connections</p>
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant/40 flex items-center gap-1 italic">
-                                            Coming soon
-                                        </p>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant/30 hidden sm:inline">Not connected</span>
-                                    <button className="text-on-surface-variant/20 hover:text-on-surface transition-colors disabled"><span className="material-symbols-outlined">more_vert</span></button>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="px-6 py-4 bg-surface-container/10 border-t border-outline-variant/5">
-                            <button onClick={handleLinkAccount} className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary hover:text-primary/70 transition-colors"><span className="material-symbols-outlined text-[18px]">add</span> Link an account</button>
-                        </div>
-                    </div>
+
+                    {/* Removed Linked accounts section per user request */}
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
@@ -187,8 +163,12 @@ const Settings = () => {
                         </button>
                     </div>
                 </div>
-
             </div>
+
+            <ProfileEditModal 
+                isOpen={isProfileModalOpen} 
+                onClose={() => setIsProfileModalOpen(false)} 
+            />
         </div>
     );
 };

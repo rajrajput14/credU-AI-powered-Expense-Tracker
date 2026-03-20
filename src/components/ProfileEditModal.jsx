@@ -6,6 +6,7 @@ import { useAppStore } from '../store/useAppStore';
 const ProfileEditModal = ({ isOpen, onClose }) => {
     const { user, setUser } = useAppStore();
     const [fullName, setFullName] = useState(user?.user_metadata?.full_name || '');
+    const [avatarSeed, setAvatarSeed] = useState(user?.user_metadata?.avatar_seed || user?.email || '');
     const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e) => {
@@ -13,7 +14,10 @@ const ProfileEditModal = ({ isOpen, onClose }) => {
         setLoading(true);
         try {
             const { data, error } = await supabase.auth.updateUser({
-                data: { full_name: fullName }
+                data: { 
+                    full_name: fullName,
+                    avatar_seed: avatarSeed
+                }
             });
             if (error) throw error;
             setUser(data.user);
@@ -39,6 +43,21 @@ const ProfileEditModal = ({ isOpen, onClose }) => {
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
                     />
+                </div>
+                <div>
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60 mb-2 italic">Profile Avatar Seed</label>
+                    <div className="flex gap-4 items-center">
+                        <div className="w-12 h-12 rounded-full overflow-hidden border border-outline-variant/10 shrink-0 shadow-sm">
+                            <img src={`https://api.dicebear.com/7.x/notionists/svg?seed=${avatarSeed}&backgroundColor=e2e8f0`} alt="Preview" className="w-full h-full object-cover" />
+                        </div>
+                        <input
+                            type="text"
+                            className="flex-1 px-4 py-3 rounded-xl border border-outline-variant/10 bg-surface-container/10 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all text-on-surface font-headline text-sm"
+                            placeholder="Type anything to change your avatar"
+                            value={avatarSeed}
+                            onChange={(e) => setAvatarSeed(e.target.value)}
+                        />
+                    </div>
                 </div>
                 <div>
                     <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60 mb-2 italic">Email</label>
