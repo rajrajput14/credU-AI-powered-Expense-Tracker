@@ -23,6 +23,7 @@ const VoiceButton = () => {
     }, [voiceTrigger])
     const [transcript, setTranscript] = useState("")
     const [result, setResult] = useState(null)
+    const [lastResult, setLastResult] = useState(null)
     const [error, setError] = useState(null)
     
     const recognitionRef = useRef(null)
@@ -129,21 +130,52 @@ const VoiceButton = () => {
         }
     }
 
-    const processVoice = async (text) => {
+    const speakResponse = (text) => {
+        if (!window.speechSynthesis) return
+        window.speechSynthesis.cancel() // Stop any ongoing speech
+        const utterance = new SpeechSynthesisUtterance(text)
+        utterance.rate = 1.0
+        utterance.pitch = 1.0
+        window.speechSynthesis.speak(utterance)
+    }
+
+    const normalizeText = (text) => {
+        return text
+            .toLowerCase()
+            .replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, "") // Remove punctuation
+            .replace(/\b(uh|um|hmm|like|basically|actually|literally)\b/g, "") // Remove common fillers
+            .replace(/\s{2,}/g, " ") // Clean extra spaces
+            .trim()
+    }
+
+    const processVoice = async (rawText) => {
+        const text = normalizeText(rawText)
+        if (!text) return
+        
         setUiState('PROCESSING')
         try {
-            const parsed = await parseTransactionIntent(text)
-            console.log("Gemini Output:", parsed)
+            const history = transactions.slice(0, 10).map(t => 
+                `${t.name || t.category}${t.category ? ` (${t.category})` : ''}`
+            ).join(', ')
+            
+            const response = await parseTransactionIntent(text, history, lastResult)
+            console.log("Intelligent Agent Output:", response)
 
-            if (parsed && parsed.action) {
-                setResult(parsed)
+            if (response && response.transactions?.length > 0) {
+                setResult(response)
+                // Store the first transaction as the 'lastResult' for potential corrections
+                setLastResult(response.transactions[0])
                 setUiState('CONFIRMATION')
+                
+                if (response.voiceResponse) {
+                    speakResponse(response.voiceResponse)
+                }
             } else {
-                handleError("I didn't quite catch that. Try saying something like 'spent 50 on pizza'.")
+                handleError("I couldn't find any financial commands. Try again.")
             }
         } catch (err) {
             console.error(err)
-            handleError(err.message || "I couldn't process that. Please try again.")
+            handleError(err.message || "I had trouble processing that.")
         }
     }
 
@@ -154,27 +186,28 @@ const VoiceButton = () => {
     }
 
     const handleConfirm = async () => {
+        if (!result || !result.transactions) return
         setUiState('PROCESSING')
+        
         try {
             const { data: { user } } = await supabase.auth.getUser()
             if (!user) throw new Error("No user found")
             
-            if (result.action === 'create') {
-                await addTransaction(user.id, {
-                    amount: result.amount,
-                    type: result.type,
-                    category: result.category,
-                    note: result.note,
-                    date: new Date().toISOString()
-                })
-            } else if (result.action === 'delete') {
-                await deleteTransaction(result.transactionId)
-            } else if (result.action === 'update') {
-                await updateTransaction(result.transactionId, {
-                    amount: result.amount,
-                    category: result.category,
-                    note: result.note
-                })
+            for (const tx of result.transactions) {
+                if (tx.action === 'create' || tx.action === 'update') {
+                    // For now, even "update" corrections from voice are treated as new entries
+                    // because we are in a voice-modal flow. In v3 we can map to specific IDs.
+                    await addTransaction(user.id, {
+                        amount: tx.amount,
+                        type: tx.type,
+                        category: tx.category,
+                        name: tx.merchant || tx.category || "Voice Entry",
+                        note: tx.summary || "Added via voice",
+                        date: tx.date || new Date().toISOString()
+                    })
+                } else if (tx.action === 'delete') {
+                    // Logic for deleting specific items could go here if transactionId is known
+                }
             }
 
             playSuccessSound()

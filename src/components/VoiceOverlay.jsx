@@ -98,19 +98,40 @@ const VoiceOverlay = ({
                         )}
 
                         {state === 'CONFIRMATION' && result && (
-                            <div className="rounded-[2.5rem] bg-surface-container-lowest text-on-surface p-10 shadow-[0_20px_50px_rgba(0,0,0,0.3)] mx-auto w-full max-w-sm border border-outline-variant/10">
-                                <div className="flex items-center justify-between mb-6">
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant/40 italic">I heard this:</span>
-                                    <span className={clsx(
-                                        "rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest inline-flex items-center gap-1",
-                                        result.type === 'income' ? "bg-primary/10 text-primary" : "bg-error/10 text-error"
-                                    )}>
-                                        {result.type}
+                            <div className="rounded-[2.5rem] bg-surface-container-lowest text-on-surface p-10 shadow-[0_20px_50px_rgba(0,0,0,0.3)] mx-auto w-full max-w-sm border border-outline-variant/10 max-h-[400px] overflow-y-auto custom-scrollbar">
+                                <div className="flex items-center justify-between mb-8">
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary italic">
+                                        {result.isCorrection ? "Input Corrected" : "Financial Insight"}
                                     </span>
+                                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                                        <span className="material-symbols-outlined text-primary text-sm">auto_awesome</span>
+                                    </div>
                                 </div>
-                                <div className="flex flex-col items-center gap-3">
-                                    <p className="text-6xl font-black text-on-surface tracking-tighter leading-none font-headline">{formatCurrency(result.amount)}</p>
-                                    <p className="text-xs font-black text-on-surface-variant/60 uppercase tracking-widest mt-2">{result.category} • {result.note || 'Unspecified'}</p>
+                                
+                                <div className="flex flex-col gap-6">
+                                    {result.transactions.map((tx, idx) => (
+                                        <div key={idx} className={clsx(
+                                            "flex flex-col items-start text-left gap-2",
+                                            idx !== result.transactions.length - 1 && "pb-6 border-b border-outline-variant/5"
+                                        )}>
+                                            <p className="text-lg font-bold text-on-surface tracking-tight leading-tight">
+                                                {tx.summary}
+                                            </p>
+                                            <div className="flex items-center gap-2">
+                                                <span className={clsx(
+                                                    "rounded-lg px-2 py-0.5 text-[8px] font-black uppercase tracking-widest",
+                                                    tx.type === 'income' ? "bg-primary/10 text-primary" : "bg-error/10 text-error"
+                                                )}>
+                                                    {tx.category}
+                                                </span>
+                                                {tx.merchant && (
+                                                    <span className="text-[8px] font-black uppercase tracking-widest text-on-surface-variant/40">
+                                                        {tx.merchant}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                         )}
