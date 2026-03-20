@@ -6,7 +6,7 @@ import * as subscriptionService from '../services/subscriptionService';
 
 const LandingPage = () => {
     const navigate = useNavigate();
-    const { user, createCheckout, isPro } = useAppStore();
+    const { user, createCheckout, isPro, setPaywallOpen } = useAppStore();
     const [openFaq, setOpenFaq] = useState(null);
 
     const faqs = [
@@ -299,10 +299,20 @@ const LandingPage = () => {
                         <p className="text-white/80 text-lg md:text-xl mb-12 max-w-2xl mx-auto relative z-10">Join 50,000+ professionals using credU to build real wealth.</p>
                         <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center relative z-10">
                             <button 
-                                onClick={handleGetStarted}
+                                onClick={() => {
+                                    if (user) {
+                                        if (isPro()) {
+                                            navigate('/app-dashboard/settings');
+                                        } else {
+                                            setPaywallOpen(true);
+                                        }
+                                    } else {
+                                        navigate('/auth');
+                                    }
+                                }}
                                 className="bg-white text-primary px-10 py-5 rounded-full text-xl font-bold shadow-xl hover:scale-105 transition-transform"
                             >
-                                Get Started for Free
+                                {user ? (isPro() ? 'Manage Pro' : 'Upgrade to Pro') : 'Get Started for Free'}
                             </button>
                             <button className="bg-white/10 backdrop-blur-md text-white border border-white/20 px-10 py-5 rounded-full text-xl font-bold hover:bg-white/20 transition-all text-sm md:text-xl">
                                 Schedule Demo

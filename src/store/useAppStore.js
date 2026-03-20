@@ -245,9 +245,15 @@ export const useAppStore = create((set, get) => ({
     },
 
     // Subscription Actions
-    createCheckout: async (userId, email, priceId) => {
+    createCheckout: async (userId, email, priceId, productId) => {
         try {
-            await billingService.createCheckout(userId, email, priceId);
+            const { data, error } = await supabase.functions.invoke('polar-checkout', {
+                body: { userId, email, priceId, productId }
+            });
+            if (error) throw error;
+            if (data?.url) {
+                window.location.href = data.url;
+            }
         } catch (error) {
             console.error('Checkout error:', error);
             set({ error: error.message });

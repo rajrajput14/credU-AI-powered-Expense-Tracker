@@ -20,7 +20,7 @@ const getCategoryIcon = (category) => {
 };
 
 const Dashboard = () => {
-    const { user, transactions, goals, budget, setTransactionModal, loading, isPro, getMonthlyTransactionCount, setPaywallOpen, formatCurrency } = useAppStore();
+    const { user, subscription, transactions, goals, budget, setTransactionModal, loading, isPro, getMonthlyTransactionCount, setPaywallOpen, formatCurrency } = useAppStore();
     const [period, setPeriod] = useState('This Month');
     
     const filteredByPeriod = useMemo(() => {

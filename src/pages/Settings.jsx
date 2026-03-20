@@ -29,7 +29,12 @@ const Settings = () => {
         if (!user) return navigate('/auth');
         setIsUpgrading(true);
         try {
-            await createCheckout(user.id, user.email, import.meta.env.VITE_POLAR_PRICE_ID);
+            await createCheckout(
+                user.id, 
+                user.email, 
+                import.meta.env.VITE_POLAR_PRICE_ID || 'your_polar_price_id',
+                import.meta.env.VITE_POLAR_PRODUCT_ID || '4ee35c5b-a988-4938-aa9f-1802173ef26b'
+            );
         } finally {
             setIsUpgrading(false);
         }

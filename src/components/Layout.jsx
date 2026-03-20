@@ -16,6 +16,7 @@ const Layout = () => {
     const navigate = useNavigate();
     const { 
         user, 
+        subscription,
         isTransactionModalOpen, 
         setTransactionModal,
         isGoalModalOpen,
@@ -126,12 +127,26 @@ const Layout = () => {
                             </div>
                             <div className="flex-1 min-w-0">
                                 <p className="text-sm font-semibold text-on-surface truncate group-hover:text-primary transition-colors uppercase">{user?.email?.split('@')[0] || 'User'}</p>
-                                <p className={clsx(
-                                    "text-[10px] font-bold uppercase tracking-wider truncate",
-                                    isPro() ? "text-primary" : "text-on-surface-variant/60"
-                                )}>
-                                    {isPro() ? 'Premium member' : 'Free plan'}
-                                </p>
+                                <div className="flex items-center justify-between">
+                                    <p className={clsx(
+                                        "text-[10px] font-bold uppercase tracking-wider truncate",
+                                        isPro() ? "text-primary" : "text-on-surface-variant/60"
+                                    )}>
+                                        {isPro() ? 'Premium member' : 'Free plan'}
+                                    </p>
+                                    {!isPro() && (
+                                        <button 
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                setPaywallOpen(true);
+                                            }}
+                                            className="text-[9px] font-black text-primary uppercase tracking-widest hover:underline"
+                                        >
+                                            Upgrade
+                                        </button>
+                                    )}
+                                </div>
                             </div>
                         </Link>
                         <motion.button 

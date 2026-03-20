@@ -10,6 +10,7 @@ import Auth from './pages/Auth'
 import Settings from './pages/Settings'
 import LandingPage from './pages/LandingPage'
 import Support from './pages/Support'
+import Success from './pages/Success'
 import { supabase, getCurrentUser } from './services/supabase'
 import { useAppStore } from './store/useAppStore'
 
@@ -96,6 +97,7 @@ function App() {
                 <Route path="settings" element={<Settings />} />
                 <Route path="support" element={<Support />} />
                 </Route>
+                <Route path="/success" element={<Success />} />
             </Routes>
         </Router>
     </motion.div>

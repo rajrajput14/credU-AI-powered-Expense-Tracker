@@ -52,7 +52,11 @@ const PaywallModal = () => {
 
                     <div className="flex flex-col gap-3">
                         <button 
-                            onClick={() => createCheckout(user?.id, user?.email, import.meta.env.VITE_POLAR_PRICE_ID)}
+                            onClick={async () => {
+                                const productId = import.meta.env.VITE_POLAR_PRODUCT_ID || '4ee35c5b-a988-4938-aa9f-1802173ef26b';
+                                const priceId = import.meta.env.VITE_POLAR_PRICE_ID || 'your_polar_price_id';
+                                await createCheckout(user?.id, user?.email, priceId, productId);
+                            }}
                             className="w-full py-4 bg-primary text-surface rounded-2xl font-black uppercase tracking-widest hover:opacity-90 transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-2"
                         >
                             <span>Upgrade Now</span>
