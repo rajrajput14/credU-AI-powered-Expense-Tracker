@@ -10,7 +10,7 @@ import AnimatedCard from '../components/animations/AnimatedCard';
 import PageTransition from '../components/animations/PageTransition';
 
 const Analytics = () => {
-    const { user, subscription, transactions, isPro, setPaywallOpen, formatCurrency, getCurrencySymbol } = useAppStore();
+    const { user, subscription, transactions, budget, loading, isPro, setPaywallOpen, formatCurrency, getCurrencySymbol } = useAppStore();
     const [period, setPeriod] = useState('All Time');
 
     const filteredByPeriod = useMemo(() => {

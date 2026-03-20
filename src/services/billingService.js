@@ -40,14 +40,14 @@ export const billingService = {
       .from('subscriptions')
       .select('*')
       .eq('user_id', userId)
-      .single();
+      .limit(1);
 
     if (error && error.code !== 'PGRST116') { // PGRST116 is 'no rows found'
       console.error('Error fetching subscription:', error);
       return null;
     }
 
-    return data || null;
+    return (data && data.length > 0) ? data[0] : null;
   },
 
   /**
