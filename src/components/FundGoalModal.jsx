@@ -17,13 +17,13 @@ const FundGoalModal = ({ isOpen, onClose, goal }) => {
     };
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title={`Capital Injection: ${goal?.title}`}>
+        <Modal isOpen={isOpen} onClose={onClose} title={`Add money: ${goal?.title}`}>
             <form onSubmit={handleSubmit} className="space-y-4 font-body">
                 <div>
                     <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant/40 mb-4 italic">
-                        Current Sphere Saturation: <span className="text-on-surface font-bold text-xs">${goal?.current_amount || 0}</span> / ${goal?.target_amount}
+                        Current savings: <span className="text-on-surface font-bold text-xs">${goal?.current_amount || 0}</span> / ${goal?.target_amount}
                     </p>
-                    <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60 mb-2 italic">Amount to Inject</label>
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60 mb-2 italic">How much are you adding?</label>
                     <div className="relative">
                         <span className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/40 font-bold">$</span>
                         <input
@@ -44,7 +44,7 @@ const FundGoalModal = ({ isOpen, onClose, goal }) => {
                         type="submit"
                         className="w-full py-4 bg-secondary hover:bg-secondary/90 text-surface font-black uppercase tracking-widest text-sm rounded-2xl transition-all shadow-lg shadow-secondary/20 active:scale-[0.98]"
                     >
-                        Confirm Injection
+                        Add money
                     </button>
                 </div>
             </form>

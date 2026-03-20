@@ -64,15 +64,15 @@ const TransactionFormModal = ({ isOpen, onClose, transaction = null }) => {
     };
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title={transaction ? 'Refine Transaction' : 'Record Capital'}>
+        <Modal isOpen={isOpen} onClose={onClose} title={transaction ? 'Update expense' : 'Add expense'}>
             <form onSubmit={handleSubmit} className="space-y-4 font-body">
                 <div>
-                    <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60 mb-2 italic">Instruction / Purpose</label>
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60 mb-2 italic">What was this for?</label>
                     <input
                         type="text"
                         required
                         className="w-full px-4 py-3 rounded-xl border border-outline-variant/10 bg-surface-container/10 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all text-on-surface font-headline text-sm"
-                        placeholder="e.g. Strategic Acquisition / Groceries"
+                        placeholder="e.g. Groceries, Rent, Coffee"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     />
@@ -80,7 +80,7 @@ const TransactionFormModal = ({ isOpen, onClose, transaction = null }) => {
 
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60 mb-2 italic">Capital Amount</label>
+                        <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60 mb-2 italic">Amount</label>
                         <div className="relative">
                             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/40 font-bold">$</span>
                             <input
@@ -95,20 +95,20 @@ const TransactionFormModal = ({ isOpen, onClose, transaction = null }) => {
                         </div>
                     </div>
                     <div>
-                        <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60 mb-2 italic">Flow Type</label>
+                        <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60 mb-2 italic">Type</label>
                         <select
                             className="w-full px-4 py-3 rounded-xl border border-outline-variant/10 bg-surface-container/10 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all text-on-surface font-black uppercase tracking-widest text-[10px] appearance-none cursor-pointer"
                             value={formData.type}
                             onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                         >
-                            <option value="expense">Outflow (Expense)</option>
-                            <option value="income">Inflow (Income)</option>
+                            <option value="expense">Money out (Expense)</option>
+                            <option value="income">Money in (Income)</option>
                         </select>
                     </div>
                 </div>
 
                 <div>
-                    <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60 mb-2 italic">Sphere / Category</label>
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60 mb-2 italic">Category</label>
                     <select
                         className="w-full px-4 py-3 rounded-xl border border-outline-variant/10 bg-surface-container/10 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all text-on-surface font-black uppercase tracking-widest text-[10px] appearance-none cursor-pointer"
                         value={formData.category}
@@ -121,7 +121,7 @@ const TransactionFormModal = ({ isOpen, onClose, transaction = null }) => {
                 </div>
 
                 <div>
-                    <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60 mb-2 italic">Temporal Marker</label>
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60 mb-2 italic">Date</label>
                     <input
                         type="date"
                         required
@@ -136,7 +136,7 @@ const TransactionFormModal = ({ isOpen, onClose, transaction = null }) => {
                         type="submit"
                         className="w-full py-4 bg-primary hover:bg-primary/90 text-surface font-black uppercase tracking-widest text-xs rounded-2xl transition-all shadow-lg shadow-primary/20 active:scale-[0.98]"
                     >
-                        {transaction ? 'Sync Changes' : 'Execute Record'}
+                        {transaction ? 'Save' : 'Save'}
                     </button>
                     {transaction && (
                         <button
@@ -144,7 +144,7 @@ const TransactionFormModal = ({ isOpen, onClose, transaction = null }) => {
                             onClick={handleDelete}
                             className="w-full py-4 bg-surface-container-lowest border border-error/10 text-error hover:bg-error/5 font-black uppercase tracking-widest text-xs rounded-2xl transition-all active:scale-[0.98]"
                         >
-                            Purge Record
+                            Delete
                         </button>
                     )}
                 </div>

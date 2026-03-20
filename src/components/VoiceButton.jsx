@@ -98,11 +98,11 @@ const VoiceButton = () => {
                 setResult(parsed)
                 setUiState('CONFIRMATION')
             } else {
-                handleError("I couldn't quite understand that command. Try saying 'spent 50 for pizza'.")
+                handleError("I didn't quite catch that. Try saying something like 'spent 50 on pizza'.")
             }
         } catch (err) {
             console.error(err)
-            handleError("Something went wrong with the AI processing.")
+            handleError("Something went wrong. Please try again.")
         }
     }
 
@@ -142,7 +142,7 @@ const VoiceButton = () => {
             setTranscript("")
         } catch (err) {
             console.error(err)
-            handleError("Failed to save transaction.")
+            handleError("I couldn't save that. Please try again.")
         }
     }
 
@@ -194,7 +194,7 @@ const VoiceButton = () => {
                 )}
             </AnimatePresence>
 
-            <div className="fixed bottom-6 right-6 z-40 lg:bottom-10 lg:right-10">
+            <div className="fixed bottom-24 right-6 z-40 md:bottom-28 lg:bottom-10 lg:right-10">
                 <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}

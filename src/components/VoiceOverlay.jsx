@@ -28,16 +28,16 @@ const VoiceOverlay = ({
                 </button>
 
                 <div className="text-center max-w-lg mx-auto w-full font-body">
-                    <p className="text-primary font-black mb-4 uppercase tracking-[0.3em] text-[10px] italic">credU Synthetic Intelligence</p>
+                    <p className="text-primary font-black mb-4 uppercase tracking-[0.3em] text-[10px] italic">credU Voice</p>
                     
                     <h1 className={clsx(
                         "text-3xl md:text-5xl font-black tracking-tighter mb-12 font-headline uppercase",
                         state === 'ERROR' ? "text-error" : "text-surface"
                     )}>
-                        {state === 'LISTENING' && "Awaiting Directives"}
-                        {state === 'PROCESSING' && "Synthesizing Flow"}
-                        {state === 'CONFIRMATION' && "Verification Required"}
-                        {state === 'ERROR' && "Link Disrupted"}
+                        {state === 'LISTENING' && "I'm listening..."}
+                        {state === 'PROCESSING' && "One second..."}
+                        {state === 'CONFIRMATION' && "Is this right?"}
+                        {state === 'ERROR' && "I didn't catch that"}
                     </h1>
                     
                     {/* Visual State Indicator */}
@@ -87,10 +87,10 @@ const VoiceOverlay = ({
                         
                         {state === 'LISTENING' && !transcript && (
                             <>
-                                <p className="text-surface/30 mt-2 mb-4 font-black uppercase tracking-widest text-[10px]">Sample Protocols</p>
+                                <p className="text-surface/30 mt-2 mb-4 font-black uppercase tracking-widest text-[10px]">Try saying</p>
                                 <div className="flex flex-wrap justify-center gap-2">
-                                    <span className="bg-surface/5 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-surface/10 text-surface/60 italic">"Spent $12 on infrastructure at Starbucks"</span>
-                                    <span className="bg-surface/5 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-surface/10 text-surface/60 italic">"Inject $200 from external source"</span>
+                                    <span className="bg-surface/5 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-surface/10 text-surface/60 italic">"Spent $12 on coffee at Starbucks"</span>
+                                    <span className="bg-surface/5 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-surface/10 text-surface/60 italic">"I just got paid $200"</span>
                                 </div>
                             </>
                         )}
@@ -98,7 +98,7 @@ const VoiceOverlay = ({
                         {state === 'CONFIRMATION' && result && (
                             <div className="rounded-[2.5rem] bg-surface-container-lowest text-on-surface p-10 shadow-[0_20px_50px_rgba(0,0,0,0.3)] mx-auto w-full max-w-sm border border-outline-variant/10">
                                 <div className="flex items-center justify-between mb-6">
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant/40 italic">Proposed Transmission</span>
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant/40 italic">I heard this:</span>
                                     <span className={clsx(
                                         "rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest inline-flex items-center gap-1",
                                         result.type === 'income' ? "bg-primary/10 text-primary" : "bg-error/10 text-error"
@@ -115,7 +115,7 @@ const VoiceOverlay = ({
 
                         {state === 'ERROR' && (
                             <p className="text-sm text-error bg-error/10 py-4 px-8 rounded-full border border-error/20 inline-block font-black uppercase tracking-widest">
-                                {error || "Protocol Unrecognized"}
+                                {error || "I didn't understand that"}
                             </p>
                         )}
                     </div>
@@ -133,20 +133,20 @@ const VoiceOverlay = ({
                                     onClick={onConfirm}
                                     className="w-full rounded-2xl bg-primary hover:bg-primary/90 py-5 font-black uppercase tracking-[0.2em] text-xs text-surface shadow-xl shadow-primary/20 active:scale-[0.98] transition-all flex justify-center items-center gap-3"
                                 >
-                                    Commit Capital
+                                    Yes, save it
                                 </button>
                                 <div className="flex gap-3 w-full">
                                     <button 
                                         onClick={onCancel}
                                         className="flex-1 rounded-2xl bg-surface/5 border border-surface/10 py-4 font-black uppercase tracking-widest text-[10px] text-surface hover:bg-surface/10 transition-all"
                                     >
-                                        Abort
+                                        Cancel
                                     </button>
                                     <button 
                                         onClick={onEdit}
                                         className="flex-1 rounded-2xl border border-primary/30 bg-primary/10 py-4 font-black uppercase tracking-widest text-[10px] text-primary hover:bg-primary/20 transition-all"
                                     >
-                                        Correction
+                                        Edit
                                     </button>
                                 </div>
                             </motion.div>
@@ -162,13 +162,13 @@ const VoiceOverlay = ({
                                     onClick={onRetry}
                                     className="flex-1 rounded-2xl bg-surface py-5 font-black uppercase tracking-widest text-[10px] text-on-surface hover:opacity-90 transition-all active:scale-95 flex items-center justify-center gap-2"
                                 >
-                                    Retry Link
+                                    Try again
                                 </button>
                                 <button 
                                     onClick={onCancel}
                                     className="flex-1 rounded-2xl border border-surface/10 bg-surface/5 py-5 font-black uppercase tracking-widest text-[10px] text-surface hover:bg-surface/10 transition-all"
                                 >
-                                    Terminate
+                                    Close
                                 </button>
                             </motion.div>
                         )}

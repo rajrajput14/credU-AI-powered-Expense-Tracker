@@ -59,15 +59,15 @@ const GoalFormModal = ({ isOpen, onClose, goal = null }) => {
     };
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title={goal ? 'Modify Objective' : 'New Aspiration'}>
+        <Modal isOpen={isOpen} onClose={onClose} title={goal ? 'Update goal' : 'New goal'}>
             <form onSubmit={handleSubmit} className="space-y-4 font-body">
                 <div>
-                    <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60 mb-2 italic">Aspiration Title</label>
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60 mb-2 italic">What are you saving for?</label>
                     <input
                         type="text"
                         required
                         className="w-full px-4 py-3 rounded-xl border border-outline-variant/10 bg-surface-container/10 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all text-on-surface font-headline text-sm"
-                        placeholder="e.g. Next-Gen Workstation / Swiss Retreat"
+                        placeholder="e.g. New laptop, Dream vacation"
                         value={formData.title}
                         onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                     />
@@ -75,7 +75,7 @@ const GoalFormModal = ({ isOpen, onClose, goal = null }) => {
 
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60 mb-2 italic">Target Capital</label>
+                        <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60 mb-2 italic">How much do you need?</label>
                         <div className="relative">
                             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/40 font-bold">$</span>
                             <input
@@ -90,7 +90,7 @@ const GoalFormModal = ({ isOpen, onClose, goal = null }) => {
                         </div>
                     </div>
                     <div>
-                        <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60 mb-2 italic">Initial Seed</label>
+                        <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60 mb-2 italic">Already saved</label>
                         <div className="relative">
                             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/40 font-bold">$</span>
                             <input
@@ -107,7 +107,7 @@ const GoalFormModal = ({ isOpen, onClose, goal = null }) => {
 
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60 mb-2 italic">Sphere</label>
+                        <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60 mb-2 italic">Category</label>
                         <select
                             className="w-full px-4 py-3 rounded-xl border border-outline-variant/10 bg-surface-container/10 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all text-on-surface font-black uppercase tracking-widest text-[10px] appearance-none cursor-pointer"
                             value={formData.category}
@@ -119,7 +119,7 @@ const GoalFormModal = ({ isOpen, onClose, goal = null }) => {
                         </select>
                     </div>
                     <div>
-                        <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60 mb-2 italic">Deadline (Optional)</label>
+                        <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60 mb-2 italic">Target date (optional)</label>
                         <input
                             type="date"
                             className="w-full px-4 py-3 rounded-xl border border-outline-variant/10 bg-surface-container/10 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all text-on-surface font-black uppercase tracking-widest text-[10px]"
@@ -134,7 +134,7 @@ const GoalFormModal = ({ isOpen, onClose, goal = null }) => {
                         type="submit"
                         className="w-full py-4 bg-secondary hover:bg-secondary/90 text-surface font-black uppercase tracking-widest text-xs rounded-2xl transition-all shadow-lg shadow-secondary/20 active:scale-[0.98]"
                     >
-                        {goal ? 'Update Objective' : 'Initialize Saving'}
+                        {goal ? 'Save goal' : 'Add goal'}
                     </button>
                     {goal && (
                         <button
@@ -142,7 +142,7 @@ const GoalFormModal = ({ isOpen, onClose, goal = null }) => {
                             onClick={handleDelete}
                             className="w-full py-4 bg-surface-container-lowest border border-error/10 text-error hover:bg-error/5 font-black uppercase tracking-widest text-xs rounded-2xl transition-all active:scale-[0.98]"
                         >
-                            Abandon Goal
+                            Delete goal
                         </button>
                     )}
                 </div>

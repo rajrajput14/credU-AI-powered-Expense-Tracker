@@ -1,10 +1,15 @@
-import { useAppStore } from '../store/useAppStore';
-import { analyticsService } from '../services/analyticsService';
 import { useMemo, useState } from 'react';
 import clsx from 'clsx';
+import { motion } from 'framer-motion';
+import { useAppStore } from '../store/useAppStore';
+import { analyticsService } from '../services/analyticsService';
+import SkeletonCard from '../components/skeletons/SkeletonCard';
+import SkeletonChart from '../components/skeletons/SkeletonChart';
+import AnimatedCard from '../components/animations/AnimatedCard';
+import PageTransition from '../components/animations/PageTransition';
 
 const Analytics = () => {
-    const { transactions, budget } = useAppStore();
+    const { transactions, budget, user, loading } = useAppStore();
     const [period, setPeriod] = useState('All Time');
 
     const filteredByPeriod = useMemo(() => {
@@ -76,7 +81,7 @@ const Analytics = () => {
                 <div className="flex items-center gap-2 text-sm">
                     <span className="text-on-surface-variant hover:text-on-surface cursor-pointer font-medium transition-colors">App</span>
                     <span className="text-on-surface-variant/40">/</span>
-                    <span className="text-on-surface font-black">Analytics</span>
+                    <span className="text-on-surface font-black">Insights</span>
                 </div>
                 
                 <div className="flex items-center gap-4">
@@ -90,8 +95,8 @@ const Analytics = () => {
             <div className="flex-1 overflow-x-hidden overflow-y-auto p-6 md:p-8 space-y-8 max-w-7xl mx-auto w-full">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                     <div>
-                        <h1 className="text-2xl font-bold tracking-tight text-on-surface mb-1 font-headline">Financial Analytics</h1>
-                        <p className="text-on-surface-variant text-sm font-medium">Deep dive into your spending patterns and habits.</p>
+                        <h1 className="text-2xl font-bold tracking-tight text-on-surface mb-1 font-headline">Insights</h1>
+                        <p className="text-on-surface-variant text-sm font-medium">See where your money is going.</p>
                     </div>
                     
                     <div className="flex items-center gap-2 bg-surface-container-lowest p-1 rounded-xl border border-outline-variant/10 shadow-sm">
@@ -111,139 +116,174 @@ const Analytics = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div className="bg-surface-container-lowest p-5 rounded-2xl border border-outline-variant/10 shadow-sm flex flex-col justify-between hover:border-primary/30 transition-colors group">
-                        <div className="flex justify-between items-start mb-4">
-                            <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary/20 transition-colors"><span className="material-symbols-outlined">shopping_bag</span></div>
-                        </div>
-                        <div>
-                            <p className="text-on-surface-variant text-sm font-bold mb-1 uppercase tracking-widest text-[10px]">Total Expenses</p>
-                            <h3 className="text-2xl font-bold text-on-surface tracking-tight font-headline">{formatCurrency(totalExpenses)}</h3>
-                        </div>
-                    </div>
-                    <div className="bg-surface-container-lowest p-5 rounded-2xl border border-outline-variant/10 shadow-sm flex flex-col justify-between hover:border-secondary/30 transition-colors group">
-                        <div className="flex justify-between items-start mb-4">
-                            <div className="w-10 h-10 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center group-hover:bg-secondary/20 transition-colors"><span className="material-symbols-outlined">payments</span></div>
-                        </div>
-                        <div>
-                            <p className="text-on-surface-variant text-sm font-bold mb-1 uppercase tracking-widest text-[10px]">Total Income</p>
-                            <h3 className="text-2xl font-bold text-on-surface tracking-tight font-headline">{formatCurrency(totalIncome)}</h3>
-                        </div>
-                    </div>
-                    <div className="bg-surface-container-lowest p-5 rounded-2xl border border-outline-variant/10 shadow-sm flex flex-col justify-between hover:border-tertiary/30 transition-colors group">
-                        <div className="flex justify-between items-start mb-4">
-                            <div className="w-10 h-10 rounded-xl bg-tertiary/10 text-tertiary flex items-center justify-center group-hover:bg-tertiary/20 transition-colors"><span className="material-symbols-outlined">savings</span></div>
-                        </div>
-                        <div>
-                            <p className="text-on-surface-variant text-sm font-bold mb-1 uppercase tracking-widest text-[10px]">Savings Rate</p>
-                            <h3 className="text-2xl font-bold text-on-surface tracking-tight font-headline">{savingsRate.toFixed(1)}%</h3>
-                        </div>
-                    </div>
-                    <div className="bg-surface-container-lowest p-5 rounded-2xl border border-outline-variant/10 shadow-sm flex flex-col justify-between hover:border-primary/30 transition-colors group">
-                        <div className="flex justify-between items-start mb-4">
-                            <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary/20 transition-colors"><span className="material-symbols-outlined">receipt_long</span></div>
-                        </div>
-                        <div>
-                            <p className="text-on-surface-variant text-sm font-bold mb-1 uppercase tracking-widest text-[10px]">Fixed Bills</p>
-                            <h3 className="text-2xl font-bold text-on-surface tracking-tight font-headline">{formatCurrency(fixedBills)}</h3>
-                        </div>
-                    </div>
+                    {loading ? (
+                        Array.from({ length: 4 }).map((_, i) => (
+                            <SkeletonCard key={i} />
+                        ))
+                    ) : (
+                        <>
+                            <AnimatedCard delay={0.1} className="bg-surface-container-lowest p-5 rounded-2xl border border-outline-variant/10 shadow-sm flex flex-col justify-between hover:border-primary/30 transition-colors group">
+                                <div className="flex justify-between items-start mb-4">
+                                    <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary/20 transition-colors"><span className="material-symbols-outlined">shopping_bag</span></div>
+                                </div>
+                                <div>
+                                    <p className="text-on-surface-variant text-sm font-bold mb-1 uppercase tracking-widest text-[10px]">Total spent</p>
+                                    <h3 className="text-2xl font-bold text-on-surface tracking-tight font-headline">{formatCurrency(totalExpenses)}</h3>
+                                </div>
+                            </AnimatedCard>
+                            <AnimatedCard delay={0.2} className="bg-surface-container-lowest p-5 rounded-2xl border border-outline-variant/10 shadow-sm flex flex-col justify-between hover:border-secondary/30 transition-colors group">
+                                <div className="flex justify-between items-start mb-4">
+                                    <div className="w-10 h-10 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center group-hover:bg-secondary/20 transition-colors"><span className="material-symbols-outlined">payments</span></div>
+                                </div>
+                                <div>
+                                    <p className="text-on-surface-variant text-sm font-bold mb-1 uppercase tracking-widest text-[10px]">Total income</p>
+                                    <h3 className="text-2xl font-bold text-on-surface tracking-tight font-headline">{formatCurrency(totalIncome)}</h3>
+                                </div>
+                            </AnimatedCard>
+                            <AnimatedCard delay={0.3} className="bg-surface-container-lowest p-5 rounded-2xl border border-outline-variant/10 shadow-sm flex flex-col justify-between hover:border-tertiary/30 transition-colors group">
+                                <div className="flex justify-between items-start mb-4">
+                                    <div className="w-10 h-10 rounded-xl bg-tertiary/10 text-tertiary flex items-center justify-center group-hover:bg-tertiary/20 transition-colors"><span className="material-symbols-outlined">savings</span></div>
+                                </div>
+                                <div>
+                                    <p className="text-on-surface-variant text-sm font-bold mb-1 uppercase tracking-widest text-[10px]">Savings rate</p>
+                                    <h3 className="text-2xl font-bold text-on-surface tracking-tight font-headline">{savingsRate.toFixed(1)}%</h3>
+                                </div>
+                            </AnimatedCard>
+                            <AnimatedCard delay={0.4} className="bg-surface-container-lowest p-5 rounded-2xl border border-outline-variant/10 shadow-sm flex flex-col justify-between hover:border-primary/30 transition-colors group">
+                                <div className="flex justify-between items-start mb-4">
+                                    <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary/20 transition-colors"><span className="material-symbols-outlined">receipt_long</span></div>
+                                </div>
+                                <div>
+                                    <p className="text-on-surface-variant text-sm font-bold mb-1 uppercase tracking-widest text-[10px]">Regular bills</p>
+                                    <h3 className="text-2xl font-bold text-on-surface tracking-tight font-headline">{formatCurrency(fixedBills)}</h3>
+                                </div>
+                            </AnimatedCard>
+                        </>
+                    )}
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     
                     {/* Cash Flow Chart */}
-                    <div className="bg-surface-container-lowest rounded-3xl p-6 border border-outline-variant/10 shadow-sm lg:col-span-2 flex flex-col">
-                        <div className="flex justify-between items-start mb-6">
-                            <div>
-                                <h3 className="font-bold text-on-surface tracking-tight text-lg mb-1 font-headline">Cash Flow</h3>
-                                <p className="text-on-surface-variant text-sm font-medium">Income vs Expenses over time</p>
-                            </div>
-                            <div className="flex items-center gap-4 text-xs font-bold uppercase tracking-widest">
-                                <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-secondary"></span><span className="text-on-surface-variant">Income</span></div>
-                                <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-on-surface"></span><span className="text-on-surface-variant">Expenses</span></div>
-                            </div>
+                    {loading ? (
+                        <div className="lg:col-span-2">
+                            <SkeletonChart />
                         </div>
-                        
-                        <div className="flex-1 w-full min-h-[300px] flex items-end gap-2 sm:gap-6 relative text-[10px] text-on-surface-variant/60 font-bold uppercase tracking-widest">
-                            <div className="flex flex-col justify-between h-full py-2 pr-2 col-span-1 absolute left-0 top-0 bottom-6 text-right w-10">
-                                <span>$8k</span><span>$6k</span><span>$4k</span><span>$2k</span><span>0</span>
-                            </div>
-                            
-                            <div className="ml-10 flex-1 h-full relative border-b border-outline-variant/10 pb-2 flex items-end justify-between">
-                                <svg className="absolute inset-x-0 bottom-2 w-full h-[80%] overflow-visible" preserveAspectRatio="none" viewBox="0 0 100 100">
-                                    <path 
-                                        d={`M ${cashFlowPoints.expensePath}`} 
-                                        fill="none" 
-                                        stroke="var(--on-surface)" 
-                                        strokeWidth="3" 
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        className="transition-all duration-700"
-                                    ></path>
-                                    <defs>
-                                        <linearGradient id="incomeGrad" x1="0" x2="0" y1="0" y2="1">
-                                            <stop offset="0%" stopColor="var(--secondary)" stopOpacity="0.2"></stop>
-                                            <stop offset="100%" stopColor="var(--secondary)" stopOpacity="0"></stop>
-                                        </linearGradient>
-                                    </defs>
-                                    <path 
-                                        d={`M ${cashFlowPoints.incomePath} L 100,100 L 0,100 Z`} 
-                                        fill="url(#incomeGrad)"
-                                        className="transition-all duration-700"
-                                    ></path>
-                                    <path 
-                                        d={`M ${cashFlowPoints.incomePath}`} 
-                                        fill="none" 
-                                        stroke="var(--secondary)" 
-                                        strokeWidth="3" 
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        className="transition-all duration-700"
-                                    ></path>
-                                </svg>
-                                
-                                {cashFlow.map((d, i) => (
-                                    <div key={i} className="flex flex-col items-center gap-1 w-full text-[10px] font-bold">
-                                        <span>{d.name}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Expense Breakdown */}
-                    <div className="bg-surface-container-lowest rounded-3xl p-6 border border-outline-variant/10 shadow-sm flex flex-col">
-                        <div className="mb-8">
-                            <h3 className="font-bold text-on-surface tracking-tight text-lg mb-1 font-headline">Expense Breakdown</h3>
-                            <p className="text-on-surface-variant text-sm font-medium">Where your money goes</p>
-                        </div>
-                        
-                        <div className="flex-1 flex flex-col justify-center items-center">
-                            <div className="relative w-48 h-48 rounded-full border-[16px] border-surface-container flex items-center justify-center mb-8 shadow-inner">
-                                <div className="absolute inset-[-16px] rounded-full transition-all duration-1000" style={{ background: pieGradient, WebkitMaskImage: 'radial-gradient(transparent 58%, black 60%)', maskImage: 'radial-gradient(transparent 58%, black 60%)' }}></div>
-                                
-                                <div className="text-center bg-surface-container-lowest rounded-full w-32 h-32 flex flex-col items-center justify-center shadow-sm relative z-10">
-                                    <p className="text-on-surface-variant text-[10px] font-bold uppercase tracking-widest">Total</p>
-                                    <p className="text-xl font-bold text-on-surface truncate px-2 font-headline">{formatCurrency(totalExpenses)}</p>
+                    ) : (
+                        <AnimatedCard delay={0.5} className="bg-surface-container-lowest rounded-3xl p-6 border border-outline-variant/10 shadow-sm lg:col-span-2 flex flex-col">
+                            <div className="flex justify-between items-start mb-6">
+                                <div>
+                                    <h3 className="font-bold text-on-surface tracking-tight text-lg mb-1 font-headline">Money in vs out</h3>
+                                    <p className="text-on-surface-variant text-sm font-medium">See your balance over time</p>
+                                </div>
+                                <div className="flex items-center gap-4 text-xs font-bold uppercase tracking-widest">
+                                    <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-secondary"></span><span className="text-on-surface-variant">Income</span></div>
+                                    <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-on-surface"></span><span className="text-on-surface-variant">Expenses</span></div>
                                 </div>
                             </div>
-
-                            <div className="w-full space-y-3">
-                                {topCategories.map((cat, i) => (
-                                    <div key={cat.category} className="flex items-center justify-between text-sm">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: i % 2 === 0 ? 'var(--primary)' : 'var(--secondary)' }}></div>
-                                            <span className="font-bold text-on-surface-variant capitalize">{cat.category}</span>
+                            
+                            <div className="flex-1 w-full min-h-[300px] flex items-end gap-2 sm:gap-6 relative text-[10px] text-on-surface-variant/60 font-bold uppercase tracking-widest">
+                                <div className="flex flex-col justify-between h-full py-2 pr-2 col-span-1 absolute left-0 top-0 bottom-6 text-right w-10">
+                                    <span>$8k</span><span>$6k</span><span>$4k</span><span>$2k</span><span>0</span>
+                                </div>
+                                
+                                <div className="ml-10 flex-1 h-full relative border-b border-outline-variant/10 pb-2 flex items-end justify-between">
+                                    <svg className="absolute inset-x-0 bottom-2 w-full h-[80%] overflow-visible" preserveAspectRatio="none" viewBox="0 0 100 100">
+                                        <motion.path 
+                                            initial={{ pathLength: 0, opacity: 0 }}
+                                            animate={{ pathLength: 1, opacity: 1 }}
+                                            transition={{ duration: 1.5, delay: 0.8, ease: "easeInOut" }}
+                                            d={`M ${cashFlowPoints.expensePath}`} 
+                                            fill="none" 
+                                            stroke="var(--on-surface)" 
+                                            strokeWidth="3" 
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            className="transition-all duration-700"
+                                        ></motion.path>
+                                        <defs>
+                                            <linearGradient id="incomeGrad" x1="0" x2="0" y1="0" y2="1">
+                                                <stop offset="0%" stopColor="var(--secondary)" stopOpacity="0.2"></stop>
+                                                <stop offset="100%" stopColor="var(--secondary)" stopOpacity="0"></stop>
+                                            </linearGradient>
+                                        </defs>
+                                        <motion.path 
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            transition={{ duration: 1, delay: 1.5 }}
+                                            d={`M ${cashFlowPoints.incomePath} L 100,100 L 0,100 Z`} 
+                                            fill="url(#incomeGrad)"
+                                            className="transition-all duration-700"
+                                        ></motion.path>
+                                        <motion.path 
+                                            initial={{ pathLength: 0, opacity: 0 }}
+                                            animate={{ pathLength: 1, opacity: 1 }}
+                                            transition={{ duration: 1.5, delay: 1, ease: "easeInOut" }}
+                                            d={`M ${cashFlowPoints.incomePath}`} 
+                                            fill="none" 
+                                            stroke="var(--secondary)" 
+                                            strokeWidth="3" 
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            className="transition-all duration-700"
+                                        ></motion.path>
+                                    </svg>
+                                    
+                                    {cashFlow.map((d, i) => (
+                                        <div key={i} className="flex flex-col items-center gap-1 w-full text-[10px] font-bold">
+                                            <span>{d.name}</span>
                                         </div>
-                                        <span className="font-bold text-on-surface">{cat.percentage.toFixed(0)}%</span>
-                                    </div>
-                                ))}
-                                {topCategories.length === 0 && (
-                                    <p className="text-on-surface-variant text-center italic mt-4 text-sm font-medium">No expenses yet.</p>
-                                )}
+                                    ))}
+                                </div>
                             </div>
+                        </AnimatedCard>
+                    )}
+
+                    {/* Expense Breakdown */}
+                    {loading ? (
+                        <div className="flex flex-col gap-4">
+                            <SkeletonCard />
                         </div>
-                    </div>
+                    ) : (
+                        <AnimatedCard delay={0.6} className="bg-surface-container-lowest rounded-3xl p-6 border border-outline-variant/10 shadow-sm flex flex-col">
+                            <div className="mb-8">
+                                <h3 className="font-bold text-on-surface tracking-tight text-lg mb-1 font-headline">Where your money went</h3>
+                                <p className="text-on-surface-variant text-sm font-medium">Spending by category</p>
+                            </div>
+                            
+                            <div className="flex-1 flex flex-col justify-center items-center">
+                                <div className="relative w-48 h-48 rounded-full border-[16px] border-surface-container flex items-center justify-center mb-8 shadow-inner">
+                                    <motion.div 
+                                        initial={{ rotate: -90, opacity: 0 }}
+                                        animate={{ rotate: 0, opacity: 1 }}
+                                        transition={{ duration: 1.5, delay: 1 }}
+                                        className="absolute inset-[-16px] rounded-full transition-all duration-1000" 
+                                        style={{ background: pieGradient, WebkitMaskImage: 'radial-gradient(transparent 58%, black 60%)', maskImage: 'radial-gradient(transparent 58%, black 60%)' }}
+                                    ></motion.div>
+                                    
+                                    <div className="text-center bg-surface-container-lowest rounded-full w-32 h-32 flex flex-col items-center justify-center shadow-sm relative z-10">
+                                        <p className="text-on-surface-variant text-[10px] font-bold uppercase tracking-widest">Total</p>
+                                        <p className="text-xl font-bold text-on-surface truncate px-2 font-headline">{formatCurrency(totalExpenses)}</p>
+                                    </div>
+                                </div>
+
+                                <div className="w-full space-y-3">
+                                    {topCategories.map((cat, i) => (
+                                        <div key={cat.category} className="flex items-center justify-between text-sm">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: i % 2 === 0 ? 'var(--primary)' : 'var(--secondary)' }}></div>
+                                                <span className="font-bold text-on-surface-variant capitalize">{cat.category}</span>
+                                            </div>
+                                            <span className="font-bold text-on-surface">{cat.percentage.toFixed(0)}%</span>
+                                        </div>
+                                    ))}
+                                    {topCategories.length === 0 && (
+                                        <p className="text-on-surface-variant text-center italic mt-4 text-sm font-medium">No expenses yet.</p>
+                                    )}
+                                </div>
+                            </div>
+                        </AnimatedCard>
+                    )}
                 </div>
 
                 {/* Smart Insights & Anomalies */}
@@ -255,7 +295,7 @@ const Analytics = () => {
                             <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center border border-white/20 backdrop-blur-md">
                                 <span className="material-symbols-outlined text-primary">psychology</span>
                             </div>
-                            <h3 className="font-bold text-lg tracking-tight font-headline">AI Financial Analysis</h3>
+                            <h3 className="font-bold text-lg tracking-tight font-headline">What we noticed</h3>
                         </div>
                         
                         <div className="space-y-4 relative z-10">
@@ -268,7 +308,7 @@ const Analytics = () => {
                     </div>
 
                     <div className="bg-surface-container-lowest rounded-3xl p-6 border border-outline-variant/10 shadow-sm">
-                        <h3 className="font-bold text-on-surface tracking-tight text-lg mb-6 font-headline">Top Spending Categories</h3>
+                        <h3 className="font-bold text-on-surface tracking-tight text-lg mb-6 font-headline">Biggest expenses</h3>
                         
                         <div className="space-y-5">
                             {topCategories.map((cat, i) => (
@@ -283,7 +323,7 @@ const Analytics = () => {
                                 </div>
                             ))}
                             {topCategories.length === 0 && (
-                                <p className="text-on-surface-variant text-center italic mt-4 text-sm font-medium">No recorded expenses.</p>
+                                <p className="text-on-surface-variant text-center italic mt-4 text-sm font-medium">No expenses yet.</p>
                             )}
                         </div>
                         

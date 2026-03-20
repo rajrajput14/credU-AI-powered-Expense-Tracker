@@ -9,20 +9,16 @@ import Layout from './components/Layout'
 import Auth from './pages/Auth'
 import Settings from './pages/Settings'
 import LandingPage from './pages/LandingPage'
-import SplashScreen from './components/SplashScreen'
 import { supabase, getCurrentUser } from './services/supabase'
 import { useAppStore } from './store/useAppStore'
 
 function App() {
   const [user, setUser] = useState(null)
   const [initializing, setInitializing] = useState(true)
-  const [showSplash, setShowSplash] = useState(true)
   const { fetchInitialData, subscribeToDatabase, setUser: setGlobalUser } = useAppStore()
 
   useEffect(() => {
     let unsubscribe = null
-    const startTime = Date.now()
-    const MIN_SPLASH_TIME = 1500
     const { darkMode } = useAppStore.getState();
 
     // Initialize Dark Mode
@@ -34,31 +30,18 @@ function App() {
 
     const init = async () => {
       try {
-        // 1. Check active session
         const u = await getCurrentUser()
         setUser(u)
         setGlobalUser(u)
 
         if (u) {
-          // 2. Fetch initial data
           await fetchInitialData(u.id)
           unsubscribe = subscribeToDatabase(u.id)
         }
-
-        // 3. Ensure minimum display time
-        const elapsed = Date.now() - startTime
-        const delay = Math.max(0, MIN_SPLASH_TIME - elapsed)
-
-        setTimeout(() => {
-          setInitializing(false)
-          // Give a tiny buffer for the fadeout to start
-          setTimeout(() => setShowSplash(false), 100)
-        }, delay)
-
+        setInitializing(false)
       } catch (err) {
         console.error("Init Error:", err)
         setInitializing(false)
-        setShowSplash(false)
       }
     }
 
@@ -84,11 +67,17 @@ function App() {
     }
   }, [])
 
+  if (initializing) {
+    return (
+      <div className="min-h-screen bg-surface flex items-center justify-center">
+        {/* Simple loader if needed while initializing */}
+        <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
   return (
     <AnimatePresence mode="wait">
-      {showSplash ? (
-        <SplashScreen key="splash" />
-      ) : (
         <motion.div
           key="app"
           initial={{ opacity: 0, y: 10 }}
@@ -110,7 +99,6 @@ function App() {
             </Routes>
           </Router>
         </motion.div>
-      )}
     </AnimatePresence>
   )
 }

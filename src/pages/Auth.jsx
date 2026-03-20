@@ -31,7 +31,7 @@ const Auth = () => {
                     }
                 });
                 if (error) throw error;
-                setSuccessMessage("Account created! Please check your email for verification.");
+                setSuccessMessage("All set! Check your email to verify your account.");
                 setMode('login');
             } else if (mode === 'login') {
                 const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -42,12 +42,12 @@ const Auth = () => {
                     redirectTo: `${window.location.origin}/auth?mode=reset`,
                 });
                 if (error) throw error;
-                setSuccessMessage("Password reset link sent to your email.");
+                setSuccessMessage("Check your email for a link to reset your password.");
             } else if (mode === 'reset') {
                 if (password !== confirmPassword) throw new Error("Passwords do not match");
                 const { error } = await supabase.auth.updateUser({ password });
                 if (error) throw error;
-                setSuccessMessage("Password updated successfully! You can now log in.");
+                setSuccessMessage("Your password is updated! You can sign in now.");
                 setMode('login');
             }
         } catch (err) {
@@ -80,20 +80,20 @@ const Auth = () => {
                             >
                                 {mode === 'login' && (
                                     <>
-                                        <h2 className="text-4xl font-bold mb-6 font-headline leading-tight">Welcome to the<br/><span className="text-primary-container">Digital Atrium.</span></h2>
-                                        <p className="text-white/60 text-lg leading-relaxed">Where your financial story becomes visible, actionable, and architectural.</p>
+                                        <h2 className="text-4xl font-bold mb-6 font-headline leading-tight">Welcome back to<br/><span className="text-primary-container">credU.</span></h2>
+                                        <p className="text-white/60 text-lg leading-relaxed">See your money clearly and make better choices.</p>
                                     </>
                                 )}
                                 {mode === 'signup' && (
                                     <>
-                                        <h2 className="text-4xl font-bold mb-6 font-headline leading-tight">Build your<br/><span className="text-primary-container">wealth sanctuary.</span></h2>
-                                        <p className="text-white/60 text-lg leading-relaxed">Join 50,000+ members who have mastered their capital with AI-driven clarity.</p>
+                                        <h2 className="text-4xl font-bold mb-6 font-headline leading-tight">Start your<br/><span className="text-primary-container">savings journey.</span></h2>
+                                        <p className="text-white/60 text-lg leading-relaxed">Join others who are saving more with our AI tools.</p>
                                     </>
                                 )}
                                 {(mode === 'forgot' || mode === 'reset') && (
                                     <>
-                                        <h2 className="text-4xl font-bold mb-6 font-headline leading-tight">Securing your<br/><span className="text-primary-container">financial vault.</span></h2>
-                                        <p className="text-white/60 text-lg leading-relaxed">Reset your password to regain access to your personal financial archive.</p>
+                                        <h2 className="text-4xl font-bold mb-6 font-headline leading-tight">Let's reset<br/><span className="text-primary-container">your password.</span></h2>
+                                        <p className="text-white/60 text-lg leading-relaxed">Choose a new password to get back to your account.</p>
                                     </>
                                 )}
                             </motion.div>
@@ -107,11 +107,11 @@ const Auth = () => {
                                     <span className="material-symbols-outlined text-primary-container">shield</span>
                                 </div>
                                 <div>
-                                    <p className="text-sm font-bold">Bank-Grade Privacy</p>
-                                    <p className="text-xs text-white/40">AES-256 Encrypted</p>
+                                    <p className="text-sm font-bold">Your data is safe</p>
+                                    <p className="text-xs text-white/40">Protected and private</p>
                                 </div>
                             </div>
-                            <p className="text-xs text-white/60 leading-relaxed">We protect your data legacy like our own. Read-only access ensures your funds remain untouched.</p>
+                            <p className="text-xs text-white/60 leading-relaxed">We keep your info private. Only you can see and manage your money.</p>
                         </div>
                     </div>
                 </div>
@@ -128,12 +128,12 @@ const Auth = () => {
                     <div className="max-w-sm mx-auto w-full">
                         <div className="mb-10 text-center lg:text-left">
                             <h3 className="text-3xl font-bold mb-2 font-headline text-on-surface">
-                                {mode === 'login' ? 'Welcome Back' : mode === 'signup' ? 'Create Account' : mode === 'forgot' ? 'Forgot Password?' : 'Reset Password'}
+                                {mode === 'login' ? 'Welcome back!' : mode === 'signup' ? 'Join credU' : mode === 'forgot' ? 'Forgot password?' : 'Reset password'}
                             </h3>
                             <p className="text-on-surface-variant text-sm">
-                                {mode === 'login' ? 'Enter your details to access your vault' : 
-                                 mode === 'signup' ? 'Start your journey with credU' : 
-                                 mode === 'forgot' ? 'We’ll send a reset link to your email' : 'Choose a strong new password'}
+                                {mode === 'login' ? 'Sign in to see your money story' : 
+                                 mode === 'signup' ? 'Create an account to get started' : 
+                                 mode === 'forgot' ? "We'll email you a link to reset your password" : 'Pick a strong new password'}
                             </p>
                         </div>
 
@@ -236,7 +236,7 @@ const Auth = () => {
                             >
                                 {loading ? <Loader2 className="animate-spin" size={20} /> : (
                                     <>
-                                        {mode === 'login' ? 'Enter Vault' : mode === 'signup' ? 'Create Profile' : 'Submit'}
+                                        {mode === 'login' ? 'Sign In' : mode === 'signup' ? 'Join Now' : 'Save'}
                                         <ArrowRight size={18} />
                                     </>
                                 )}
@@ -246,7 +246,7 @@ const Auth = () => {
                         <div className="mt-12 text-center">
                             {mode === 'login' ? (
                                 <p className="text-sm text-on-surface-variant font-medium">
-                                    New to credU? <button onClick={() => setMode('signup')} className="text-primary font-bold hover:underline">Create Account</button>
+                                    New to credU? <button onClick={() => setMode('signup')} className="text-primary font-bold hover:underline">Join Now</button>
                                 </p>
                             ) : (
                                 <button 

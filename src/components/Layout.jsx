@@ -6,6 +6,9 @@ import { useAppStore } from '../store/useAppStore';
 import TransactionFormModal from './TransactionFormModal';
 import GoalFormModal from './GoalFormModal';
 import FundGoalModal from './FundGoalModal';
+import OfflineBanner from './OfflineBanner';
+import PageTransition from './animations/PageTransition';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Layout = () => {
     const location = useLocation();
@@ -29,15 +32,16 @@ const Layout = () => {
     }
 
     const navItems = [
-        { path: '/app-dashboard', icon: 'grid_view', label: 'Dashboard' },
-        { path: '/app-dashboard/transactions', icon: 'list_alt', label: 'Transactions' },
-        { path: '/app-dashboard/analytics', icon: 'analytics', label: 'Analytics' },
-        { path: '/app-dashboard/goals', icon: 'track_changes', label: 'Goals & Planning' },
+        { path: '/app-dashboard', icon: 'grid_view', label: 'Home' },
+        { path: '/app-dashboard/transactions', icon: 'list_alt', label: 'Expenses' },
+        { path: '/app-dashboard/analytics', icon: 'analytics', label: 'Insights' },
+        { path: '/app-dashboard/goals', icon: 'track_changes', label: 'Savings Goals' },
         { path: '/app-dashboard/settings', icon: 'settings', label: 'Settings' }
     ];
 
     return (
         <div className="bg-surface text-on-surface antialiased selection:bg-primary-container selection:text-on-primary-container pb-24 lg:pb-0 lg:flex lg:h-screen lg:overflow-hidden relative font-body">
+            <OfflineBanner />
             {/* DESKTOP SIDEBAR */}
             <aside className="w-64 bg-surface-container-lowest border-r border-outline-variant/10 hidden lg:flex flex-col justify-between shrink-0 relative z-20">
                 <div className="p-6">
@@ -48,13 +52,15 @@ const Layout = () => {
 
                     <div className="flex-1 flex flex-col justify-between overflow-y-auto px-6">
                         <div className="space-y-6">
-                            <button 
+                            <motion.button 
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
                                 onClick={() => setTransactionModal(true)}
                                 className="w-full bg-on-surface text-white rounded-2xl py-3.5 px-4 font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-lg"
                             >
-                                <span className="material-symbols-outlined text-[20px]">add</span>
-                                <span>New Transaction</span>
-                            </button>
+                            <span className="material-symbols-outlined text-[20px]">add</span>
+                            <span>Add Expense</span>
+                        </motion.button>
 
                             <nav className="space-y-1">
                                 {navItems.map((item) => {
@@ -85,14 +91,14 @@ const Layout = () => {
                                     className="flex items-center gap-3 px-4 py-3 rounded-2xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all group"
                                 >
                                     <div className="w-10 h-10 rounded-xl bg-surface-container text-on-surface-variant/50 flex items-center justify-center group-hover:bg-white transition-colors"><span className="material-symbols-outlined text-[20px]">mic</span></div>
-                                    <span className="font-semibold">Voice Entry</span>
+                                    <span className="font-semibold">Tap to speak</span>
                                 </button>
                                 <button 
                                     onClick={() => alert("Help Center coming soon!")}
                                     className="flex items-center gap-3 px-4 py-3 rounded-2xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all group"
                                 >
                                     <div className="w-10 h-10 rounded-xl bg-surface-container text-on-surface-variant/50 flex items-center justify-center group-hover:bg-white transition-colors"><span className="material-symbols-outlined text-[20px]">help_center</span></div>
-                                    <span className="font-semibold">Help & Support</span>
+                                    <span className="font-semibold">Need help?</span>
                                 </button>
                             </div>
                         </div>
@@ -109,9 +115,16 @@ const Layout = () => {
                         </div>
                         <div className="flex-1 min-w-0">
                             <p className="text-sm font-semibold text-on-surface truncate group-hover:text-primary transition-colors uppercase">{user?.email?.split('@')[0] || 'User'}</p>
-                            <p className="text-[10px] text-on-surface-variant/60 font-bold uppercase tracking-wider truncate">Pro Account</p>
+                            <p className="text-[10px] text-on-surface-variant/60 font-bold uppercase tracking-wider truncate">Premium member</p>
                         </div>
-                        <button onClick={handleSignOut} className="material-symbols-outlined text-on-surface-variant hover:text-error transition-colors">logout</button>
+                        <motion.button 
+                            whileHover={{ scale: 1.1, color: '#b41340' }}
+                            whileTap={{ scale: 0.9 }}
+                            onClick={handleSignOut} 
+                            className="material-symbols-outlined text-on-surface-variant transition-colors"
+                        >
+                            logout
+                        </motion.button>
                     </div>
                 </div>
             </aside>
@@ -131,7 +144,11 @@ const Layout = () => {
                     </div>
                 </div>
 
-                <Outlet />
+                <AnimatePresence mode="wait">
+                    <PageTransition key={location.pathname} className="flex-1 flex flex-col w-full">
+                        <Outlet />
+                    </PageTransition>
+                </AnimatePresence>
             </main>
 
             {/* MOBILE BOTTOM NAVIGATION */}
