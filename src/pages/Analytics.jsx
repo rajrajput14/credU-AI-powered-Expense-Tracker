@@ -10,7 +10,7 @@ import AnimatedCard from '../components/animations/AnimatedCard';
 import PageTransition from '../components/animations/PageTransition';
 
 const Analytics = () => {
-    const { transactions, budget, user, loading } = useAppStore();
+    const { transactions, budget, user, loading, isPro, createCheckout, setPaywallOpen } = useAppStore();
     const [period, setPeriod] = useState('All Time');
 
     const filteredByPeriod = useMemo(() => {
@@ -170,6 +170,26 @@ const Analytics = () => {
                         <div className="lg:col-span-2">
                             <SkeletonChart />
                         </div>
+                    ) : !isPro() ? (
+                        <AnimatedCard delay={0.5} className="bg-surface-container-lowest rounded-3xl p-6 border border-outline-variant/10 shadow-sm lg:col-span-2 flex flex-col relative overflow-hidden group">
+                            <div className="absolute inset-0 bg-surface/40 backdrop-blur-[4px] z-20 flex flex-col items-center justify-center p-8 text-center">
+                                <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-4"><span className="material-symbols-outlined text-[28px]">lock</span></div>
+                                <h4 className="font-bold text-on-surface text-lg mb-2 font-headline">Advanced Cash Flow</h4>
+                                <p className="text-on-surface-variant text-sm mb-6 max-w-xs">Pro users get detailed daily balance tracking and income vs expense trends.</p>
+                                <button 
+                                    onClick={() => setPaywallOpen(true)}
+                                    className="px-6 py-2.5 bg-primary text-surface rounded-full text-xs font-black uppercase tracking-widest hover:opacity-90 transition-all shadow-lg shadow-primary/20"
+                                >
+                                    Upgrade to Pro
+                                </button>
+                            </div>
+                            <div className="opacity-20 pointer-events-none filter blur-[2px]">
+                                <div className="flex justify-between items-start mb-6">
+                                    <h3 className="font-bold text-on-surface tracking-tight text-lg mb-1 font-headline">Money in vs out</h3>
+                                </div>
+                                <div className="h-64 bg-surface-container rounded-xl"></div>
+                            </div>
+                        </AnimatedCard>
                     ) : (
                         <AnimatedCard delay={0.5} className="bg-surface-container-lowest rounded-3xl p-6 border border-outline-variant/10 shadow-sm lg:col-span-2 flex flex-col">
                             <div className="flex justify-between items-start mb-6">
@@ -279,7 +299,7 @@ const Analytics = () => {
                                         </div>
                                     ))}
                                     {topCategories.length === 0 && (
-                                        <p className="text-on-surface-variant text-center italic mt-4 text-sm font-medium">No expenses yet.</p>
+                                        <p className="text-on-surface-variant text-center italic mt-4 text-sm font-medium">No transactions yet.</p>
                                     )}
                                 </div>
                             </div>
@@ -290,26 +310,37 @@ const Analytics = () => {
                 {/* Smart Insights & Anomalies */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     
-                    <div className="bg-on-surface rounded-3xl p-6 text-white shadow-lg relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-48 h-48 bg-primary/20 rounded-full blur-3xl -mr-10 -mt-10"></div>
-                        <div className="flex items-center gap-3 mb-6 relative z-10">
-                            <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center border border-white/20 backdrop-blur-md">
-                                <span className="material-symbols-outlined text-primary">psychology</span>
-                            </div>
-                            <h3 className="font-bold text-lg tracking-tight font-headline">What we noticed</h3>
+                    {!isPro() ? (
+                        <div className="bg-surface-container rounded-3xl p-6 flex flex-col items-center justify-center text-center border border-outline-variant/10 relative overflow-hidden">
+                            <div className="w-10 h-10 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center mb-4"><span className="material-symbols-outlined">auto_awesome</span></div>
+                            <h4 className="font-bold text-on-surface mb-2 font-headline">AI Wealth Insights</h4>
+                            <p className="text-on-surface-variant text-xs mb-4">Get personalized advice on how to save more money every month.</p>
+                            <button 
+                                onClick={() => setPaywallOpen(true)}
+                                className="text-[10px] font-black uppercase tracking-widest text-secondary hover:text-secondary/70 transition-colors underline underline-offset-4"
+                            >
+                                Unlock with Pro
+                            </button>
                         </div>
-                        
-                        <div className="space-y-4 relative z-10">
-                            <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-4">
-                                <p className="text-sm text-surface font-medium leading-relaxed italic">
-                                    "{activeInsight}"
+                    ) : (
+                        <div className="bg-on-surface rounded-3xl p-6 text-white shadow-lg relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-48 h-48 bg-primary/20 rounded-full blur-3xl -mr-10 -mt-10"></div>
+                            <div className="flex items-center gap-3 mb-6 relative z-10">
+                                <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center border border-white/20 backdrop-blur-md">
+                                    <span className="material-symbols-outlined text-primary">psychology</span>
+                                </div>
+                                <h3 className="font-bold text-lg tracking-tight font-headline">What we noticed</h3>
+                            </div>
+                            <div className="p-4 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-md relative z-10">
+                                <p className="text-sm leading-relaxed text-white/90">
+                                    {activeInsight}
                                 </p>
                             </div>
                         </div>
-                    </div>
+                    )}
 
                     <div className="bg-surface-container-lowest rounded-3xl p-6 border border-outline-variant/10 shadow-sm">
-                        <h3 className="font-bold text-on-surface tracking-tight text-lg mb-6 font-headline">Biggest expenses</h3>
+                        <h3 className="font-bold text-on-surface tracking-tight text-lg mb-6 font-headline">Top categories</h3>
                         
                         <div className="space-y-5">
                             {topCategories.map((cat, i) => (
@@ -324,7 +355,7 @@ const Analytics = () => {
                                 </div>
                             ))}
                             {topCategories.length === 0 && (
-                                <p className="text-on-surface-variant text-center italic mt-4 text-sm font-medium">No expenses yet.</p>
+                                <p className="text-on-surface-variant text-center italic mt-4 text-sm font-medium">No transactions yet.</p>
                             )}
                         </div>
                         

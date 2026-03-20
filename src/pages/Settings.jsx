@@ -10,7 +10,7 @@ import AnimatedCard from '../components/animations/AnimatedCard';
 
 const Settings = () => {
     const navigate = useNavigate();
-    const { user, currency, setCurrency, darkMode, setDarkMode } = useAppStore();
+    const { user, currency, setCurrency, darkMode, setDarkMode, subscription, isPro, createCheckout } = useAppStore();
     const [notifications, setNotifications] = useState(true);
     const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
@@ -25,6 +25,21 @@ const Settings = () => {
 
     const handleLinkAccount = () => {
         alert("Linking accounts is a premium feature coming soon!");
+    };
+
+    const handleUpgrade = async () => {
+        if (!user) return navigate('/auth');
+        await createCheckout(user.id, user.email, import.meta.env.VITE_POLAR_PRICE_ID);
+    };
+
+    const handleCancelSubscription = async () => {
+        if (!subscription?.polar_subscription_id) return;
+        if (confirm('Are you sure you want to cancel your subscription? You will lose access to premium features.')) {
+            const success = await useAppStore.getState().cancelSubscription(subscription.polar_subscription_id);
+            if (success) {
+                alert('Subscription canceled successfully.');
+            }
+        }
     };
 
     const name = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
@@ -65,8 +80,28 @@ const Settings = () => {
                             <h2 className="text-xl font-bold text-on-surface capitalize font-headline">{name}</h2>
                             <p className="text-on-surface-variant text-sm mb-4 italic opacity-60">{email}</p>
                             <div className="flex items-center justify-center sm:justify-start gap-2">
-                                <span className="bg-gradient-to-r from-primary to-primary-dim text-surface text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-sm">Free plan</span>
-                                <button className="text-xs font-black uppercase tracking-widest text-primary hover:text-primary/70 transition-colors underline underline-offset-4">Go Premium</button>
+                                <span className={clsx(
+                                    "text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-sm",
+                                    isPro() ? "bg-gradient-to-r from-secondary to-secondary-dim text-surface" : "bg-gradient-to-r from-primary to-primary-dim text-surface"
+                                )}>
+                                {subscription?.plan ? `${subscription.plan} plan` : 'Free plan'}
+                                </span>
+                                {isPro() && subscription?.polar_subscription_id && (
+                                    <button 
+                                        onClick={handleCancelSubscription}
+                                        className="text-xs font-black uppercase tracking-widest text-error hover:text-error/70 transition-colors underline underline-offset-4 ml-2"
+                                    >
+                                        Cancel
+                                    </button>
+                                )}
+                                {!isPro() && (
+                                    <button 
+                                        onClick={handleUpgrade}
+                                        className="text-xs font-black uppercase tracking-widest text-primary hover:text-primary/70 transition-colors underline underline-offset-4"
+                                    >
+                                        Go Premium
+                                    </button>
+                                )}
                             </div>
                         </div>
                         <div className="z-10 w-full sm:w-auto mt-4 sm:mt-0">

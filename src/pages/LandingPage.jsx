@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAppStore } from '../store/useAppStore';
+import * as subscriptionService from '../services/subscriptionService';
 
 const LandingPage = () => {
     const navigate = useNavigate();
+    const { user, createCheckout, isPro } = useAppStore();
     const [openFaq, setOpenFaq] = useState(null);
 
     const faqs = [
@@ -29,6 +32,14 @@ const LandingPage = () => {
         }
     ];
 
+    const handleGetStarted = () => {
+        if (user) {
+            navigate('/app-dashboard');
+        } else {
+            navigate('/auth');
+        }
+    };
+
     return (
         <div className="bg-surface font-body text-on-surface antialiased selection:bg-primary-container selection:text-on-primary-container min-h-screen">
             {/* Navigation Header */}
@@ -49,7 +60,7 @@ const LandingPage = () => {
                             Login
                         </button>
                         <button 
-                            onClick={() => navigate('/auth')}
+                            onClick={handleGetStarted}
                             className="fluid-gradient text-white px-5 md:px-6 py-2.5 rounded-full text-sm font-semibold shadow-lg hover:opacity-90 transition-all"
                         >
                             Get Started
@@ -93,7 +104,7 @@ const LandingPage = () => {
                                 className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
                             >
                                 <button 
-                                    onClick={() => navigate('/auth')}
+                                    onClick={handleGetStarted}
                                     className="fluid-gradient text-white px-8 py-4 rounded-full text-lg font-bold shadow-xl hover:scale-105 transition-transform"
                                 >
                                     Get Started
@@ -288,7 +299,7 @@ const LandingPage = () => {
                         <p className="text-white/80 text-lg md:text-xl mb-12 max-w-2xl mx-auto relative z-10">Join 50,000+ professionals using credU to build real wealth.</p>
                         <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center relative z-10">
                             <button 
-                                onClick={() => navigate('/auth')}
+                                onClick={handleGetStarted}
                                 className="bg-white text-primary px-10 py-5 rounded-full text-xl font-bold shadow-xl hover:scale-105 transition-transform"
                             >
                                 Get Started for Free

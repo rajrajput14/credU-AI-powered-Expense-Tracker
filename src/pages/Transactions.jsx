@@ -84,7 +84,7 @@ const Transactions = () => {
             if (filter === 'Completed' && tx.status !== 'completed') return false;
             if (filter === 'Pending' && tx.status !== 'pending') return false;
             if (filter === 'Income' && tx.type !== 'income') return false;
-            if (filter === 'Expenses' && tx.type !== 'expense') return false;
+            if (filter === 'Transactions' && tx.type !== 'expense') return false;
 
             // Category filter
             if (categoryFilter !== 'All' && tx.category !== categoryFilter) return false;
@@ -139,7 +139,7 @@ const Transactions = () => {
                 <div className="flex items-center gap-2 text-sm">
                     <span className="text-on-surface-variant hover:text-on-surface cursor-pointer font-medium transition-colors">App</span>
                     <span className="text-on-surface-variant/40">/</span>
-                    <span className="text-on-surface font-black">Expenses</span>
+                    <span className="text-on-surface font-black">Transactions</span>
                 </div>
                 <div className="flex items-center gap-4">
                     <button className="material-symbols-outlined text-on-surface-variant/60 hover:text-on-surface transition-colors">notifications</button>
@@ -152,8 +152,8 @@ const Transactions = () => {
             <div className="flex-1 overflow-x-hidden overflow-y-auto p-6 md:p-8 space-y-8 max-w-7xl mx-auto w-full">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                     <div>
-                        <h1 className="text-2xl font-bold tracking-tight text-on-surface mb-1 font-headline">Past transactions</h1>
-                        <p className="text-on-surface-variant text-sm font-medium">Review your recent activity.</p>
+                        <h1 className="text-2xl font-bold tracking-tight text-on-surface mb-1 font-headline">Transactions</h1>
+                        <p className="text-on-surface-variant text-sm font-medium">Your recent financial activity.</p>
                     </div>
                     
                     <div className="flex items-center gap-3">
@@ -161,7 +161,7 @@ const Transactions = () => {
                             <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/40 group-focus-within:text-primary transition-colors">search</span>
                             <input 
                                 type="text" 
-                                placeholder="Search expenses..." 
+                                placeholder="Search transactions..." 
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="pl-10 pr-4 py-2 bg-surface-container-lowest border border-outline-variant/10 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all w-full md:w-64 shadow-sm placeholder:text-on-surface-variant/40 font-bold" 
@@ -237,7 +237,7 @@ const Transactions = () => {
 
                 <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/10 shadow-sm overflow-hidden">
                     <div className="flex items-center gap-6 px-4 md:px-6 border-b border-outline-variant/5 bg-surface-container/30 overflow-x-auto no-scrollbar">
-                        {['All', 'Income', 'Expenses', 'Pending'].map((tab) => (
+                        {['All', 'Income', 'Transactions', 'Pending'].map((tab) => (
                             <button 
                                 key={tab}
                                 onClick={() => { setFilter(tab); setCurrentPage(1); }}
@@ -353,7 +353,7 @@ const Transactions = () => {
                                 {!loading && paginatedTransactions.length === 0 && (
                                     <tr>
                                         <td colSpan="6" className="py-12 text-center text-on-surface-variant/60 font-bold italic">
-                                            Couldn't find any expenses matching your search.
+                                            Couldn't find any transactions matching your search.
                                         </td>
                                     </tr>
                                 )}

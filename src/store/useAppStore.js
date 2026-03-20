@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { supabase } from '../lib/supabaseClient';
 import { transactionService } from '../services/transactionService';
 import { goalService } from '../services/goalService';
+import { billingService } from '../services/billingService';
 
 export const useAppStore = create((set, get) => ({
     user: null,
@@ -11,6 +12,7 @@ export const useAppStore = create((set, get) => ({
     loading: false,
     error: null,
     voiceEntry: null,
+    subscription: null,
     
     // UI State for Modals
     isTransactionModalOpen: false,
@@ -21,6 +23,8 @@ export const useAppStore = create((set, get) => ({
     darkMode: localStorage.getItem('darkMode') === 'true',
     budget: Number(localStorage.getItem('budget')) || 4000,
     voiceTrigger: 0,
+    voiceUsage: 0,
+    isPaywallOpen: false,
 
     triggerVoice: () => set(state => ({ voiceTrigger: state.voiceTrigger + 1 })),
 
@@ -57,14 +61,54 @@ export const useAppStore = create((set, get) => ({
     setCurrency: (currency) => set({ currency }),
     setUser: (user) => set({ user }),
 
+    isPro: () => {
+        const sub = get().subscription;
+        if (!sub) return false;
+        
+        // Active or Trialing always have access
+        if (['active', 'trialing'].includes(sub.status)) return true;
+        
+        // Past Due: Allow 3-day grace period
+        if (sub.status === 'past_due' && sub.updated_at) {
+            const lastUpdated = new Date(sub.updated_at);
+            const now = new Date();
+            const diffDays = (now - lastUpdated) / (1000 * 60 * 60 * 24);
+            return diffDays <= 3;
+        }
+        
+        return false;
+    },
+
+    setPaywallOpen: (isOpen) => set({ isPaywallOpen: isOpen }),
+
+    getMonthlyTransactionCount: () => {
+        const transactions = get().transactions;
+        const now = new Date();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        return transactions.filter(t => new Date(t.date) >= startOfMonth && t.type === 'expense').length;
+    },
+
+    isLimitReached: () => {
+        if (get().isPro()) return false;
+        return get().getMonthlyTransactionCount() >= 20;
+    },
+
+    isVoiceLimitReached: () => {
+        if (get().isPro()) return false;
+        return get().voiceUsage >= 5;
+    },
+
+    incrementVoiceUsage: () => set(state => ({ voiceUsage: state.voiceUsage + 1 })),
+
     fetchInitialData: async (userId) => {
         set({ loading: true, error: null });
         try {
-            const [transactions, goals] = await Promise.all([
+            const [transactions, goals, subscription] = await Promise.all([
                 transactionService.fetchTransactions(userId),
-                goalService.fetchGoals(userId)
+                goalService.fetchGoals(userId),
+                billingService.fetchSubscription(userId)
             ]);
-            set({ transactions, goals, loading: false });
+            set({ transactions, goals, subscription, loading: false });
         } catch (error) {
             console.error('Failed to fetch initial data:', error);
             set({ error: error.message, loading: false });
@@ -125,6 +169,30 @@ export const useAppStore = create((set, get) => ({
         }
     },
 
+    // Subscription Actions
+    createCheckout: async (userId, email, priceId) => {
+        try {
+            await billingService.createCheckout(userId, email, priceId);
+        } catch (error) {
+            console.error('Checkout error:', error);
+            set({ error: error.message });
+        }
+    },
+
+    cancelSubscription: async (subscriptionId) => {
+        set({ loading: true });
+        try {
+            const result = await billingService.cancelSubscription(subscriptionId);
+            if (result.error) throw new Error(result.error);
+            set({ loading: false });
+            return true;
+        } catch (error) {
+            console.error('Cancellation error:', error);
+            set({ error: error.message, loading: false });
+            return false;
+        }
+    },
+
     // Subscriptions
     subscribeToDatabase: (userId) => {
         const subscription = supabase
@@ -160,6 +228,15 @@ export const useAppStore = create((set, get) => ({
                     set((state) => ({
                         goals: state.goals.map(g => g.id === newRecord.id ? newRecord : g)
                     }));
+                }
+            })
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'subscriptions', filter: `user_id=eq.${userId}` }, (payload) => {
+                const { eventType, new: newRecord } = payload;
+                console.log('Realtime Subscription Event:', eventType, newRecord);
+                if (eventType === 'INSERT' || eventType === 'UPDATE') {
+                    set({ subscription: newRecord });
+                } else if (eventType === 'DELETE') {
+                    set({ subscription: null });
                 }
             })
             .subscribe((status) => {

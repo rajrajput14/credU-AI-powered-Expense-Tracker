@@ -9,6 +9,7 @@ import FundGoalModal from './FundGoalModal';
 import OfflineBanner from './OfflineBanner';
 import PageTransition from './animations/PageTransition';
 import { motion, AnimatePresence } from 'framer-motion';
+import PaywallModal from './PaywallModal';
 
 const Layout = () => {
     const location = useLocation();
@@ -23,13 +24,24 @@ const Layout = () => {
         setFundGoalModal,
         activeTransaction,
         activeGoal,
-        triggerVoice
+        triggerVoice,
+        isLimitReached,
+        setPaywallOpen,
+        isPro
     } = useAppStore();
 
     const handleSignOut = async () => {
         await supabase.auth.signOut()
         navigate('/auth')
     }
+
+    const handleAddTransactionClick = () => {
+        if (isLimitReached()) {
+            setPaywallOpen(true);
+        } else {
+            setTransactionModal(true);
+        }
+    };
 
     const navItems = [
         { name: 'Dashboard', path: '/app-dashboard', icon: 'grid_view' },
@@ -53,7 +65,7 @@ const Layout = () => {
                     <div className="flex-1 flex flex-col justify-between overflow-y-auto px-6">
                         <div className="space-y-6">
                             <button 
-                                    onClick={() => setTransactionModal(true)}
+                                    onClick={handleAddTransactionClick}
                                     className="w-full bg-on-surface text-white rounded-2xl py-4 font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 hover:bg-on-surface/90 transition-all shadow-lg shadow-on-surface/20"
                                 >
                                     <span className="material-symbols-outlined text-[20px]">add</span>
@@ -114,7 +126,12 @@ const Layout = () => {
                             </div>
                             <div className="flex-1 min-w-0">
                                 <p className="text-sm font-semibold text-on-surface truncate group-hover:text-primary transition-colors uppercase">{user?.email?.split('@')[0] || 'User'}</p>
-                                <p className="text-[10px] text-on-surface-variant/60 font-bold uppercase tracking-wider truncate">Premium member</p>
+                                <p className={clsx(
+                                    "text-[10px] font-bold uppercase tracking-wider truncate",
+                                    isPro() ? "text-primary" : "text-on-surface-variant/60"
+                                )}>
+                                    {isPro() ? 'Premium member' : 'Free plan'}
+                                </p>
                             </div>
                         </Link>
                         <motion.button 
@@ -183,7 +200,7 @@ const Layout = () => {
                     Add Transaction
                 </div>
                 <button 
-                    onClick={() => setTransactionModal(true)}
+                    onClick={handleAddTransactionClick}
                     className="w-16 h-16 bg-on-surface text-white rounded-full flex items-center justify-center shadow-2xl shadow-on-surface/40 active:scale-95 transition-all hover:bg-on-surface/90 border border-white/10"
                 >
                     <span className="material-symbols-outlined text-[28px]">add</span>
@@ -208,6 +225,8 @@ const Layout = () => {
                 onClose={() => setFundGoalModal(false)} 
                 goal={activeGoal}
             />
+            
+            <PaywallModal />
         </div>
     );
 };

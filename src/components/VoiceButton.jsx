@@ -11,7 +11,7 @@ import VoiceOverlay from './VoiceOverlay'
 
 const VoiceButton = () => {
     const navigate = useNavigate()
-    const { addTransaction, updateTransaction, deleteTransaction, setVoiceEntry, voiceTrigger } = useAppStore()
+    const { addTransaction, updateTransaction, deleteTransaction, setVoiceEntry, voiceTrigger, isVoiceLimitReached, setPaywallOpen, incrementVoiceUsage } = useAppStore()
     
     // UI States: IDLE, LISTENING, PROCESSING, CONFIRMATION, ERROR
     const [uiState, setUiState] = useState('IDLE')
@@ -77,6 +77,11 @@ const VoiceButton = () => {
     const startVoice = () => {
         if (!recognitionRef.current) {
             alert("Speech recognition not supported in this browser.")
+            return
+        }
+
+        if (isVoiceLimitReached()) {
+            setPaywallOpen(true)
             return
         }
         
@@ -150,6 +155,7 @@ const VoiceButton = () => {
             }
 
             playSuccessSound()
+            incrementVoiceUsage()
             setUiState('IDLE')
             setResult(null)
             setTranscript("")

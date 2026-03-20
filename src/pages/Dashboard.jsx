@@ -20,7 +20,7 @@ const getCategoryIcon = (category) => {
 };
 
 const Dashboard = () => {
-    const { user, transactions, goals, budget, setTransactionModal, loading } = useAppStore();
+    const { user, transactions, goals, budget, setTransactionModal, loading, isPro, getMonthlyTransactionCount, setPaywallOpen } = useAppStore();
     const [period, setPeriod] = useState('This Month');
     
     const filteredByPeriod = useMemo(() => {
@@ -115,6 +115,33 @@ const Dashboard = () => {
                 </div>
             </div>
 
+            {!isPro() && (
+                <div className="bg-primary/5 border border-primary/10 rounded-2xl p-4 flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                            <span className="material-symbols-outlined">analytics</span>
+                        </div>
+                        <div>
+                            <p className="text-sm font-bold text-on-surface">Monthly Transactions</p>
+                            <p className="text-xs text-on-surface-variant">{getMonthlyTransactionCount()} of 20 used this month</p>
+                        </div>
+                    </div>
+                    <div className="flex-1 max-w-[200px] bg-surface-container rounded-full h-1.5 overflow-hidden">
+                        <motion.div 
+                            initial={{ width: 0 }}
+                            animate={{ width: `${Math.min((getMonthlyTransactionCount() / 20) * 100, 100)}%` }}
+                            className="bg-primary h-full"
+                        />
+                    </div>
+                    <button 
+                        onClick={() => setPaywallOpen(true)}
+                        className="text-xs font-black uppercase tracking-widest text-primary hover:underline"
+                    >
+                        Upgrade
+                    </button>
+                </div>
+            )}
+
             {/* Overview Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {loading ? (
@@ -205,6 +232,7 @@ const Dashboard = () => {
                                     <motion.button 
                                         whileHover={{ scale: 1.05 }}
                                         whileTap={{ scale: 0.95 }}
+                                        onClick={() => setPaywallOpen(true)}
                                         className="text-xs font-bold text-primary bg-primary/10 hover:bg-primary/20 px-3 py-1.5 rounded-lg transition-colors flex items-center w-fit gap-1"
                                     >
                                         See more <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
@@ -320,7 +348,7 @@ const Dashboard = () => {
                             )}
                             
                             {!loading && recentTransactions.length === 0 && (
-                                <p className="text-on-surface-variant text-sm italic text-center py-4 font-medium">No expenses yet. Add your first one.</p>
+                                <p className="text-on-surface-variant text-sm italic text-center py-4 font-medium">No transactions yet. Add your first one.</p>
                             )}
                         </div>
                     </div>
@@ -335,7 +363,13 @@ const Dashboard = () => {
                         <motion.button 
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                            onClick={() => setTransactionModal(true)}
+                            onClick={() => {
+                                if (!isPro() && getMonthlyTransactionCount() >= 20) {
+                                    setPaywallOpen(true);
+                                } else {
+                                    setTransactionModal(true);
+                                }
+                            }}
                             className="flex justify-center items-center gap-2 bg-surface-container-lowest hover:bg-surface-container border border-outline-variant/10 p-4 rounded-2xl shadow-sm transition-all focus:ring-2 focus:ring-primary focus:outline-none"
                         >
                             <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold">
@@ -349,7 +383,13 @@ const Dashboard = () => {
                         <motion.button 
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                            onClick={() => setTransactionModal(true)}
+                            onClick={() => {
+                                if (!isPro() && getMonthlyTransactionCount() >= 20) {
+                                    setPaywallOpen(true);
+                                } else {
+                                    setTransactionModal(true);
+                                }
+                            }}
                             className="flex justify-center items-center gap-2 bg-surface-container-lowest hover:bg-surface-container border border-outline-variant/10 p-4 rounded-2xl shadow-sm transition-all focus:ring-2 focus:ring-primary focus:outline-none"
                         >
                             <div className="w-10 h-10 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center font-bold">
@@ -422,6 +462,7 @@ const Dashboard = () => {
                         <motion.button 
                             whileHover={{ scale: 1.05, backgroundColor: '#f5f7f9' }}
                             whileTap={{ scale: 0.95 }}
+                            onClick={() => setPaywallOpen(true)}
                             className="bg-white text-on-surface font-bold px-4 py-2 rounded-xl text-sm transition-all w-full shadow-sm"
                         >
                             See plans

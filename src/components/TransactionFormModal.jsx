@@ -82,7 +82,7 @@ const TransactionFormModal = ({ isOpen, onClose, transaction = null }) => {
     };
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title={transaction ? 'Update expense' : 'Add expense'}>
+        <Modal isOpen={isOpen} onClose={onClose} title={transaction ? 'Update transaction' : 'Add transaction'}>
             <form onSubmit={handleSubmit} className="space-y-4 font-body">
                 <div>
                     <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60 mb-2 italic">What was this for?</label>
@@ -119,7 +119,7 @@ const TransactionFormModal = ({ isOpen, onClose, transaction = null }) => {
                             value={formData.type}
                             onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                         >
-                            <option value="expense">Money out (Expense)</option>
+                            <option value="expense">Money out (Transaction)</option>
                             <option value="income">Money in (Income)</option>
                         </select>
                     </div>
