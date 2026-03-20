@@ -11,7 +11,7 @@ import VoiceOverlay from './VoiceOverlay'
 
 const VoiceButton = () => {
     const navigate = useNavigate()
-    const { addTransaction, updateTransaction, deleteTransaction, setVoiceEntry, voiceTrigger, isVoiceLimitReached, setPaywallOpen, incrementVoiceUsage } = useAppStore()
+    const { addTransaction, updateTransaction, deleteTransaction, setVoiceEntry, voiceTrigger, isVoiceLimitReached, setPaywallOpen, incrementVoiceUsage, transactions } = useAppStore()
     
     // UI States: IDLE, LISTENING, PROCESSING, CONFIRMATION, ERROR
     const [uiState, setUiState] = useState('IDLE')
