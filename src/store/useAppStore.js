@@ -132,14 +132,16 @@ export const useAppStore = create((set, get) => ({
     fetchInitialData: async (userId) => {
         set({ loading: true, error: null });
         try {
+            console.log("Fetching data for user:", userId);
             const [transactions, goals, subscription] = await Promise.all([
                 transactionService.fetchTransactions(userId),
                 goalService.fetchGoals(userId),
                 billingService.fetchSubscription(userId)
             ]);
+            console.log("Fetched Subscription:", subscription);
             set({ transactions, goals, subscription, loading: false });
         } catch (error) {
-            console.error('Failed to fetch initial data:', error);
+            console.error('CRITICAL: Failed to fetch initial data:', error);
             set({ error: error.message, loading: false });
         }
     },
