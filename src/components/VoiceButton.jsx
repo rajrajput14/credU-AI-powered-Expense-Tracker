@@ -8,6 +8,7 @@ import { supabase } from '../services/supabase'
 import { playSuccessSound, playErrorSound, playListeningStart } from '../services/audioService'
 import { useNavigate } from 'react-router-dom'
 import VoiceOverlay from './VoiceOverlay'
+import { Haptics, ImpactStyle, NotificationType } from '@capacitor/haptics'
 
 const VoiceButton = () => {
     const navigate = useNavigate()
@@ -98,7 +99,7 @@ const VoiceButton = () => {
         }
     }, [])
 
-    const startVoice = () => {
+    const startVoice = async () => {
         if (!recognitionRef.current) {
             handleError("Speech recognition is not supported in this browser or requires an HTTPS connection.")
             return
@@ -117,14 +118,16 @@ const VoiceButton = () => {
         setUiState('LISTENING')
         
         try {
+            await Haptics.impact({ style: ImpactStyle.Light })
             recognitionRef.current.start()
         } catch (e) {
             console.warn("Recognition already started or error:", e)
         }
     }
 
-    const stopVoice = () => {
+    const stopVoice = async () => {
         if (recognitionRef.current) {
+            await Haptics.impact({ style: ImpactStyle.Light })
             recognitionRef.current.stop()
             // onend will handle the transition
         }
@@ -193,6 +196,7 @@ const VoiceButton = () => {
             const { data: { user } } = await supabase.auth.getUser()
             if (!user) throw new Error("No user found")
             
+            await Haptics.impact({ style: ImpactStyle.Medium })
             for (const tx of result.transactions) {
                 if (tx.action === 'create' || tx.action === 'update') {
                     // For now, even "update" corrections from voice are treated as new entries
@@ -210,6 +214,7 @@ const VoiceButton = () => {
                 }
             }
 
+            await Haptics.notification({ type: NotificationType.Success })
             playSuccessSound()
             incrementVoiceUsage()
             setUiState('IDLE')

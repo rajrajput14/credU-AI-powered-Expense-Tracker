@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">credU</string>
+    <string name="title_activity_main">credU</string>
+    <string name="package_name">com.credu.app</string>
+    <string name="custom_url_scheme">com.credu.app</string>
+</resources>
