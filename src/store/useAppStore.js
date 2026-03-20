@@ -131,6 +131,7 @@ export const useAppStore = create((set, get) => ({
             .channel('public-db-changes')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'transactions', filter: `user_id=eq.${userId}` }, (payload) => {
                 const { eventType, new: newRecord, old: oldRecord } = payload;
+                console.log('Realtime Transaction Event:', eventType, newRecord || oldRecord);
                 if (eventType === 'INSERT') {
                     set((state) => {
                         if (state.transactions.some(t => t.id === newRecord.id)) return state;
@@ -141,11 +142,13 @@ export const useAppStore = create((set, get) => ({
                 } else if (eventType === 'UPDATE') {
                     set((state) => ({
                         transactions: state.transactions.map(t => t.id === newRecord.id ? newRecord : t)
+                                        .sort((a,b) => new Date(b.date) - new Date(a.date))
                     }));
                 }
             })
             .on('postgres_changes', { event: '*', schema: 'public', table: 'goals', filter: `user_id=eq.${userId}` }, (payload) => {
                 const { eventType, new: newRecord, old: oldRecord } = payload;
+                console.log('Realtime Goal Event:', eventType, newRecord || oldRecord);
                 if (eventType === 'INSERT') {
                     set((state) => {
                         if (state.goals.some(g => g.id === newRecord.id)) return state;
@@ -159,7 +162,9 @@ export const useAppStore = create((set, get) => ({
                     }));
                 }
             })
-            .subscribe();
+            .subscribe((status) => {
+                console.log('Realtime Subscription Status:', status);
+            });
 
         return () => supabase.removeChannel(subscription);
     }

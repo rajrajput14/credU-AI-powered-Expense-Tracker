@@ -22,6 +22,7 @@ const Transactions = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [filter, setFilter] = useState("All");
     const [categoryFilter, setCategoryFilter] = useState("All");
+    const [timelinePeriod, setTimelinePeriod] = useState('This Month');
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 8;
@@ -30,6 +31,25 @@ const Transactions = () => {
         const cats = new Set(transactions.map(t => t.category));
         return ["All", ...Array.from(cats)].filter(Boolean);
     }, [transactions]);
+
+    const filteredByPeriod = useMemo(() => {
+        const now = new Date();
+        return transactions.filter(tx => {
+            const txDate = new Date(tx.date);
+            if (timelinePeriod === 'This Month') {
+                return txDate.getMonth() === now.getMonth() && txDate.getFullYear() === now.getFullYear();
+            }
+            if (timelinePeriod === 'This Week') {
+                const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                return txDate >= oneWeekAgo;
+            }
+            if (timelinePeriod === 'Last 3 Months') {
+                const threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 3, now.getDate());
+                return txDate >= threeMonthsAgo;
+            }
+            return true; // All Time
+        });
+    }, [transactions, timelinePeriod]);
 
     const handleExport = () => {
         const headers = ['Date', 'Name', 'Category', 'Amount', 'Type', 'Status'];
@@ -59,10 +79,12 @@ const Transactions = () => {
     };
 
     const filteredTransactions = useMemo(() => {
-        return transactions.filter(tx => {
+        return filteredByPeriod.filter(tx => {
             // Status filter
             if (filter === 'Completed' && tx.status !== 'completed') return false;
             if (filter === 'Pending' && tx.status !== 'pending') return false;
+            if (filter === 'Income' && tx.type !== 'income') return false;
+            if (filter === 'Expenses' && tx.type !== 'expense') return false;
 
             // Category filter
             if (categoryFilter !== 'All' && tx.category !== categoryFilter) return false;
@@ -78,7 +100,7 @@ const Transactions = () => {
             }
             return true;
         });
-    }, [transactions, filter, searchTerm, categoryFilter]);
+    }, [filteredByPeriod, filter, searchTerm, categoryFilter]);
 
     const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
     const paginatedTransactions = filteredTransactions.slice(
@@ -146,51 +168,27 @@ const Transactions = () => {
                             />
                         </div>
                         
-                        <div className="relative">
+                        </button>
+                    </div>
+                </div>
+
+                {/* Timeline Slider (Period Filter) */}
+                <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/10 shadow-sm overflow-hidden mb-8">
+                    <div className="flex items-center gap-6 px-4 md:px-6 border-b border-outline-variant/5 bg-surface-container/30 overflow-x-auto no-scrollbar">
+                        {['This Month', 'This Week', 'Last 3 Months', 'All Time'].map((period) => (
                             <button 
-                                onClick={() => setIsFilterOpen(!isFilterOpen)}
+                                key={period}
+                                onClick={() => { setTimelinePeriod(period); setCurrentPage(1); }}
                                 className={clsx(
-                                    "flex items-center justify-center gap-2 px-4 py-2 rounded-xl border transition-all shadow-sm text-sm font-bold",
-                                    categoryFilter !== 'All' ? "bg-primary/10 border-primary/20 text-primary" : "bg-surface-container-lowest border-outline-variant/10 text-on-surface-variant hover:bg-surface-container"
+                                    "py-4 text-xs font-black uppercase tracking-widest whitespace-nowrap transition-colors flex items-center gap-1",
+                                    timelinePeriod === period 
+                                        ? "text-primary border-b-2 border-primary" 
+                                        : "text-on-surface-variant hover:text-on-surface"
                                 )}
                             >
-                                <span className={clsx("material-symbols-outlined text-[18px]", categoryFilter !== 'All' ? "text-primary" : "text-on-surface-variant/60")}>filter_list</span>
-                                <span className="hidden sm:inline">{categoryFilter === 'All' ? 'Filters' : categoryFilter}</span>
+                                {period}
                             </button>
-
-                            {isFilterOpen && (
-                                <>
-                                    <div className="fixed inset-0 z-20" onClick={() => setIsFilterOpen(false)}></div>
-                                    <div className="absolute right-0 mt-2 w-48 bg-surface-container-lowest rounded-2xl border border-outline-variant/10 shadow-xl z-30 py-2 animate-in fade-in slide-in-from-top-2 duration-200">
-                                        <div className="px-4 py-2 text-[10px] font-black text-on-surface-variant/40 uppercase tracking-widest border-b border-outline-variant/5 mb-1">Filter by Category</div>
-                                        {categories.map(cat => (
-                                            <button
-                                                key={cat}
-                                                onClick={() => {
-                                                    setCategoryFilter(cat);
-                                                    setIsFilterOpen(false);
-                                                    setCurrentPage(1);
-                                                }}
-                                                className={clsx(
-                                                    "w-full text-left px-4 py-2 text-sm transition-colors flex items-center justify-between font-bold",
-                                                    categoryFilter === cat ? "bg-primary/5 text-primary" : "text-on-surface-variant hover:bg-surface-container"
-                                                )}
-                                            >
-                                                <span className="capitalize">{cat}</span>
-                                                {categoryFilter === cat && <span className="material-symbols-outlined text-sm">check</span>}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                        
-                        <button 
-                            onClick={handleExport}
-                            className="flex items-center justify-center gap-2 bg-surface-container-lowest px-4 py-2 rounded-xl border border-outline-variant/10 hover:bg-surface-container transition-all shadow-sm text-sm font-bold text-on-surface-variant hidden sm:flex shrink-0"
-                        >
-                            <span className="material-symbols-outlined text-[18px]">download</span> Download list
-                        </button>
+                        ))}
                     </div>
                 </div>
 

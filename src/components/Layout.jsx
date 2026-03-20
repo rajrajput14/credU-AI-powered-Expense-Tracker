@@ -170,6 +170,19 @@ const Layout = () => {
                     )
                 })}
             </nav>
+            {/* MOBILE FAB */}
+            <motion.div 
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="fixed bottom-24 right-6 lg:hidden z-50"
+            >
+                <button 
+                    onClick={() => setTransactionModal(true)}
+                    className="w-14 h-14 bg-on-surface text-white rounded-2xl flex items-center justify-center shadow-2xl shadow-on-surface/40 active:scale-95 transition-all hover:bg-on-surface/90"
+                >
+                    <span className="material-symbols-outlined text-[28px]">add</span>
+                </button>
+            </motion.div>
 
             <VoiceButton />
 
