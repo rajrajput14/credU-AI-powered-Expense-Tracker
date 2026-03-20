@@ -57,7 +57,20 @@ const VoiceButton = () => {
                     if (transcriptRef.current) {
                         recognition.stop()
                     }
-                }, 1000) // 1 second of silence to trigger processing
+                }, 1500) // 1.5 seconds of silence (slightly more on mobile)
+            }
+
+            recognition.onerror = (event) => {
+                console.error("Speech Recognition Error:", event.error)
+                if (event.error === 'not-allowed') {
+                    handleError("Microphone access denied. Please enable it in browser settings.")
+                } else if (event.error === 'network') {
+                    handleError("Network connection error. Try again.")
+                } else if (event.error === 'no-speech') {
+                    setUiState('IDLE')
+                } else {
+                    handleError(`Voice error: ${event.error}`)
+                }
             }
 
             recognition.onend = () => {
@@ -71,6 +84,8 @@ const VoiceButton = () => {
             }
 
             recognitionRef.current = recognition
+        } else {
+            console.warn("Speech Recognition not supported in this browser.")
         }
 
         return () => {
@@ -84,7 +99,7 @@ const VoiceButton = () => {
 
     const startVoice = () => {
         if (!recognitionRef.current) {
-            alert("Speech recognition not supported in this browser.")
+            handleError("Speech recognition is not supported in this browser or requires an HTTPS connection.")
             return
         }
 
@@ -128,7 +143,7 @@ const VoiceButton = () => {
             }
         } catch (err) {
             console.error(err)
-            handleError("Something went wrong. Please try again.")
+            handleError(err.message || "I couldn't process that. Please try again.")
         }
     }
 
