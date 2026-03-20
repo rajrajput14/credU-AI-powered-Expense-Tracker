@@ -4,6 +4,7 @@ import { useAppStore } from '../store/useAppStore';
 
 const GoalFormModal = ({ isOpen, onClose, goal = null }) => {
     const { addGoal, updateGoal, deleteGoal, user } = useAppStore();
+    const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
         title: '',
         target_amount: '',
@@ -36,19 +37,36 @@ const GoalFormModal = ({ isOpen, onClose, goal = null }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const data = {
-            ...formData,
-            target_amount: parseFloat(formData.target_amount),
-            current_amount: parseFloat(formData.current_amount || 0),
-            user_id: user?.id
-        };
-
-        if (goal?.id) {
-            await updateGoal(goal.id, data);
-        } else {
-            await addGoal(user?.id, data);
+        if (!formData.title) {
+            alert('Please enter a title for your goal');
+            return;
         }
-        onClose();
+        if (!formData.target_amount || isNaN(parseFloat(formData.target_amount)) || parseFloat(formData.target_amount) <= 0) {
+            alert('Please enter a valid target amount greater than 0');
+            return;
+        }
+
+        setIsLoading(true);
+        try {
+            const data = {
+                ...formData,
+                target_amount: parseFloat(formData.target_amount),
+                current_amount: parseFloat(formData.current_amount || 0),
+                user_id: user?.id
+            };
+
+            if (goal?.id) {
+                await updateGoal(goal.id, data);
+            } else {
+                await addGoal(user?.id, data);
+            }
+            onClose();
+        } catch (err) {
+            console.error(err);
+            alert('Failed to save goal. Please check your connection and try again.');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleDelete = async () => {
@@ -132,9 +150,10 @@ const GoalFormModal = ({ isOpen, onClose, goal = null }) => {
                 <div className="pt-6 flex flex-col gap-3">
                     <button
                         type="submit"
-                        className="w-full py-4 bg-secondary hover:bg-secondary/90 text-surface font-black uppercase tracking-widest text-xs rounded-2xl transition-all shadow-lg shadow-secondary/20 active:scale-[0.98]"
+                        disabled={isLoading}
+                        className="w-full py-4 bg-secondary hover:bg-secondary/90 text-surface font-black uppercase tracking-widest text-xs rounded-2xl transition-all shadow-lg shadow-secondary/20 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        {goal ? 'Save goal' : 'Add goal'}
+                        {isLoading ? 'Creating...' : (goal ? 'Save goal' : 'Add goal')}
                     </button>
                     {goal && (
                         <button

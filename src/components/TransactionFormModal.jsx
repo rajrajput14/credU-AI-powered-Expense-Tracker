@@ -42,18 +42,35 @@ const TransactionFormModal = ({ isOpen, onClose, transaction = null }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const data = {
-            ...formData,
-            amount: parseFloat(formData.amount),
-            user_id: user?.id
-        };
-
-        if (transaction?.id) {
-            await updateTransaction(transaction.id, data);
-        } else {
-            await addTransaction(user?.id, data);
+        if (!formData.amount || isNaN(parseFloat(formData.amount)) || parseFloat(formData.amount) <= 0) {
+            alert('Please enter a valid amount greater than 0');
+            return;
         }
-        onClose();
+        if (!formData.name) {
+            alert('Please enter a name for the transaction');
+            return;
+        }
+
+        setIsLoading(true);
+        try {
+            const data = {
+                ...formData,
+                amount: parseFloat(formData.amount),
+                user_id: user?.id
+            };
+
+            if (transaction?.id) {
+                await updateTransaction(transaction.id, data);
+            } else {
+                await addTransaction(user?.id, data);
+            }
+            onClose();
+        } catch (err) {
+            console.error(err);
+            alert('Something went wrong while saving. Please try again.');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleDelete = async () => {
@@ -134,9 +151,10 @@ const TransactionFormModal = ({ isOpen, onClose, transaction = null }) => {
                 <div className="pt-6 flex flex-col gap-3">
                     <button
                         type="submit"
-                        className="w-full py-4 bg-primary hover:bg-primary/90 text-surface font-black uppercase tracking-widest text-xs rounded-2xl transition-all shadow-lg shadow-primary/20 active:scale-[0.98]"
+                        disabled={isLoading}
+                        className="w-full py-4 bg-primary hover:bg-primary/90 text-surface font-black uppercase tracking-widest text-xs rounded-2xl transition-all shadow-lg shadow-primary/20 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        {transaction ? 'Save' : 'Save'}
+                        {isLoading ? 'Processing...' : (transaction ? 'Save Changes' : 'Save Transaction')}
                     </button>
                     {transaction && (
                         <button

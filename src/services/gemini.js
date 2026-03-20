@@ -5,14 +5,14 @@ const GEMINI_URL = `https://generativelanguage.googleapis.com/v1/models/gemini-2
 
 export const parseTransactionIntent = async (text) => {
   const prompt = `
-    Analyze the following text and extract transaction details for a fintech app.
+    Analyze the following text and extract transaction details for the credU app.
     Return ONLY a raw JSON object with:
     - action: "create" | "update" | "delete"
-    - amount: number (if applicable)
+    - amount: number
     - category: string (one of: shopping, food, transport, bills, entertainment, income, other)
     - type: "income" | "expense"
-    - note: string (original text or extracted note)
-    - target: string (for "update" or "delete", which transaction the user is referring to, e.g., "coffee")
+    - note: string (a short clean description)
+    - target: string (for updates/deletes)
 
     Text: "${text}"
   `

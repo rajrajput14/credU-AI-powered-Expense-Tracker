@@ -11,7 +11,7 @@ import VoiceOverlay from './VoiceOverlay'
 
 const VoiceButton = () => {
     const navigate = useNavigate()
-    const { addTransaction, setVoiceEntry, voiceTrigger } = useAppStore()
+    const { addTransaction, updateTransaction, deleteTransaction, setVoiceEntry, voiceTrigger } = useAppStore()
     
     // UI States: IDLE, LISTENING, PROCESSING, CONFIRMATION, ERROR
     const [uiState, setUiState] = useState('IDLE')
@@ -27,6 +27,7 @@ const VoiceButton = () => {
     
     const recognitionRef = useRef(null)
     const transcriptRef = useRef("")
+    const silenceTimerRef = useRef(null)
 
     useEffect(() => {
         // Initialize Speech Recognition once
@@ -34,9 +35,13 @@ const VoiceButton = () => {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
             const recognition = new SpeechRecognition()
             
-            recognition.continuous = false 
+            recognition.continuous = true
             recognition.interimResults = true
             recognition.lang = 'en-US'
+            
+            recognition.onstart = () => {
+                console.log("Recognition started")
+            }
             
             recognition.onresult = (event) => {
                 let current = ""
@@ -45,6 +50,14 @@ const VoiceButton = () => {
                 }
                 setTranscript(current)
                 transcriptRef.current = current
+
+                // Reset silence timer whenever we get a result
+                if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current)
+                silenceTimerRef.current = setTimeout(() => {
+                    if (transcriptRef.current) {
+                        recognition.stop()
+                    }
+                }, 2000) // 2 seconds of silence to trigger processing
             }
 
             recognition.onend = () => {
