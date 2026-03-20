@@ -32,11 +32,11 @@ const Layout = () => {
     }
 
     const navItems = [
-        { path: '/app-dashboard', icon: 'grid_view', label: 'Home' },
-        { path: '/app-dashboard/transactions', icon: 'list_alt', label: 'Expenses' },
-        { path: '/app-dashboard/analytics', icon: 'analytics', label: 'Insights' },
-        { path: '/app-dashboard/goals', icon: 'track_changes', label: 'Savings Goals' },
-        { path: '/app-dashboard/settings', icon: 'settings', label: 'Settings' }
+        { name: 'Dashboard', path: '/app-dashboard', icon: 'grid_view' },
+        { name: 'Insights', path: '/app-dashboard/analytics', icon: 'analytics' },
+        { name: 'Transactions', path: '/app-dashboard/transactions', icon: 'receipt_long' },
+        { name: 'Goals', path: '/app-dashboard/goals', icon: 'savings' },
+        { name: 'Settings', path: '/app-dashboard/settings', icon: 'settings' },
     ];
 
     return (
@@ -52,15 +52,13 @@ const Layout = () => {
 
                     <div className="flex-1 flex flex-col justify-between overflow-y-auto px-6">
                         <div className="space-y-6">
-                            <motion.button 
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
-                                onClick={() => setTransactionModal(true)}
-                                className="w-full bg-on-surface text-white rounded-2xl py-3.5 px-4 font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-lg"
-                            >
-                            <span className="material-symbols-outlined text-[20px]">add</span>
-                            <span>Add Expense</span>
-                        </motion.button>
+                            <button 
+                                    onClick={() => setTransactionModal(true)}
+                                    className="w-full bg-on-surface text-white rounded-2xl py-4 font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 hover:bg-on-surface/90 transition-all shadow-lg shadow-on-surface/20"
+                                >
+                                    <span className="material-symbols-outlined text-[20px]">add</span>
+                                    Add transaction
+                                </button>
 
                             <nav className="space-y-1">
                                 {navItems.map((item) => {
@@ -79,7 +77,7 @@ const Layout = () => {
                                                 "material-symbols-outlined text-[22px]",
                                                 isActive && "font-variation-fill"
                                             )}>{item.icon}</span>
-                                            <span className="font-semibold">{item.label}</span>
+                                            <span className="font-semibold">{item.name}</span>
                                         </Link>
                                     );
                                 })}
@@ -154,18 +152,23 @@ const Layout = () => {
             </main>
 
             {/* MOBILE BOTTOM NAVIGATION */}
-            <nav className="fixed bottom-0 left-0 w-full bg-white/80 backdrop-blur-xl border-t border-outline-variant/10 flex items-center justify-around px-2 py-3 z-50 lg:hidden pb-safe shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.05)]">
+            <nav className="fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-xl border-t border-outline-variant/10 flex items-center justify-around px-2 py-4 z-50 lg:hidden pb-safe shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.05)]">
                 {navItems.map(item => {
                     const isActive = location.pathname === item.path;
                     return (
                         <Link 
                             key={item.path}
                             to={item.path} 
-                            className={`flex flex-col items-center justify-center gap-1 w-16 h-12 rounded-xl transition-all
-                                ${isActive ? 'text-primary' : 'text-on-surface-variant/60 hover:text-on-surface-variant cursor-pointer'}`
-                            }>
-                            <span className="material-symbols-outlined text-[24px] mb-0.5">{item.icon}</span>
-                            {isActive && <div className="w-1 h-1 rounded-full bg-primary"></div>}
+                            className={clsx(
+                                "flex flex-col items-center justify-center gap-1.5 w-16 transition-all duration-300",
+                                isActive ? 'text-primary scale-110' : 'text-on-surface-variant/40 hover:text-on-surface-variant cursor-pointer'
+                            )}
+                        >
+                            <span className="material-symbols-outlined text-[26px] mb-0.5">{item.icon}</span>
+                            <span className={clsx(
+                                "text-[10px] font-black uppercase tracking-widest transition-all",
+                                isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                            )}>{item.name}</span>
                         </Link>
                     )
                 })}
@@ -174,11 +177,14 @@ const Layout = () => {
             <motion.div 
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                className="fixed bottom-24 right-6 lg:hidden z-50"
+                className="fixed bottom-[184px] right-6 lg:hidden z-50 group"
             >
+                <div className="absolute bottom-full right-0 mb-3 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap bg-on-surface text-white text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-md pointer-events-none shadow-xl border border-white/10">
+                    Add Transaction
+                </div>
                 <button 
                     onClick={() => setTransactionModal(true)}
-                    className="w-14 h-14 bg-on-surface text-white rounded-2xl flex items-center justify-center shadow-2xl shadow-on-surface/40 active:scale-95 transition-all hover:bg-on-surface/90"
+                    className="w-16 h-16 bg-on-surface text-white rounded-full flex items-center justify-center shadow-2xl shadow-on-surface/40 active:scale-95 transition-all hover:bg-on-surface/90 border border-white/10"
                 >
                     <span className="material-symbols-outlined text-[28px]">add</span>
                 </button>

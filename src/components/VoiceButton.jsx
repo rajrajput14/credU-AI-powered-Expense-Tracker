@@ -207,7 +207,10 @@ const VoiceButton = () => {
                 )}
             </AnimatePresence>
 
-            <div className="fixed bottom-24 right-6 z-40 md:bottom-28 lg:bottom-10 lg:right-10">
+            <div className="fixed bottom-24 right-6 z-40 md:bottom-28 lg:bottom-10 lg:right-10 group">
+                <div className="absolute bottom-full right-0 mb-2 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap bg-primary text-surface text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-md pointer-events-none shadow-xl border border-white/10">
+                    Voice Assistant
+                </div>
                 <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}

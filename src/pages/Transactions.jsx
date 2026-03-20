@@ -152,8 +152,8 @@ const Transactions = () => {
             <div className="flex-1 overflow-x-hidden overflow-y-auto p-6 md:p-8 space-y-8 max-w-7xl mx-auto w-full">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                     <div>
-                        <h1 className="text-2xl font-bold tracking-tight text-on-surface mb-1 font-headline">Past expenses</h1>
-                        <p className="text-on-surface-variant text-sm font-medium">Review your recent spending.</p>
+                        <h1 className="text-2xl font-bold tracking-tight text-on-surface mb-1 font-headline">Past transactions</h1>
+                        <p className="text-on-surface-variant text-sm font-medium">Review your recent activity.</p>
                     </div>
                     
                     <div className="flex items-center gap-3">
@@ -167,7 +167,50 @@ const Transactions = () => {
                                 className="pl-10 pr-4 py-2 bg-surface-container-lowest border border-outline-variant/10 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all w-full md:w-64 shadow-sm placeholder:text-on-surface-variant/40 font-bold" 
                             />
                         </div>
+                        <div className="relative">
+                            <button 
+                                onClick={() => setIsFilterOpen(!isFilterOpen)}
+                                className={clsx(
+                                    "flex items-center justify-center gap-2 px-4 py-2 rounded-xl border transition-all shadow-sm text-sm font-bold",
+                                    categoryFilter !== 'All' ? "bg-primary/10 border-primary/20 text-primary" : "bg-surface-container-lowest border-outline-variant/10 text-on-surface-variant hover:bg-surface-container"
+                                )}
+                            >
+                                <span className={clsx("material-symbols-outlined text-[18px]", categoryFilter !== 'All' ? "text-primary" : "text-on-surface-variant/60")}>filter_list</span>
+                                <span className="hidden sm:inline">{categoryFilter === 'All' ? 'Filters' : categoryFilter}</span>
+                            </button>
+
+                            {isFilterOpen && (
+                                <>
+                                    <div className="fixed inset-0 z-20" onClick={() => setIsFilterOpen(false)}></div>
+                                    <div className="absolute right-0 mt-2 w-48 bg-surface-container-lowest rounded-2xl border border-outline-variant/10 shadow-xl z-30 py-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                                        <div className="px-4 py-2 text-[10px] font-black text-on-surface-variant/40 uppercase tracking-widest border-b border-outline-variant/5 mb-1">Filter by Category</div>
+                                        {categories.map(cat => (
+                                            <button
+                                                key={cat}
+                                                onClick={() => {
+                                                    setCategoryFilter(cat);
+                                                    setIsFilterOpen(false);
+                                                    setCurrentPage(1);
+                                                }}
+                                                className={clsx(
+                                                    "w-full text-left px-4 py-2 text-sm transition-colors flex items-center justify-between font-bold",
+                                                    categoryFilter === cat ? "bg-primary/5 text-primary" : "text-on-surface-variant hover:bg-surface-container"
+                                                )}
+                                            >
+                                                <span className="capitalize">{cat}</span>
+                                                {categoryFilter === cat && <span className="material-symbols-outlined text-sm">check</span>}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </>
+                            )}
+                        </div>
                         
+                        <button 
+                            onClick={handleExport}
+                            className="flex items-center justify-center gap-2 bg-surface-container-lowest px-4 py-2 rounded-xl border border-outline-variant/10 hover:bg-surface-container transition-all shadow-sm text-sm font-bold text-on-surface-variant hidden sm:flex shrink-0"
+                        >
+                            <span className="material-symbols-outlined text-[18px]">download</span> Download list
                         </button>
                     </div>
                 </div>
