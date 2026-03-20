@@ -93,13 +93,13 @@ const Layout = () => {
                                     <div className="w-10 h-10 rounded-xl bg-surface-container text-on-surface-variant/50 flex items-center justify-center group-hover:bg-white transition-colors"><span className="material-symbols-outlined text-[20px]">mic</span></div>
                                     <span className="font-semibold">Tap to speak</span>
                                 </button>
-                                <button 
-                                    onClick={() => alert("Help Center coming soon!")}
+                                <Link 
+                                    to="/app-dashboard/support"
                                     className="flex items-center gap-3 px-4 py-3 rounded-2xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all group"
                                 >
                                     <div className="w-10 h-10 rounded-xl bg-surface-container text-on-surface-variant/50 flex items-center justify-center group-hover:bg-white transition-colors"><span className="material-symbols-outlined text-[20px]">help_center</span></div>
                                     <span className="font-semibold">Need help?</span>
-                                </button>
+                                </Link>
                             </div>
                         </div>
                     </div>

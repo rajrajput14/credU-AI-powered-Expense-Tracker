@@ -4,6 +4,7 @@ import { useAppStore } from '../store/useAppStore';
 
 const TransactionFormModal = ({ isOpen, onClose, transaction = null }) => {
     const { addTransaction, updateTransaction, deleteTransaction, user } = useAppStore();
+    const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
         amount: '',

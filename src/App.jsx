@@ -9,6 +9,7 @@ import Layout from './components/Layout'
 import Auth from './pages/Auth'
 import Settings from './pages/Settings'
 import LandingPage from './pages/LandingPage'
+import Support from './pages/Support'
 import { supabase, getCurrentUser } from './services/supabase'
 import { useAppStore } from './store/useAppStore'
 
@@ -95,6 +96,7 @@ function App() {
                 <Route path="analytics" element={<Analytics />} />
                 <Route path="goals" element={<Goals />} />
                 <Route path="settings" element={<Settings />} />
+                <Route path="support" element={<Support />} />
               </Route>
             </Routes>
           </Router>
