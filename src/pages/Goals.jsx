@@ -8,12 +8,9 @@ import AnimatedCard from '../components/animations/AnimatedCard';
 import PageTransition from '../components/animations/PageTransition';
 
 const Goals = () => {
-    const { goals, setGoalModal, setFundGoalModal, user, loading } = useAppStore();
+    const { user, goals, deleteGoal, setGoalModal, setFundGoalModal, loading, formatCurrency } = useAppStore();
     const [filter, setFilter] = useState('All');
 
-    const formatCurrency = (amount) => {
-        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount || 0);
-    };
 
     const totalSaved = useMemo(() => 
         goals.reduce((sum, g) => sum + Number(g.current_amount || 0), 0)

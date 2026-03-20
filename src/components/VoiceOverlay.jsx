@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion'
+import { useAppStore } from '../store/useAppStore'
 import clsx from 'clsx'
 
 const VoiceOverlay = ({ 
@@ -11,6 +12,7 @@ const VoiceOverlay = ({
     onRetry,
     onCancel
 }) => {
+    const { formatCurrency } = useAppStore();
     return (
         <motion.div 
             initial={{ opacity: 0 }}
@@ -89,8 +91,8 @@ const VoiceOverlay = ({
                             <>
                                 <p className="text-surface/30 mt-2 mb-4 font-black uppercase tracking-widest text-[10px]">Try saying</p>
                                 <div className="flex flex-wrap justify-center gap-2">
-                                    <span className="bg-surface/5 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-surface/10 text-surface/60 italic">"Spent $12 on coffee at Starbucks"</span>
-                                    <span className="bg-surface/5 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-surface/10 text-surface/60 italic">"I just got paid $200"</span>
+                                    <span className="bg-surface/5 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-surface/10 text-surface/60 italic">"Spent {formatCurrency(12)} on coffee at Starbucks"</span>
+                                    <span className="bg-surface/5 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-surface/10 text-surface/60 italic">"I just got paid {formatCurrency(200)}"</span>
                                 </div>
                             </>
                         )}
@@ -107,7 +109,7 @@ const VoiceOverlay = ({
                                     </span>
                                 </div>
                                 <div className="flex flex-col items-center gap-3">
-                                    <p className="text-6xl font-black text-on-surface tracking-tighter leading-none font-headline">${result.amount}</p>
+                                    <p className="text-6xl font-black text-on-surface tracking-tighter leading-none font-headline">{formatCurrency(result.amount)}</p>
                                     <p className="text-xs font-black text-on-surface-variant/60 uppercase tracking-widest mt-2">{result.category} • {result.note || 'Unspecified'}</p>
                                 </div>
                             </div>

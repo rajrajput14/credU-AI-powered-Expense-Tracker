@@ -1,29 +1,16 @@
-import { useEffect, useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { ChevronDown } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import clsx from 'clsx'
-import { useCurrencyStore } from '../store/useCurrencyStore'
+import { useAppStore } from '../store/useAppStore'
 import Icon from './Icon'
 
-const AVAILABLE_CURRENCIES = [
-    { code: 'INR', symbol: '₹', label: 'Indian Rupee' },
-    { code: 'USD', symbol: '$', label: 'US Dollar' },
-    { code: 'EUR', symbol: '€', label: 'Euro' },
-    { code: 'GBP', symbol: '£', label: 'British Pound' },
-    { code: 'AUD', symbol: 'A$', label: 'Australian Dollar' },
-    { code: 'CAD', symbol: 'C$', label: 'Canadian Dollar' },
-    { code: 'SGD', symbol: 'S$', label: 'Singapore Dollar' },
-    { code: 'JPY', symbol: '¥', label: 'Japanese Yen' }
-]
-
 const CurrencySelector = () => {
-    const { selectedCurrency, setSelectedCurrency, fetchRates, ratesLoading } = useCurrencyStore()
+    const { currency, setCurrency, availableCurrencies } = useAppStore()
     const [isOpen, setIsOpen] = useState(false)
     const dropdownRef = useRef(null)
 
-    useEffect(() => {
-        fetchRates()
-    }, [fetchRates])
+    const selectedCurrency = availableCurrencies.find(c => c.code === currency) || availableCurrencies[0];
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -35,8 +22,8 @@ const CurrencySelector = () => {
         return () => document.removeEventListener('mousedown', handleClickOutside)
     }, [])
 
-    const handleSelect = (currency) => {
-        setSelectedCurrency(currency.code, currency.symbol)
+    const handleSelect = (curr) => {
+        setCurrency(curr.code)
         setIsOpen(false)
     }
 
@@ -46,13 +33,9 @@ const CurrencySelector = () => {
                 onClick={() => setIsOpen(!isOpen)}
                 className="flex items-center gap-2 rounded-xl border border-outline-variant/10 bg-surface-container-lowest/50 backdrop-blur-md px-3 py-2 text-[10px] font-black uppercase tracking-widest text-on-surface hover:bg-surface-container/20 transition-all border-outline-variant/5 shadow-sm"
             >
-                {ratesLoading ? (
-                    <Icon name="loading" size="sm" className="animate-spin text-on-surface-variant/40" />
-                ) : (
-                    <span className="flex h-5 w-5 items-center justify-center rounded-md bg-primary/10 text-primary">
-                        {selectedCurrency.symbol}
-                    </span>
-                )}
+                <span className="flex h-5 w-5 items-center justify-center rounded-md bg-primary/10 text-primary">
+                    {selectedCurrency.symbol}
+                </span>
                 <span>{selectedCurrency.code}</span>
                 <ChevronDown size={14} className={clsx("text-on-surface-variant/40 transition-transform", isOpen && "rotate-180")} />
             </button>
@@ -66,7 +49,7 @@ const CurrencySelector = () => {
                         transition={{ duration: 0.15 }}
                         className="absolute right-0 top-full mt-2 w-48 overflow-hidden rounded-2xl border border-outline-variant/10 bg-surface-container-lowest/90 backdrop-blur-xl shadow-2xl z-50 p-1"
                     >
-                        {AVAILABLE_CURRENCIES.map(curr => (
+                        {availableCurrencies.map(curr => (
                             <button
                                 key={curr.code}
                                 onClick={() => handleSelect(curr)}

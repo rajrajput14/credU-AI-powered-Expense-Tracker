@@ -3,7 +3,7 @@ import Modal from './Modal';
 import { useAppStore } from '../store/useAppStore';
 
 const GoalFormModal = ({ isOpen, onClose, goal = null }) => {
-    const { addGoal, updateGoal, deleteGoal, user } = useAppStore();
+    const { addGoal, updateGoal, deleteGoal, user, getCurrencySymbol } = useAppStore();
     const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
         title: '',

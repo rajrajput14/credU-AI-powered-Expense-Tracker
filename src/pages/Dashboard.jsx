@@ -20,7 +20,7 @@ const getCategoryIcon = (category) => {
 };
 
 const Dashboard = () => {
-    const { user, transactions, goals, budget, setTransactionModal, loading, isPro, getMonthlyTransactionCount, setPaywallOpen } = useAppStore();
+    const { user, transactions, goals, budget, setTransactionModal, loading, isPro, getMonthlyTransactionCount, setPaywallOpen, formatCurrency } = useAppStore();
     const [period, setPeriod] = useState('This Month');
     
     const filteredByPeriod = useMemo(() => {
@@ -59,9 +59,6 @@ const Dashboard = () => {
     const recentTransactions = transactions.slice(0, 4);
     const activeGoals = goals.slice(0, 2);
 
-    const formatCurrency = (amount) => {
-        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount || 0);
-    };
 
     const formatDate = (dateString) => {
         if (!dateString) return '';
@@ -115,32 +112,6 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            {!isPro() && (
-                <div className="bg-primary/5 border border-primary/10 rounded-2xl p-4 flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
-                            <span className="material-symbols-outlined">analytics</span>
-                        </div>
-                        <div>
-                            <p className="text-sm font-bold text-on-surface">Monthly Transactions</p>
-                            <p className="text-xs text-on-surface-variant">{getMonthlyTransactionCount()} of 20 used this month</p>
-                        </div>
-                    </div>
-                    <div className="flex-1 max-w-[200px] bg-surface-container rounded-full h-1.5 overflow-hidden">
-                        <motion.div 
-                            initial={{ width: 0 }}
-                            animate={{ width: `${Math.min((getMonthlyTransactionCount() / 20) * 100, 100)}%` }}
-                            className="bg-primary h-full"
-                        />
-                    </div>
-                    <button 
-                        onClick={() => setPaywallOpen(true)}
-                        className="text-xs font-black uppercase tracking-widest text-primary hover:underline"
-                    >
-                        Upgrade
-                    </button>
-                </div>
-            )}
 
             {/* Overview Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

@@ -8,7 +8,7 @@ export const useAppStore = create((set, get) => ({
     user: null,
     transactions: [],
     goals: [],
-    currency: 'USD ($)',
+    currency: localStorage.getItem('currency') || 'USD',
     loading: false,
     error: null,
     voiceEntry: null,
@@ -56,9 +56,38 @@ export const useAppStore = create((set, get) => ({
         activeGoal: goal 
     }),
 
+    availableCurrencies: [
+        { code: 'USD', symbol: '$', label: 'US Dollar' },
+        { code: 'EUR', symbol: '€', label: 'Euro' },
+        { code: 'GBP', symbol: '£', label: 'British Pound' },
+        { code: 'INR', symbol: '₹', label: 'Indian Rupee' },
+        { code: 'JPY', symbol: '¥', label: 'Japanese Yen' },
+        { code: 'CAD', symbol: 'CA$', label: 'Canadian Dollar' },
+        { code: 'AUD', symbol: 'AU$', label: 'Australian Dollar' },
+        { code: 'SGD', symbol: 'SG$', label: 'Singapore Dollar' },
+        { code: 'AED', symbol: 'AED', label: 'UAE Dirham' },
+    ],
     setVoiceEntry: (entry) => set({ voiceEntry: entry }),
     clearVoiceEntry: () => set({ voiceEntry: null }),
-    setCurrency: (currency) => set({ currency }),
+    setCurrency: (currency) => {
+        set({ currency });
+        localStorage.setItem('currency', currency);
+    },
+    
+    formatCurrency: (amount) => {
+        const currency = get().currency;
+        return new Intl.NumberFormat('en-US', { 
+            style: 'currency', 
+            currency: currency 
+        }).format(amount || 0);
+    },
+
+    getCurrencySymbol: () => {
+        const currencyCode = get().currency;
+        const currencies = get().availableCurrencies;
+        const found = currencies.find(c => c.code === currencyCode);
+        return found ? found.symbol : '$';
+    },
     setUser: (user) => set({ user }),
 
     isPro: () => {
@@ -117,55 +146,101 @@ export const useAppStore = create((set, get) => ({
 
     // Transaction Actions
     addTransaction: async (userId, data) => {
+        const tempId = crypto.randomUUID();
+        const optimisticTx = { ...data, id: tempId, user_id: userId, created_at: new Date().toISOString() };
+        
+        // Optimistic update
+        set(state => ({ 
+            transactions: [optimisticTx, ...state.transactions].sort((a,b) => new Date(b.date) - new Date(a.date)) 
+        }));
+
         try {
             await transactionService.addTransaction({ ...data, user_id: userId });
-            // Relies on Real-Time to update the store, or we can optimistially update:
-            // But we will just let Real-Time do it to guarantee DB consistency.
+            // Real-time listener will eventually replace/confirm this, 
+            // but the tempId check in subscribeToDatabase prevents duplicates.
         } catch (error) {
             console.error(error);
-            set({ error: error.message });
+            // Rollback on error
+            set(state => ({ transactions: state.transactions.filter(t => t.id !== tempId), error: error.message }));
         }
     },
     updateTransaction: async (id, data) => {
+        const previousTx = get().transactions.find(t => t.id === id);
+        
+        // Optimistic update
+        set(state => ({
+            transactions: state.transactions.map(t => t.id === id ? { ...t, ...data } : t)
+                .sort((a,b) => new Date(b.date) - new Date(a.date))
+        }));
+
         try {
             await transactionService.updateTransaction(id, data);
         } catch (error) {
             console.error(error);
-            set({ error: error.message });
+            // Rollback
+            set(state => ({ 
+                transactions: state.transactions.map(t => t.id === id ? previousTx : t)
+                    .sort((a,b) => new Date(b.date) - new Date(a.date)),
+                error: error.message 
+            }));
         }
     },
     deleteTransaction: async (id) => {
+        const previousTx = get().transactions.find(t => t.id === id);
+
+        // Optimistic update
+        set(state => ({ transactions: state.transactions.filter(t => t.id !== id) }));
+
         try {
             await transactionService.deleteTransaction(id);
         } catch (error) {
             console.error(error);
-            set({ error: error.message });
+            // Rollback
+            set(state => ({ transactions: [previousTx, ...state.transactions].sort((a,b) => new Date(b.date) - new Date(a.date)), error: error.message }));
         }
     },
 
     // Goal Actions
     addGoal: async (userId, data) => {
+        const tempId = crypto.randomUUID();
+        const optimisticGoal = { ...data, id: tempId, user_id: userId, created_at: new Date().toISOString() };
+        
+        set(state => ({ goals: [...state.goals, optimisticGoal] }));
+
         try {
             await goalService.addGoal({ ...data, user_id: userId });
         } catch (error) {
             console.error(error);
-            set({ error: error.message });
+            set(state => ({ goals: state.goals.filter(g => g.id !== tempId), error: error.message }));
         }
     },
     updateGoal: async (id, data) => {
+        const previousGoal = get().goals.find(g => g.id === id);
+        
+        set(state => ({
+            goals: state.goals.map(g => g.id === id ? { ...g, ...data } : g)
+        }));
+
         try {
             await goalService.updateGoal(id, data);
         } catch (error) {
             console.error(error);
-            set({ error: error.message });
+            set(state => ({ 
+                goals: state.goals.map(g => g.id === id ? previousGoal : g),
+                error: error.message 
+            }));
         }
     },
     deleteGoal: async (id) => {
+        const previousGoal = get().goals.find(g => g.id === id);
+        
+        set(state => ({ goals: state.goals.filter(g => g.id !== id) }));
+
         try {
             await goalService.deleteGoal(id);
         } catch (error) {
             console.error(error);
-            set({ error: error.message });
+            set(state => ({ goals: [...state.goals, previousGoal], error: error.message }));
         }
     },
 

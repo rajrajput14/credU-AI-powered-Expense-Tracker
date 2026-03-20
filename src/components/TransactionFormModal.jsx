@@ -3,7 +3,7 @@ import Modal from './Modal';
 import { useAppStore } from '../store/useAppStore';
 
 const TransactionFormModal = ({ isOpen, onClose, transaction = null }) => {
-    const { addTransaction, updateTransaction, deleteTransaction, user } = useAppStore();
+    const { addTransaction, updateTransaction, deleteTransaction, user, getCurrencySymbol } = useAppStore();
     const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
@@ -100,7 +100,7 @@ const TransactionFormModal = ({ isOpen, onClose, transaction = null }) => {
                     <div>
                         <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60 mb-2 italic">Amount</label>
                         <div className="relative">
-                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/40 font-bold">$</span>
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/40 font-bold">{getCurrencySymbol()}</span>
                             <input
                                 type="number"
                                 step="0.01"

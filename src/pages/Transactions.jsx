@@ -18,7 +18,7 @@ const getCategoryIcon = (category) => {
 };
 
 const Transactions = () => {
-    const { transactions, setTransactionModal, user, loading } = useAppStore();
+    const { user, transactions, deleteTransaction, setTransactionModal, loading, formatCurrency } = useAppStore();
     const [searchTerm, setSearchTerm] = useState("");
     const [filter, setFilter] = useState("All");
     const [categoryFilter, setCategoryFilter] = useState("All");
@@ -110,9 +110,6 @@ const Transactions = () => {
 
     const pendingCount = transactions.filter(t => t.status === 'pending').length;
 
-    const formatCurrency = (amount) => {
-        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount || 0);
-    };
 
     const formatDate = (dateString) => {
         if (!dateString) return '';

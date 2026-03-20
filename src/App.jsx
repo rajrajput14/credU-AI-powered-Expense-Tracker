@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import Dashboard from './pages/Dashboard'
 import Analytics from './pages/Analytics'
 import Transactions from './pages/Transactions'
@@ -71,37 +71,34 @@ function App() {
   if (initializing) {
     return (
       <div className="min-h-screen bg-surface flex items-center justify-center">
-        {/* Simple loader if needed while initializing */}
         <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
       </div>
     );
   }
 
   return (
-    <AnimatePresence mode="wait">
-        <motion.div
-          key="app"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="min-h-screen bg-surface"
-        >
-          <Router>
+    <motion.div
+        key="app"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="min-h-screen bg-surface"
+    >
+        <Router>
             <Routes>
-              <Route path="/auth" element={!user ? <Auth /> : <Navigate to="/app-dashboard" />} />
-              <Route path="/" element={<LandingPage />} />
-              <Route path="/app-dashboard" element={user ? <Layout /> : <Navigate to="/auth" />}>
+                <Route path="/auth" element={!user ? <Auth /> : <Navigate to="/app-dashboard" />} />
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/app-dashboard" element={user ? <Layout /> : <Navigate to="/auth" />}>
                 <Route index element={<Dashboard />} />
                 <Route path="transactions" element={<Transactions />} />
                 <Route path="analytics" element={<Analytics />} />
                 <Route path="goals" element={<Goals />} />
                 <Route path="settings" element={<Settings />} />
                 <Route path="support" element={<Support />} />
-              </Route>
+                </Route>
             </Routes>
-          </Router>
-        </motion.div>
-    </AnimatePresence>
+        </Router>
+    </motion.div>
   )
 }
 

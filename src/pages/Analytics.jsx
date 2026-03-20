@@ -10,7 +10,7 @@ import AnimatedCard from '../components/animations/AnimatedCard';
 import PageTransition from '../components/animations/PageTransition';
 
 const Analytics = () => {
-    const { transactions, budget, user, loading, isPro, createCheckout, setPaywallOpen } = useAppStore();
+    const { transactions, budget, loading, formatCurrency, user, isPro, createCheckout, setPaywallOpen } = useAppStore();
     const [period, setPeriod] = useState('All Time');
 
     const filteredByPeriod = useMemo(() => {
@@ -72,9 +72,6 @@ const Analytics = () => {
         .filter(t => t.type === 'expense' && ['housing', 'rent', 'utilities', 'subscriptions', 'bills'].includes(t.category?.toLowerCase()))
         .reduce((sum, t) => sum + Number(t.amount || 0), 0);
 
-    const formatCurrency = (amount) => {
-        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount || 0);
-    };
 
     return (
         <div className="flex-1 flex flex-col w-full font-body">

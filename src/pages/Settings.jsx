@@ -7,20 +7,18 @@ import { motion } from 'framer-motion';
 import ProfileEditModal from '../components/ProfileEditModal';
 import PageTransition from '../components/animations/PageTransition';
 import AnimatedCard from '../components/animations/AnimatedCard';
+import CurrencySelector from '../components/CurrencySelector';
 
 const Settings = () => {
     const navigate = useNavigate();
-    const { user, currency, setCurrency, darkMode, setDarkMode, subscription, isPro, createCheckout } = useAppStore();
+    const { user, currency, setCurrency, darkMode, setDarkMode, subscription, isPro, createCheckout, getMonthlyTransactionCount, setPaywallOpen } = useAppStore();
     const [notifications, setNotifications] = useState(true);
     const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+    const [isUpgrading, setIsUpgrading] = useState(false);
 
     const handleSignOut = async () => {
         await supabase.auth.signOut();
         navigate('/auth');
-    };
-
-    const handleCurrencyChange = (e) => {
-        setCurrency(e.target.value);
     };
 
     const handleLinkAccount = () => {
@@ -29,7 +27,12 @@ const Settings = () => {
 
     const handleUpgrade = async () => {
         if (!user) return navigate('/auth');
-        await createCheckout(user.id, user.email, import.meta.env.VITE_POLAR_PRICE_ID);
+        setIsUpgrading(true);
+        try {
+            await createCheckout(user.id, user.email, import.meta.env.VITE_POLAR_PRICE_ID);
+        } finally {
+            setIsUpgrading(false);
+        }
     };
 
     const handleCancelSubscription = async () => {
@@ -86,22 +89,6 @@ const Settings = () => {
                                 )}>
                                 {subscription?.plan ? `${subscription.plan} plan` : 'Free plan'}
                                 </span>
-                                {isPro() && subscription?.polar_subscription_id && (
-                                    <button 
-                                        onClick={handleCancelSubscription}
-                                        className="text-xs font-black uppercase tracking-widest text-error hover:text-error/70 transition-colors underline underline-offset-4 ml-2"
-                                    >
-                                        Cancel
-                                    </button>
-                                )}
-                                {!isPro() && (
-                                    <button 
-                                        onClick={handleUpgrade}
-                                        className="text-xs font-black uppercase tracking-widest text-primary hover:text-primary/70 transition-colors underline underline-offset-4"
-                                    >
-                                        Go Premium
-                                    </button>
-                                )}
                             </div>
                         </div>
                         <div className="z-10 w-full sm:w-auto mt-4 sm:mt-0">
@@ -117,8 +104,101 @@ const Settings = () => {
                         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -mr-20 -mt-20 z-0"></div>
                     </AnimatedCard>
 
+                    {/* Usage & Billing Section */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Billing Card */}
+                        <div className="bg-surface-container-lowest rounded-3xl border border-outline-variant/10 shadow-sm overflow-hidden flex flex-col relative group">
+                             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl -mr-10 -mt-10"></div>
+                             
+                             <div className="px-6 py-5 border-b border-outline-variant/5 flex items-center gap-3 shrink-0 relative z-10">
+                                <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center"><span className="material-symbols-outlined text-[20px]">payments</span></div>
+                                <h3 className="font-bold text-on-surface font-headline uppercase tracking-widest text-sm">Billing & Plan</h3>
+                            </div>
+                            
+                            <div className="p-6 flex-1 space-y-6 relative z-10">
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant/40 mb-1">Current Plan</p>
+                                        <h4 className="text-2xl font-black text-on-surface tracking-tighter uppercase italic">{subscription?.plan || 'Free Member'}</h4>
+                                    </div>
+                                    <div className="px-3 py-1 bg-primary/10 text-primary rounded-full text-[10px] font-black uppercase tracking-widest">
+                                        {subscription?.status || 'Active'}
+                                    </div>
+                                </div>
 
-                    {/* Removed Linked accounts section per user request */}
+                                <div className="bg-surface-container/30 rounded-2xl p-4 border border-outline-variant/5">
+                                    <div className="flex justify-between items-center mb-2">
+                                        <span className="text-xs font-bold text-on-surface-variant">Next Payment</span>
+                                        <span className="text-xs font-black text-on-surface">{subscription?.current_period_end ? new Date(subscription.current_period_end).toLocaleDateString() : 'N/A'}</span>
+                                    </div>
+                                    <p className="text-[10px] font-medium text-on-surface-variant/60 italic leading-snug">
+                                        {isPro() ? 'Your subscription automatically renews. Manage it via the button below.' : 'Upgrade to Pro to unlock unlimited transactions and AI insights.'}
+                                    </p>
+                                </div>
+
+                                {isPro() ? (
+                                    <button 
+                                        onClick={handleCancelSubscription}
+                                        className="w-full bg-error/10 hover:bg-error/20 text-error font-black uppercase tracking-widest py-3 rounded-2xl transition-all shadow-sm text-[10px] border border-error/10"
+                                    >
+                                        Cancel Subscription
+                                    </button>
+                                ) : (
+                                    <button 
+                                        onClick={handleUpgrade}
+                                        disabled={isUpgrading}
+                                        className={clsx(
+                                            "w-full fluid-gradient text-white font-black uppercase tracking-widest py-3 rounded-2xl transition-all shadow-lg shadow-primary/20 text-[10px] hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2",
+                                            isUpgrading && "opacity-70 cursor-wait"
+                                        )}
+                                    >
+                                        {isUpgrading ? (
+                                            <>
+                                                <div className="w-3 h-3 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                                                Processing...
+                                            </>
+                                        ) : 'Upgrade to Pro'}
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Usage Meter Card */}
+                        <div className="bg-surface-container-lowest rounded-3xl border border-outline-variant/10 shadow-sm overflow-hidden flex flex-col">
+                            <div className="px-6 py-5 border-b border-outline-variant/5 flex items-center gap-3 shrink-0">
+                                <div className="w-8 h-8 rounded-lg bg-secondary/10 text-secondary flex items-center justify-center"><span className="material-symbols-outlined text-[20px]">monitoring</span></div>
+                                <h3 className="font-bold text-on-surface font-headline uppercase tracking-widest text-sm">Monthly Usage</h3>
+                            </div>
+                            
+                            <div className="p-6 space-y-8 flex-1">
+                                <div className="space-y-4">
+                                    <div className="flex justify-between items-end">
+                                        <div>
+                                            <p className="font-bold text-on-surface text-sm mb-1 font-headline">Transactions</p>
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant/40 italic">{getMonthlyTransactionCount()} of {isPro() ? '∞' : '20'} used</p>
+                                        </div>
+                                        <span className="text-xs font-black text-primary">{Math.min(Math.round((getMonthlyTransactionCount() / 20) * 100), 100)}%</span>
+                                    </div>
+                                    <div className="w-full bg-surface-container rounded-full h-2 overflow-hidden">
+                                        <motion.div 
+                                            initial={{ width: 0 }}
+                                            animate={{ width: `${Math.min((getMonthlyTransactionCount() / 20) * 100, 100)}%` }}
+                                            className="bg-primary h-full"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="bg-secondary/5 rounded-2xl p-4 border border-secondary/10">
+                                    <div className="flex items-center gap-3">
+                                        <span className="material-symbols-outlined text-secondary">info</span>
+                                        <p className="text-[10px] font-medium text-secondary italic leading-relaxed">
+                                            Usage resets on the 1st of every month. {isPro() ? 'You have unlimited access.' : 'Upgrade for higher limits.'}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
@@ -151,15 +231,7 @@ const Settings = () => {
                                         <p className="font-bold text-on-surface text-sm mb-1 font-headline">Currency</p>
                                         <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant/40 italic">Choose your local currency.</p>
                                     </div>
-                                    <select
-                                        value={currency}
-                                        onChange={handleCurrencyChange}
-                                        className="bg-surface-container-lowest border border-outline-variant/10 text-on-surface text-xs font-black uppercase tracking-widest rounded-lg focus:ring-1 focus:ring-primary focus:border-primary block p-2 outline-none appearance-none cursor-pointer hover:border-primary/30 transition-colors"
-                                    >
-                                        <option value="USD">USD ($)</option>
-                                        <option value="EUR">EUR (€)</option>
-                                        <option value="GBP">GBP (£)</option>
-                                    </select>
+                                    <CurrencySelector />
                                 </div>
                             </div>
                         </div>

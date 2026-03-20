@@ -57,7 +57,7 @@ const VoiceButton = () => {
                     if (transcriptRef.current) {
                         recognition.stop()
                     }
-                }, 2000) // 2 seconds of silence to trigger processing
+                }, 1000) // 1 second of silence to trigger processing
             }
 
             recognition.onend = () => {
@@ -71,6 +71,14 @@ const VoiceButton = () => {
             }
 
             recognitionRef.current = recognition
+        }
+
+        return () => {
+            if (recognitionRef.current) {
+                recognitionRef.current.stop()
+                recognitionRef.current = null
+            }
+            if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current)
         }
     }, [])
 
