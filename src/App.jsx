@@ -22,14 +22,11 @@ function App() {
   const [user, setUser] = useState(null)
   const [initializing, setInitializing] = useState(true)
   const [showSplash, setShowSplash] = useState(true)
-  const { fetchInitialData, subscribeToDatabase, setUser: setGlobalUser, initTheme } = useAppStore()
+  const { fetchInitialData, subscribeToDatabase, setUser: setGlobalUser } = useAppStore()
   
   useEffect(() => {
     let unsubscribe = null
     
-    // Initialize Theme System
-    initTheme();
-
     // Initialize OTA Updates
     LiveUpdateService.init();
 

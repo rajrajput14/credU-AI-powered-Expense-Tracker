@@ -21,7 +21,7 @@ export const useAppStore = create((set, get) => ({
     isFundGoalModalOpen: false,
     activeTransaction: null,
     activeGoal: null,
-    theme: localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'),
+    theme: 'light',
     budget: Number(localStorage.getItem('budget')) || 4000,
     voiceTrigger: 0,
     voiceUsage: 0,
@@ -34,27 +34,11 @@ export const useAppStore = create((set, get) => ({
         localStorage.setItem('budget', amount);
     },
 
-    setTheme: (theme) => {
-        set({ theme });
-        localStorage.setItem('theme', theme);
-        if (theme === 'dark') {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-    },
-
+    // Theme logic removed to force Light Mode only.
     initTheme: () => {
-        const savedTheme = localStorage.getItem('theme');
-        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        const theme = savedTheme || systemTheme;
-        
-        set({ theme });
-        if (theme === 'dark') {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
+        set({ theme: 'light' });
+        document.documentElement.classList.remove('dark');
+        localStorage.removeItem('theme');
     },
 
     setTransactionModal: (isOpen, transaction = null) => set({ 

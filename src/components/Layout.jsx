@@ -31,8 +31,7 @@ const Layout = () => {
         setPaywallOpen,
         isPro,
         voiceEntry,
-        clearVoiceEntry,
-        theme
+        clearVoiceEntry
     } = useAppStore();
 
     useEffect(() => {
@@ -71,7 +70,7 @@ const Layout = () => {
                 <div className="p-6">
                     <Link to="/app-dashboard" className="flex items-center gap-2 mb-10 group overflow-hidden">
                         <img 
-                            src={theme === 'dark' ? '/assets/branding/logo-dark.png' : '/assets/branding/logo-light.png'} 
+                            src="/assets/branding/logo-light.png" 
                             alt="credU" 
                             className="h-16 w-auto object-contain transition-transform group-hover:scale-105" 
                         />
@@ -194,7 +193,7 @@ const Layout = () => {
                 </Link>
                     <Link to="/app-dashboard" className="flex items-center gap-1">
                         <img 
-                            src={theme === 'dark' ? '/assets/branding/logo-dark.png' : '/assets/branding/logo-light.png'} 
+                            src="/assets/branding/logo-light.png" 
                             alt="credU" 
                             className="h-12 w-auto object-contain" 
                         />

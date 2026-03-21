@@ -110,15 +110,15 @@ const Support = () => {
     return (
         <div className="bg-surface font-body text-on-surface antialiased min-h-screen pb-28 relative">
             {/* TopAppBar */}
-            <header className="fixed top-0 w-full z-50 bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl shadow-sm shadow-indigo-500/5 flex items-center justify-between px-6 py-4">
+            <header className="fixed top-0 w-full z-50 bg-white/60 backdrop-blur-xl shadow-sm shadow-indigo-500/5 flex items-center justify-between px-6 py-4">
                 <button 
                     onClick={() => navigate(-1)}
-                    className="text-indigo-600 dark:text-indigo-400 active:scale-95 duration-200 transition-opacity hover:opacity-80"
+                    className="text-indigo-600 active:scale-95 duration-200 transition-opacity hover:opacity-80"
                 >
                     <span className="material-symbols-outlined">arrow_back</span>
                 </button>
                 <h1 className="font-['Manrope'] font-semibold text-lg tracking-tight text-on-surface">Support</h1>
-                <button className="text-indigo-600 dark:text-indigo-400 active:scale-95 duration-200 transition-opacity hover:opacity-80">
+                <button className="text-indigo-600 active:scale-95 duration-200 transition-opacity hover:opacity-80">
                     <span className="material-symbols-outlined">search</span>
                 </button>
             </header>
@@ -258,20 +258,20 @@ const Support = () => {
             </main>
 
             {/* BottomNavBar */}
-            <nav className="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 bg-white/80 dark:bg-slate-950/80 backdrop-blur-lg shadow-[0_-8px_30px_rgb(0,0,0,0.04)] rounded-t-[32px] lg:hidden">
-                <div onClick={() => navigate('/app-dashboard')} className="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-5 py-2 hover:text-indigo-500 transition-colors active:scale-90 duration-150 cursor-pointer">
+            <nav className="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 bg-white/80 backdrop-blur-lg shadow-[0_-8px_30px_rgb(0,0,0,0.04)] rounded-t-[32px] lg:hidden">
+                <div onClick={() => navigate('/app-dashboard')} className="flex flex-col items-center justify-center text-slate-400 px-5 py-2 hover:text-indigo-500 transition-colors active:scale-90 duration-150 cursor-pointer">
                     <span className="material-symbols-outlined">home</span>
                     <span className="font-['Inter'] text-[11px] font-semibold uppercase tracking-wider mt-1">Home</span>
                 </div>
-                <div onClick={() => navigate('/app-dashboard/goals')} className="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-5 py-2 hover:text-indigo-500 transition-colors active:scale-90 duration-150 cursor-pointer">
+                <div onClick={() => navigate('/app-dashboard/goals')} className="flex flex-col items-center justify-center text-slate-400 px-5 py-2 hover:text-indigo-500 transition-colors active:scale-90 duration-150 cursor-pointer">
                     <span className="material-symbols-outlined">account_balance_wallet</span>
                     <span className="font-['Inter'] text-[11px] font-semibold uppercase tracking-wider mt-1">Wealth</span>
                 </div>
-                <div className="flex flex-col items-center justify-center bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-2xl px-5 py-2 active:scale-90 duration-150">
+                <div className="flex flex-col items-center justify-center bg-indigo-50 text-indigo-700 rounded-2xl px-5 py-2 active:scale-90 duration-150">
                     <span className="material-symbols-outlined font-variation-fill">contact_support</span>
                     <span className="font-['Inter'] text-[11px] font-semibold uppercase tracking-wider mt-1">Support</span>
                 </div>
-                <div onClick={() => navigate('/app-dashboard/settings')} className="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-5 py-2 hover:text-indigo-500 transition-colors active:scale-90 duration-150 cursor-pointer">
+                <div onClick={() => navigate('/app-dashboard/settings')} className="flex flex-col items-center justify-center text-slate-400 px-5 py-2 hover:text-indigo-500 transition-colors active:scale-90 duration-150 cursor-pointer">
                     <span className="material-symbols-outlined">person</span>
                     <span className="font-['Inter'] text-[11px] font-semibold uppercase tracking-wider mt-1">Profile</span>
                 </div>

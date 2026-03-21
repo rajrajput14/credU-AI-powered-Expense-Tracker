@@ -32,30 +32,7 @@
   --radius-xl: 3rem;
 }
 
-/* Dark mode overrides */
-.dark {
-  --color-surface: #0f1112;
-  --color-surface-bright: #1c1f21;
-  --color-surface-dim: #090a0b;
-  --color-surface-container-low: #151719;
-  --color-surface-container: #1b1e20;
-  --color-surface-container-high: #25292c;
-  --color-surface-container-highest: #303539;
-  --color-surface-container-lowest: #0c0d0e;
-  
-  --color-on-surface: #e2e2e2;
-  --color-on-surface-variant: #a4a7a9;
-  --color-outline: #8a8d8f;
-  --color-outline-variant: #444749;
-
-  --bg: #0f1112;
-  --card: #0c0d0e;
-  --text: #e2e2e2;
-  --text-muted: #a4a7a9;
-  --border: #1b1e20;
-  
-  color-scheme: dark;
-}
+/* Dark mode overrides removed */
 
 :root {
   --primary: #4647d3;

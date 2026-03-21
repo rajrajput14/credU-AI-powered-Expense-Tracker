@@ -12,7 +12,7 @@ import { CapacitorUpdater } from '@capgo/capacitor-updater';
 
 const Settings = () => {
     const navigate = useNavigate();
-    const { user, currency, setCurrency, theme, setTheme, subscription, isPro, createCheckout, getMonthlyTransactionCount, setPaywallOpen } = useAppStore();
+    const { user, currency, setCurrency, subscription, isPro, createCheckout, getMonthlyTransactionCount, setPaywallOpen } = useAppStore();
     const [notifications, setNotifications] = useState(true);
     const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
     const [isUpgrading, setIsUpgrading] = useState(false);
@@ -237,24 +237,6 @@ const Settings = () => {
                                 <h3 className="font-bold text-on-surface font-headline capitalize text-sm">App settings</h3>
                             </div>
                             <div className="divide-y divide-outline-variant/5 flex-1 relative">
-                                <div className="p-6 flex items-center justify-between">
-                                    <div>
-                                        <p className="font-bold text-on-surface text-sm mb-1 font-headline">Dark mode</p>
-                                        <p className="text-[10px] font-black capitalize text-on-surface-variant/40">Switch between light and dark themes.</p>
-                                    </div>
-                                    <button
-                                        onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                                        className={clsx(
-                                            "w-11 h-6 rounded-full transition-all relative",
-                                            theme === 'dark' ? "bg-primary shadow-lg shadow-primary/20" : "bg-surface-container"
-                                        )}
-                                    >
-                                        <div className={clsx(
-                                            "absolute top-1 w-4 h-4 rounded-full transition-all",
-                                            theme === 'dark' ? "left-6 bg-surface shadow-sm" : "left-1 bg-on-surface-variant/30"
-                                        )}></div>
-                                    </button>
-                                </div>
                                 <div className="p-6 flex items-center justify-between relative z-50">
                                     <div>
                                         <p className="font-bold text-on-surface text-sm mb-1 font-headline">Currency</p>
