@@ -25,12 +25,16 @@ const Dashboard = () => {
     
     const filteredByPeriod = useMemo(() => {
         const now = new Date();
+        const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
         const startOfYear = new Date(now.getFullYear(), 0, 1);
-        const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
+        
+        const weekDate = new Date();
+        const startOfWeek = new Date(weekDate.setDate(weekDate.getDate() - weekDate.getDay()));
 
         return transactions.filter(t => {
             const d = new Date(t.date);
+            if (period === 'Today') return d >= startOfToday;
             if (period === 'This Month') return d >= startOfMonth;
             if (period === 'This Year') return d >= startOfYear;
             if (period === 'This Week') return d >= startOfWeek;
@@ -95,13 +99,13 @@ const Dashboard = () => {
                         Good morning,
                     </p>
                     <h1 className="text-3xl font-bold tracking-tight text-on-surface font-headline">
-                        {user?.email?.split('@')[0] || 'User'}
+                        {user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split('@')[0] || 'User'}
                     </h1>
                 </div>
                 
                 {/* Date Selector */}
                 <div className="flex items-center gap-2 bg-surface-container-lowest p-1 rounded-xl border border-outline-variant/10 shadow-sm">
-                    {['This Week', 'This Month', 'This Year', 'All'].map(p => (
+                    {['Today', 'This Week', 'This Month', 'This Year', 'All'].map(p => (
                         <button 
                             key={p}
                             onClick={() => setPeriod(p)}

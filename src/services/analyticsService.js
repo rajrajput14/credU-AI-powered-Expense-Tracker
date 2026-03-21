@@ -9,7 +9,7 @@ export const analyticsService = {
       .reduce((sum, t) => sum + Number(t.amount || 0), 0);
       
     return {
-      totalBalance: income - expenses,
+      totalBalance: income,
       monthlySpending: expenses,
       totalIncome: income,
     };

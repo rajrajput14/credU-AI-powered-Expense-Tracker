@@ -184,23 +184,7 @@ const Support = () => {
                     </div>
                 </section>
 
-                {/* Voice Help Card */}
-                <section>
-                    <div 
-                        onClick={toggleVoice}
-                        className={`bg-fluid-gradient p-6 rounded-lg relative overflow-hidden shadow-xl shadow-primary/20 flex items-center gap-4 group cursor-pointer transition-all ${isListening ? 'ring-4 ring-white/50 animate-pulse' : ''}`}
-                    >
-                        <div className="absolute -right-4 -top-4 w-32 h-32 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-all"></div>
-                        <div className="relative w-14 h-14 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white text-2xl">
-                            {isListening ? '🎙️' : '🎤'}
-                        </div>
-                        <div className="relative">
-                            <h3 className="font-headline font-bold text-lg text-on-primary">{isListening ? 'Listening...' : 'Ask using voice'}</h3>
-                            <p className="text-sm text-on-primary/80">Tell us your issue, we’ll help you faster</p>
-                        </div>
-                        <span className="material-symbols-outlined ml-auto text-white/60">chevron_right</span>
-                    </div>
-                </section>
+                {/* Voice Help Card Removed Per User Request */}
 
                 {/* FAQ Section */}
                 <section className="space-y-4">

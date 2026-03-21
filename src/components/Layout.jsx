@@ -144,7 +144,7 @@ const Layout = () => {
                                 </div>
                             </div>
                             <div className="flex-1 min-w-0">
-                                <p className="text-sm font-semibold text-on-surface truncate group-hover:text-primary transition-colors capitalize">{user?.email?.split('@')[0] || 'User'}</p>
+                                <p className="text-sm font-semibold text-on-surface truncate group-hover:text-primary transition-colors capitalize">{user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split('@')[0] || 'User'}</p>
                                 <div className="flex items-center justify-between">
                                     <p className={clsx(
                                         "text-[10px] font-bold capitalize truncate",
