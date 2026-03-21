@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../services/supabase';
 import { useAppStore } from '../store/useAppStore';
@@ -8,6 +8,7 @@ import ProfileEditModal from '../components/ProfileEditModal';
 import PageTransition from '../components/animations/PageTransition';
 import AnimatedCard from '../components/animations/AnimatedCard';
 import CurrencySelector from '../components/CurrencySelector';
+import { CapacitorUpdater } from '@capgo/capacitor-updater';
 
 const Settings = () => {
     const navigate = useNavigate();
@@ -15,6 +16,21 @@ const Settings = () => {
     const [notifications, setNotifications] = useState(true);
     const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
     const [isUpgrading, setIsUpgrading] = useState(false);
+    const [currentVersion, setCurrentVersion] = useState('1.0.0');
+
+    useEffect(() => {
+        const fetchVersion = async () => {
+            try {
+                const latest = await CapacitorUpdater.getLatest();
+                if (latest?.version) {
+                    setCurrentVersion(latest.version);
+                }
+            } catch (e) {
+                console.warn('Failed to fetch native version:', e);
+            }
+        };
+        fetchVersion();
+    }, []);
 
     const handleSignOut = async () => {
         await supabase.auth.signOut();
@@ -274,6 +290,32 @@ const Settings = () => {
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-surface-container-lowest rounded-3xl border border-outline-variant/10 shadow-sm overflow-hidden flex flex-col mb-6">
+                        <div className="px-6 py-5 border-b border-outline-variant/5 flex items-center gap-3 shrink-0">
+                            <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center"><span className="material-symbols-outlined text-[20px]">info</span></div>
+                            <h3 className="font-bold text-on-surface font-headline uppercase tracking-widest text-sm">App Information</h3>
+                        </div>
+                        <div className="p-6 space-y-4">
+                            <div className="flex justify-between items-center text-sm">
+                                <span className="text-on-surface-variant font-medium">Native Version</span>
+                                <span className="text-on-surface font-black">{currentVersion}</span>
+                            </div>
+                            <div className="flex justify-between items-center text-sm">
+                                <span className="text-on-surface-variant font-medium">Build Type</span>
+                                <span className="text-on-surface font-black uppercase tracking-widest text-[10px]">Production</span>
+                            </div>
+                            <button 
+                                onClick={() => {
+                                    import('../services/LiveUpdateService').then(m => m.LiveUpdateService.checkForUpdates());
+                                    alert('Checking for updates in the background. If a new version is found, it will be downloaded and applied on next restart.');
+                                }}
+                                className="w-full bg-surface-container/50 border border-outline-variant/10 hover:bg-surface-container text-on-surface font-black uppercase tracking-widest py-3 rounded-2xl transition-all shadow-sm text-[10px]"
+                            >
+                                Check for Updates
+                            </button>
                         </div>
                     </div>
 

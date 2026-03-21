@@ -48,6 +48,8 @@ export const LiveUpdateService = {
       }
     } catch (error) {
       console.error('[LiveUpdate] Check failed:', error);
+      // Only alert if manually triggered or relevant
+      // alert('Update check failed. Please verify your internet connection or the update URL.');
     }
   },
 
@@ -60,10 +62,12 @@ export const LiveUpdateService = {
       
       console.log('[LiveUpdate] Update downloaded, will be applied on next restart.');
       
-      // Optionally notify the user or set the update to be applied immediately
-      // await CapacitorUpdater.set(update); 
+      // Notify the user about the update
+      alert('A new update has been downloaded in the background and will be applied the next time you open the app!');
+      
     } catch (error) {
       console.error('[LiveUpdate] Download failed:', error);
+      alert('Update download failed. Check your connection or the update URL.');
     }
   }
 };
