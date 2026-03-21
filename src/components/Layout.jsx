@@ -31,7 +31,8 @@ const Layout = () => {
         setPaywallOpen,
         isPro,
         voiceEntry,
-        clearVoiceEntry
+        clearVoiceEntry,
+        theme
     } = useAppStore();
 
     useEffect(() => {
@@ -68,10 +69,13 @@ const Layout = () => {
             {/* DESKTOP SIDEBAR */}
             <aside className="w-64 bg-surface-container-lowest border-r border-outline-variant/10 hidden lg:flex flex-col justify-between shrink-0 relative z-20">
                 <div className="p-6">
-                    <div className="flex items-center gap-2 mb-10">
-                        <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-primary/20">c</div>
-                        <span className="text-xl font-bold tracking-tight text-on-surface font-headline">credU.</span>
-                    </div>
+                    <Link to="/app-dashboard" className="flex items-center gap-2 mb-10 group overflow-hidden">
+                        <img 
+                            src={theme === 'dark' ? '/assets/branding/logo-dark.png' : '/assets/branding/logo-light.png'} 
+                            alt="credU" 
+                            className="h-10 w-auto object-contain transition-transform group-hover:scale-105" 
+                        />
+                    </Link>
 
                     <div className="flex-1 flex flex-col justify-between overflow-y-auto px-6">
                         <div className="space-y-6">
@@ -188,10 +192,13 @@ const Layout = () => {
                         />
                     </div>
                 </Link>
-                    <div className="flex items-center gap-1">
-                        <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-primary/20">c</div>
-                        <span className="text-xl font-bold tracking-tight text-on-surface font-headline">credU.</span>
-                    </div>
+                    <Link to="/app-dashboard" className="flex items-center gap-1">
+                        <img 
+                            src={theme === 'dark' ? '/assets/branding/logo-dark.png' : '/assets/branding/logo-light.png'} 
+                            alt="credU" 
+                            className="h-7 w-auto object-contain" 
+                        />
+                    </Link>
                 </div>
 
                 <AnimatePresence mode="wait">

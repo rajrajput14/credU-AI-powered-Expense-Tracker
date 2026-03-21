@@ -100,9 +100,11 @@ const SplashScreen = () => {
                     <div className="animate-logo flex flex-col items-center">
                         <div className="relative group">
                             <div className="absolute -inset-2 bg-gradient-to-r from-primary/30 to-primary/10 rounded-lg blur-xl opacity-40 group-hover:opacity-60 transition duration-1000"></div>
-                            <h1 className="relative text-7xl md:text-9xl font-black tracking-tighter text-white font-headline">
-                                credU<span className="text-primary">.</span>
-                            </h1>
+                            <img 
+                                src="/assets/branding/logo-dark.png" 
+                                alt="credU" 
+                                className="h-20 md:h-32 w-auto object-contain" 
+                            />
                         </div>
                         <p className="animate-tagline mt-8 text-on-surface/50 font-medium tracking-[0.3em] uppercase text-[10px] md:text-xs">
                             Take control of your money
