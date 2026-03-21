@@ -1,9 +1,9 @@
-import axios from 'axios'
-
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`
+import axios from 'axios';
 
 export const parseTransactionIntent = async (text, history = "", lastParsed = null) => {
+  const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+  const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+  
   const now = new Date();
   const dateStr = now.toISOString().split('T')[0];
   const dayName = now.toLocaleDateString('en-US', { weekday: 'long' });
@@ -48,15 +48,38 @@ export const parseTransactionIntent = async (text, history = "", lastParsed = nu
 
   try {
     const response = await axios.post(GEMINI_URL, {
-      contents: [{ parts: [{ text: prompt }] }]
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: "OBJECT",
+          properties: {
+            transactions: {
+              type: "ARRAY",
+              items: {
+                type: "OBJECT",
+                properties: {
+                  action: { type: "STRING" },
+                  amount: { type: "NUMBER" },
+                  merchant: { type: "STRING", nullable: true },
+                  category: { type: "STRING" },
+                  type: { type: "STRING" },
+                  date: { type: "STRING" },
+                  summary: { type: "STRING" }
+                },
+                required: ["action", "amount", "category", "type", "date", "summary"]
+              }
+            },
+            voiceResponse: { type: "STRING" },
+            isCorrection: { type: "BOOLEAN" }
+          },
+          required: ["transactions", "voiceResponse", "isCorrection"]
+        }
+      }
     })
 
     const resultText = response.data.candidates[0].content.parts[0].text
-    const jsonMatch = resultText.match(/\{[\s\S]*\}/)
-    
-    if (!jsonMatch) throw new Error("I couldn't understand that instruction.")
-    
-    const parsed = JSON.parse(jsonMatch[0])
+    const parsed = JSON.parse(resultText)
     
     return {
       transactions: parsed.transactions || [],

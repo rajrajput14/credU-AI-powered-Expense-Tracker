@@ -28,10 +28,10 @@ const CurrencySelector = () => {
     }
 
     return (
-        <div className="relative" ref={dropdownRef}>
+        <div className="relative z-50" ref={dropdownRef}>
             <button 
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center gap-2 rounded-xl border border-outline-variant/10 bg-surface-container-lowest/50 backdrop-blur-md px-3 py-2 text-[10px] font-black uppercase tracking-widest text-on-surface hover:bg-surface-container/20 transition-all border-outline-variant/5 shadow-sm"
+                className="flex items-center gap-2 rounded-xl border border-outline-variant/10 bg-surface-container-lowest/50 backdrop-blur-md px-3 py-2 text-[10px] font-black capitalize text-on-surface hover:bg-surface-container/20 transition-all border-outline-variant/5 shadow-sm"
             >
                 <span className="flex h-5 w-5 items-center justify-center rounded-md bg-primary/10 text-primary">
                     {selectedCurrency.symbol}
@@ -54,7 +54,7 @@ const CurrencySelector = () => {
                                 key={curr.code}
                                 onClick={() => handleSelect(curr)}
                                 className={clsx(
-                                    "flex w-full items-center justify-between rounded-xl px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-all",
+                                    "flex w-full items-center justify-between rounded-xl px-3 py-2 text-[10px] font-black capitalize transition-all",
                                     selectedCurrency.code === curr.code 
                                         ? "bg-primary/10 text-primary" 
                                         : "text-on-surface-variant/60 hover:bg-surface-container/50 hover:text-on-surface"

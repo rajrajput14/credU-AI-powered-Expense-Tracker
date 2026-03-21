@@ -110,10 +110,10 @@ const Settings = () => {
                         </div>
                         <div className="flex-1 text-center sm:text-left z-10">
                             <h2 className="text-xl font-bold text-on-surface capitalize font-headline">{name}</h2>
-                            <p className="text-on-surface-variant text-sm mb-4 italic opacity-60">{email}</p>
+                            <p className="text-on-surface-variant text-sm mb-4 opacity-60">{email}</p>
                             <div className="flex items-center justify-center sm:justify-start gap-2">
                                 <span className={clsx(
-                                    "text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-sm",
+                                    "text-[10px] font-black capitalize px-3 py-1 rounded-full shadow-sm",
                                     isPro() ? "bg-gradient-to-r from-secondary to-secondary-dim text-surface" : "bg-gradient-to-r from-primary to-primary-dim text-surface"
                                 )}>
                                 {subscription?.plan ? `${subscription.plan} plan` : 'Free plan'}
@@ -125,7 +125,7 @@ const Settings = () => {
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
                                 onClick={() => setIsProfileModalOpen(true)}
-                                className="w-full bg-surface-container-lowest border border-outline-variant/20 hover:bg-surface-container/20 text-on-surface font-black uppercase tracking-widest px-4 py-2 rounded-xl transition-colors shadow-sm text-[10px]"
+                                className="w-full bg-surface-container-lowest border border-outline-variant/20 hover:bg-surface-container/20 text-on-surface font-black capitalize px-4 py-2 rounded-xl transition-colors shadow-sm text-[10px]"
                             >
                                 Edit profile
                             </motion.button>
@@ -141,16 +141,16 @@ const Settings = () => {
                              
                              <div className="px-6 py-5 border-b border-outline-variant/5 flex items-center gap-3 shrink-0 relative z-10">
                                 <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center"><span className="material-symbols-outlined text-[20px]">payments</span></div>
-                                <h3 className="font-bold text-on-surface font-headline uppercase tracking-widest text-sm">Billing & Plan</h3>
+                                <h3 className="font-bold text-on-surface font-headline capitalize text-sm">Billing & Plan</h3>
                             </div>
                             
                             <div className="p-6 flex-1 space-y-6 relative z-10">
                                 <div className="flex justify-between items-start">
                                     <div>
-                                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant/40 mb-1">Current Plan</p>
-                                        <h4 className="text-2xl font-black text-on-surface tracking-tighter uppercase italic">{subscription?.plan || 'Free Member'}</h4>
+                                        <p className="text-[10px] font-black capitalize text-on-surface-variant/40 mb-1">Current Plan</p>
+                                        <h4 className="text-2xl font-black text-on-surface tracking-tighter capitalize">{subscription?.plan || 'Free Member'}</h4>
                                     </div>
-                                    <div className="px-3 py-1 bg-primary/10 text-primary rounded-full text-[10px] font-black uppercase tracking-widest">
+                                    <div className="px-3 py-1 bg-primary/10 text-primary rounded-full text-[10px] font-black capitalize">
                                         {subscription?.status || 'Active'}
                                     </div>
                                 </div>
@@ -160,7 +160,7 @@ const Settings = () => {
                                         <span className="text-xs font-bold text-on-surface-variant">Next Payment</span>
                                         <span className="text-xs font-black text-on-surface">{subscription?.current_period_end ? new Date(subscription.current_period_end).toLocaleDateString() : 'N/A'}</span>
                                     </div>
-                                    <p className="text-[10px] font-medium text-on-surface-variant/60 italic leading-snug">
+                                    <p className="text-[10px] font-medium text-on-surface-variant/60 leading-snug">
                                         {isPro() ? 'Your subscription automatically renews. Manage it via the button below.' : 'Upgrade to Pro to unlock unlimited transactions and AI insights.'}
                                     </p>
                                 </div>
@@ -168,7 +168,7 @@ const Settings = () => {
                                 {isPro() ? (
                                     <button 
                                         onClick={handleCancelSubscription}
-                                        className="w-full bg-error/10 hover:bg-error/20 text-error font-black uppercase tracking-widest py-3 rounded-2xl transition-all shadow-sm text-[10px] border border-error/10"
+                                        className="w-full bg-error/10 hover:bg-error/20 text-error font-black capitalize py-3 rounded-2xl transition-all shadow-sm text-[10px] border border-error/10"
                                     >
                                         Cancel Subscription
                                     </button>
@@ -177,7 +177,7 @@ const Settings = () => {
                                         onClick={handleUpgrade}
                                         disabled={isUpgrading}
                                         className={clsx(
-                                            "w-full fluid-gradient text-white font-black uppercase tracking-widest py-3 rounded-2xl transition-all shadow-lg shadow-primary/20 text-[10px] hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2",
+                                            "w-full fluid-gradient text-white font-black capitalize py-3 rounded-2xl transition-all shadow-lg shadow-primary/20 text-[10px] hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2",
                                             isUpgrading && "opacity-70 cursor-wait"
                                         )}
                                     >
@@ -193,10 +193,10 @@ const Settings = () => {
                         </div>
 
                         {/* Usage Meter Card */}
-                        <div className="bg-surface-container-lowest rounded-3xl border border-outline-variant/10 shadow-sm overflow-hidden flex flex-col">
+                        <div className="bg-surface-container-lowest rounded-3xl border border-outline-variant/10 shadow-sm flex flex-col">
                             <div className="px-6 py-5 border-b border-outline-variant/5 flex items-center gap-3 shrink-0">
                                 <div className="w-8 h-8 rounded-lg bg-secondary/10 text-secondary flex items-center justify-center"><span className="material-symbols-outlined text-[20px]">monitoring</span></div>
-                                <h3 className="font-bold text-on-surface font-headline uppercase tracking-widest text-sm">Monthly Usage</h3>
+                                <h3 className="font-bold text-on-surface font-headline capitalize text-sm">Monthly Usage</h3>
                             </div>
                             
                             <div className="p-6 space-y-8 flex-1">
@@ -204,7 +204,7 @@ const Settings = () => {
                                     <div className="flex justify-between items-end">
                                         <div>
                                             <p className="font-bold text-on-surface text-sm mb-1 font-headline">Transactions</p>
-                                            <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant/40 italic">{getMonthlyTransactionCount()} of {isPro() ? '∞' : '20'} used</p>
+                                            <p className="text-[10px] font-black capitalize text-on-surface-variant/40">{getMonthlyTransactionCount()} of {isPro() ? '∞' : '20'} used</p>
                                         </div>
                                         <span className="text-xs font-black text-primary">{Math.min(Math.round((getMonthlyTransactionCount() / 20) * 100), 100)}%</span>
                                     </div>
@@ -220,7 +220,7 @@ const Settings = () => {
                                 <div className="bg-secondary/5 rounded-2xl p-4 border border-secondary/10">
                                     <div className="flex items-center gap-3">
                                         <span className="material-symbols-outlined text-secondary">info</span>
-                                        <p className="text-[10px] font-medium text-secondary italic leading-relaxed">
+                                        <p className="text-[10px] font-medium text-secondary leading-relaxed">
                                             Usage resets on the 1st of every month. {isPro() ? 'You have unlimited access.' : 'Upgrade for higher limits.'}
                                         </p>
                                     </div>
@@ -231,16 +231,16 @@ const Settings = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                        <div className="bg-surface-container-lowest rounded-3xl border border-outline-variant/10 shadow-sm overflow-hidden flex flex-col">
+                        <div className="bg-surface-container-lowest rounded-3xl border border-outline-variant/10 shadow-sm flex flex-col z-20 relative">
                             <div className="px-6 py-5 border-b border-outline-variant/5 flex items-center gap-3 shrink-0">
                                 <div className="w-8 h-8 rounded-lg bg-tertiary/10 text-tertiary flex items-center justify-center"><span className="material-symbols-outlined text-[20px]">tune</span></div>
-                                <h3 className="font-bold text-on-surface font-headline uppercase tracking-widest text-sm">App settings</h3>
+                                <h3 className="font-bold text-on-surface font-headline capitalize text-sm">App settings</h3>
                             </div>
-                            <div className="divide-y divide-outline-variant/5 flex-1">
+                            <div className="divide-y divide-outline-variant/5 flex-1 relative">
                                 <div className="p-6 flex items-center justify-between">
                                     <div>
                                         <p className="font-bold text-on-surface text-sm mb-1 font-headline">Dark mode</p>
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant/40 italic">Switch between light and dark themes.</p>
+                                        <p className="text-[10px] font-black capitalize text-on-surface-variant/40">Switch between light and dark themes.</p>
                                     </div>
                                     <button
                                         onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
@@ -255,26 +255,26 @@ const Settings = () => {
                                         )}></div>
                                     </button>
                                 </div>
-                                <div className="p-6 flex items-center justify-between">
+                                <div className="p-6 flex items-center justify-between relative z-50">
                                     <div>
                                         <p className="font-bold text-on-surface text-sm mb-1 font-headline">Currency</p>
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant/40 italic">Choose your local currency.</p>
+                                        <p className="text-[10px] font-black capitalize text-on-surface-variant/40">Choose your local currency.</p>
                                     </div>
                                     <CurrencySelector />
                                 </div>
                             </div>
                         </div>
 
-                        <div className="bg-surface-container-lowest rounded-3xl border border-outline-variant/10 shadow-sm overflow-hidden flex flex-col">
+                        <div className="bg-surface-container-lowest rounded-3xl border border-outline-variant/10 shadow-sm flex flex-col">
                             <div className="px-6 py-5 border-b border-outline-variant/5 flex items-center gap-3 shrink-0">
                                 <div className="w-8 h-8 rounded-lg bg-secondary/10 text-secondary flex items-center justify-center"><span className="material-symbols-outlined text-[20px]">notifications</span></div>
-                                <h3 className="font-bold text-on-surface font-headline uppercase tracking-widest text-sm">Notifications</h3>
+                                <h3 className="font-bold text-on-surface font-headline capitalize text-sm">Notifications</h3>
                             </div>
                             <div className="divide-y divide-outline-variant/5 flex-1">
                                 <div className="p-6 flex items-center justify-between">
                                     <div>
                                         <p className="font-bold text-on-surface text-sm mb-1 font-headline">Large spends</p>
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant/40 italic">Get notified for big expenses.</p>
+                                        <p className="text-[10px] font-black capitalize text-on-surface-variant/40">Get notified for big expenses.</p>
                                     </div>
                                     <div className="w-12 h-6 bg-primary rounded-full relative cursor-pointer shadow-lg shadow-primary/20">
                                         <div className="w-4 h-4 bg-surface rounded-full absolute top-1 right-1 shadow-sm"></div>
@@ -283,7 +283,7 @@ const Settings = () => {
                                 <div className="p-6 flex items-center justify-between">
                                     <div>
                                         <p className="font-bold text-on-surface text-sm mb-1 font-headline">Weekly report</p>
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant/40 italic">A summary of your week.</p>
+                                        <p className="text-[10px] font-black capitalize text-on-surface-variant/40">A summary of your week.</p>
                                     </div>
                                     <div className="w-12 h-6 bg-primary rounded-full relative cursor-pointer shadow-lg shadow-primary/20">
                                         <div className="w-4 h-4 bg-surface rounded-full absolute top-1 right-1 shadow-sm"></div>
@@ -293,10 +293,10 @@ const Settings = () => {
                         </div>
                     </div>
 
-                    <div className="bg-surface-container-lowest rounded-3xl border border-outline-variant/10 shadow-sm overflow-hidden flex flex-col mb-6">
+                    <div className="bg-surface-container-lowest rounded-3xl border border-outline-variant/10 shadow-sm flex flex-col mb-6">
                         <div className="px-6 py-5 border-b border-outline-variant/5 flex items-center gap-3 shrink-0">
                             <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center"><span className="material-symbols-outlined text-[20px]">info</span></div>
-                            <h3 className="font-bold text-on-surface font-headline uppercase tracking-widest text-sm">App Information</h3>
+                            <h3 className="font-bold text-on-surface font-headline capitalize text-sm">App Information</h3>
                         </div>
                         <div className="p-6 space-y-4">
                             <div className="flex justify-between items-center text-sm">
@@ -305,14 +305,14 @@ const Settings = () => {
                             </div>
                             <div className="flex justify-between items-center text-sm">
                                 <span className="text-on-surface-variant font-medium">Build Type</span>
-                                <span className="text-on-surface font-black uppercase tracking-widest text-[10px]">Production</span>
+                                <span className="text-on-surface font-black capitalize text-[10px]">Production</span>
                             </div>
                             <button 
                                 onClick={() => {
                                     import('../services/LiveUpdateService').then(m => m.LiveUpdateService.checkForUpdates());
                                     alert('Checking for updates in the background. If a new version is found, it will be downloaded and applied on next restart.');
                                 }}
-                                className="w-full bg-surface-container/50 border border-outline-variant/10 hover:bg-surface-container text-on-surface font-black uppercase tracking-widest py-3 rounded-2xl transition-all shadow-sm text-[10px]"
+                                className="w-full bg-surface-container/50 border border-outline-variant/10 hover:bg-surface-container text-on-surface font-black capitalize py-3 rounded-2xl transition-all shadow-sm text-[10px]"
                             >
                                 Check for Updates
                             </button>
@@ -320,7 +320,7 @@ const Settings = () => {
                     </div>
 
                     <div className="mt-8">
-                        <button onClick={handleSignOut} className="w-full bg-surface-container-lowest border border-error/10 text-error hover:bg-error/5 hover:border-error/20 font-black uppercase tracking-widest px-4 py-3 rounded-2xl transition-all shadow-sm text-xs flex items-center justify-center gap-2">
+                        <button onClick={handleSignOut} className="w-full bg-surface-container-lowest border border-error/10 text-error hover:bg-error/5 hover:border-error/20 font-black capitalize px-4 py-3 rounded-2xl transition-all shadow-sm text-xs flex items-center justify-center gap-2">
                             <span className="material-symbols-outlined text-[18px]">logout</span> Log out
                         </button>
                     </div>

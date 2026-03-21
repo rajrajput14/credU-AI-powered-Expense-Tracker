@@ -340,7 +340,7 @@ const Transactions = () => {
                                                             whileHover={{ scale: 1.1 }}
                                                             whileTap={{ scale: 0.9 }}
                                                             onClick={() => setTransactionModal(true, tx)}
-                                                            className="text-on-surface-variant/40 hover:text-on-surface transition-colors opacity-0 md:group-hover:opacity-100"
+                                                            className="text-on-surface-variant/40 hover:text-on-surface transition-colors opacity-100 md:opacity-0 md:group-hover:opacity-100 p-2"
                                                         >
                                                             <span className="material-symbols-outlined text-[20px]">more_horiz</span>
                                                         </motion.button>

@@ -143,12 +143,7 @@ const VoiceButton = () => {
     }
 
     const normalizeText = (text) => {
-        return text
-            .toLowerCase()
-            .replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, "") // Remove punctuation
-            .replace(/\b(uh|um|hmm|like|basically|actually|literally)\b/g, "") // Remove common fillers
-            .replace(/\s{2,}/g, " ") // Clean extra spaces
-            .trim()
+        return text.trim();
     }
 
     const processVoice = async (rawText) => {
