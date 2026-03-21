@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabaseClient';
 import { transactionService } from '../services/transactionService';
 import { goalService } from '../services/goalService';
 import { billingService } from '../services/billingService';
+import { profileService } from '../services/profileService';
 
 export const useAppStore = create((set, get) => ({
     user: null,
@@ -143,6 +144,29 @@ export const useAppStore = create((set, get) => ({
         } catch (error) {
             console.error('CRITICAL: Failed to fetch initial data:', error);
             set({ error: error.message, loading: false });
+        }
+    },
+
+    updateProfile: async (userId, updates) => {
+        try {
+            const data = await profileService.updateProfile(userId, updates);
+            // Also update auth user if necessary (done in profileService usually)
+            return data;
+        } catch (error) {
+            set({ error: error.message });
+            throw error;
+        }
+    },
+
+    updateAvatar: async (userId, file) => {
+        set({ loading: true });
+        try {
+            const { publicUrl, user: updatedUser } = await profileService.uploadAvatar(userId, file);
+            set({ user: updatedUser, loading: false });
+            return publicUrl;
+        } catch (error) {
+            set({ error: error.message, loading: false });
+            throw error;
         }
     },
 

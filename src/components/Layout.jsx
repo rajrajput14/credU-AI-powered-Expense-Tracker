@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
 import { supabase } from '../services/supabase';
@@ -28,8 +29,17 @@ const Layout = () => {
         triggerVoice,
         isLimitReached,
         setPaywallOpen,
-        isPro
+        isPro,
+        voiceEntry,
+        clearVoiceEntry
     } = useAppStore();
+
+    useEffect(() => {
+        if (voiceEntry) {
+            setTransactionModal(true, voiceEntry);
+            clearVoiceEntry();
+        }
+    }, [voiceEntry, setTransactionModal, clearVoiceEntry]);
 
     const handleSignOut = async () => {
         await supabase.auth.signOut()
@@ -121,8 +131,12 @@ const Layout = () => {
                     <div className="flex items-center gap-3 p-2 rounded-xl hover:bg-surface-container group transition-colors">
                         <Link to="/app-dashboard/settings" className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer">
                             <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-secondary p-[2px]">
-                                <div className="w-full h-full bg-white rounded-full border-2 border-white flex items-center justify-center">
-                                    <img src={`https://api.dicebear.com/7.x/notionists/svg?seed=${user?.user_metadata?.avatar_seed || user?.email || 'Felix'}&backgroundColor=e2e8f0`} alt="Profile" className="w-full h-full rounded-full object-cover" />
+                                <div className="w-full h-full bg-white rounded-full border-2 border-white flex items-center justify-center overflow-hidden">
+                                    <img 
+                                        src={user?.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/notionists/svg?seed=${user?.user_metadata?.avatar_seed || user?.email || 'Felix'}&backgroundColor=e2e8f0`} 
+                                        alt="Profile" 
+                                        className="w-full h-full rounded-full object-cover" 
+                                    />
                                 </div>
                             </div>
                             <div className="flex-1 min-w-0">
@@ -167,7 +181,11 @@ const Layout = () => {
                 <div className="w-full bg-white/60 backdrop-blur-xl border-b border-outline-variant/10 flex items-center justify-between px-6 py-4 sticky top-0 z-50 lg:hidden">
                 <Link to="/app-dashboard/settings" className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-secondary p-[2px] cursor-pointer hover:ring-2 hover:ring-primary/20 transition-all shadow-sm">
                     <div className="w-full h-full bg-white rounded-full border-2 border-white overflow-hidden">
-                        <img src={`https://api.dicebear.com/7.x/notionists/svg?seed=${user?.user_metadata?.avatar_seed || user?.email || 'Felix'}&backgroundColor=e2e8f0`} alt="Profile" className="w-full h-full object-cover" />
+                        <img 
+                            src={user?.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/notionists/svg?seed=${user?.user_metadata?.avatar_seed || user?.email || 'Felix'}&backgroundColor=e2e8f0`} 
+                            alt="Profile" 
+                            className="w-full h-full object-cover" 
+                        />
                     </div>
                 </Link>
                     <div className="flex items-center gap-1">

@@ -227,15 +227,19 @@ const VoiceButton = () => {
     }
 
     const handleEdit = () => {
+        if (!result || !result.transactions?.[0]) return
+
+        const tx = result.transactions[0]
+        
         // Save the current result to the store
         setVoiceEntry({
-            amount: result.amount,
-            type: result.type,
-            category: result.category,
-            note: result.note
+            amount: tx.amount,
+            type: tx.type,
+            category: tx.category,
+            name: tx.summary || tx.merchant || "Voice Entry"
         })
         // Navigate to transactions page
-        navigate('/transactions')
+        navigate('/app-dashboard/transactions')
         // Close overlay
         setUiState('IDLE')
     }

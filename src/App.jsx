@@ -13,10 +13,14 @@ import Support from './pages/Support'
 import Success from './pages/Success'
 import { supabase, getCurrentUser } from './services/supabase'
 import { useAppStore } from './store/useAppStore'
+import { SplashScreen as CapacitorSplash } from '@capacitor/splash-screen'
+import SplashScreen from './components/SplashScreen'
+import { AnimatePresence } from 'framer-motion'
 
 function App() {
   const [user, setUser] = useState(null)
   const [initializing, setInitializing] = useState(true)
+  const [showSplash, setShowSplash] = useState(true)
   const { fetchInitialData, subscribeToDatabase, setUser: setGlobalUser } = useAppStore()
 
   useEffect(() => {
@@ -49,6 +53,17 @@ function App() {
 
     init()
 
+    // Minimum splash time (3 seconds)
+    const timer = setTimeout(() => {
+        setShowSplash(false)
+        // Hide native splash if mobile
+        try {
+            CapacitorSplash.hide()
+        } catch (e) {
+            // Not on mobile, ignore
+        }
+    }, 3000)
+
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       const u = session?.user || null
@@ -66,41 +81,43 @@ function App() {
     return () => {
       subscription.unsubscribe()
       if (unsubscribe) unsubscribe()
+      clearTimeout(timer)
     }
   }, [])
 
-  if (initializing) {
-    return (
-      <div className="min-h-screen bg-surface flex items-center justify-center">
-        <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-      </div>
-    );
-  }
 
   return (
-    <motion.div
-        key="app"
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className="min-h-screen bg-surface"
-    >
-        <Router>
-            <Routes>
-                <Route path="/auth" element={!user ? <Auth /> : <Navigate to="/app-dashboard" />} />
-                <Route path="/" element={<LandingPage />} />
-                <Route path="/app-dashboard" element={user ? <Layout /> : <Navigate to="/auth" />}>
-                <Route index element={<Dashboard />} />
-                <Route path="transactions" element={<Transactions />} />
-                <Route path="analytics" element={<Analytics />} />
-                <Route path="goals" element={<Goals />} />
-                <Route path="settings" element={<Settings />} />
-                <Route path="support" element={<Support />} />
-                </Route>
-                <Route path="/success" element={<Success />} />
-            </Routes>
-        </Router>
-    </motion.div>
+    <div className="min-h-screen bg-surface">
+        <AnimatePresence mode="wait">
+            {showSplash || initializing ? (
+                <SplashScreen key="splash" />
+            ) : (
+                <motion.div
+                    key="app"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.6, ease: "easeOut" }}
+                    className="min-h-screen"
+                >
+                    <Router>
+                        <Routes>
+                            <Route path="/auth" element={!user ? <Auth /> : <Navigate to="/app-dashboard" />} />
+                            <Route path="/" element={<LandingPage />} />
+                            <Route path="/app-dashboard" element={user ? <Layout /> : <Navigate to="/auth" />}>
+                                <Route index element={<Dashboard />} />
+                                <Route path="transactions" element={<Transactions />} />
+                                <Route path="analytics" element={<Analytics />} />
+                                <Route path="goals" element={<Goals />} />
+                                <Route path="settings" element={<Settings />} />
+                                <Route path="support" element={<Support />} />
+                            </Route>
+                            <Route path="/success" element={<Success />} />
+                        </Routes>
+                    </Router>
+                </motion.div>
+            )}
+        </AnimatePresence>
+    </div>
   )
 }
 
