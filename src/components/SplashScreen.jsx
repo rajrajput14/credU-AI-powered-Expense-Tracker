@@ -103,7 +103,7 @@ const SplashScreen = () => {
                             <img 
                                 src="/assets/branding/logo-dark.png" 
                                 alt="credU" 
-                                className="h-20 md:h-32 w-auto object-contain" 
+                                className="h-28 md:h-44 w-auto object-contain" 
                             />
                         </div>
                         <p className="animate-tagline mt-8 text-on-surface/50 font-medium tracking-[0.3em] uppercase text-[10px] md:text-xs">

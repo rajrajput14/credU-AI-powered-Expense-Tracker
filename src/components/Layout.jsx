@@ -73,7 +73,7 @@ const Layout = () => {
                         <img 
                             src={theme === 'dark' ? '/assets/branding/logo-dark.png' : '/assets/branding/logo-light.png'} 
                             alt="credU" 
-                            className="h-10 w-auto object-contain transition-transform group-hover:scale-105" 
+                            className="h-12 w-auto object-contain transition-transform group-hover:scale-105" 
                         />
                     </Link>
 
@@ -196,7 +196,7 @@ const Layout = () => {
                         <img 
                             src={theme === 'dark' ? '/assets/branding/logo-dark.png' : '/assets/branding/logo-light.png'} 
                             alt="credU" 
-                            className="h-7 w-auto object-contain" 
+                            className="h-9 w-auto object-contain" 
                         />
                     </Link>
                 </div>
