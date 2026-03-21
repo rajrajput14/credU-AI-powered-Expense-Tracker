@@ -21,18 +21,13 @@ function App() {
   const [user, setUser] = useState(null)
   const [initializing, setInitializing] = useState(true)
   const [showSplash, setShowSplash] = useState(true)
-  const { fetchInitialData, subscribeToDatabase, setUser: setGlobalUser } = useAppStore()
-
+  const { fetchInitialData, subscribeToDatabase, setUser: setGlobalUser, initTheme } = useAppStore()
+  
   useEffect(() => {
     let unsubscribe = null
-    const { darkMode } = useAppStore.getState();
-
-    // Initialize Dark Mode
-    if (darkMode) {
-        document.documentElement.classList.add('dark');
-    } else {
-        document.documentElement.classList.remove('dark');
-    }
+    
+    // Initialize Theme System
+    initTheme();
 
     const init = async () => {
       try {

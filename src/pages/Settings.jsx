@@ -11,7 +11,7 @@ import CurrencySelector from '../components/CurrencySelector';
 
 const Settings = () => {
     const navigate = useNavigate();
-    const { user, currency, setCurrency, darkMode, setDarkMode, subscription, isPro, createCheckout, getMonthlyTransactionCount, setPaywallOpen } = useAppStore();
+    const { user, currency, setCurrency, theme, setTheme, subscription, isPro, createCheckout, getMonthlyTransactionCount, setPaywallOpen } = useAppStore();
     const [notifications, setNotifications] = useState(true);
     const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
     const [isUpgrading, setIsUpgrading] = useState(false);
@@ -64,7 +64,11 @@ const Settings = () => {
                 <div className="flex items-center gap-4">
                     <button className="material-symbols-outlined text-on-surface-variant/60 hover:text-on-surface transition-colors">notifications</button>
                     <Link to="/app-dashboard/settings" className="w-8 h-8 rounded-full bg-surface-container border border-outline-variant/10 overflow-hidden cursor-pointer hover:ring-2 hover:ring-primary/20 transition-all">
-                        <img src={`https://api.dicebear.com/7.x/notionists/svg?seed=${user?.email || 'Felix'}&backgroundColor=e2e8f0`} alt="Profile" className="w-full h-full object-cover" />
+                        <img 
+                            src={user?.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/notionists/svg?seed=${user?.user_metadata?.avatar_seed || user?.email || 'Felix'}&backgroundColor=e2e8f0`} 
+                            alt="Profile" 
+                            className="w-full h-full object-cover" 
+                        />
                     </Link>
                 </div>
             </header>
@@ -78,8 +82,12 @@ const Settings = () => {
                 <div className="space-y-6 pb-12 z-0">
 
                     <AnimatedCard delay={0.1} className="bg-surface-container-lowest rounded-3xl p-6 border border-outline-variant/10 shadow-sm flex flex-col sm:flex-row items-center sm:items-start gap-6 relative overflow-hidden">
-                        <div className="w-24 h-24 rounded-full bg-surface-container border-4 border-surface shadow-xl flex items-center justify-center shrink-0 relative overflow-hidden group cursor-pointer z-10">
-                            <img src={`https://api.dicebear.com/7.x/notionists/svg?seed=${user?.email || 'Felix'}&backgroundColor=e2e8f0`} alt="Profile" className="w-full h-full object-cover" />
+                        <div className="w-24 h-24 rounded-full bg-surface-container border-4 border-surface shadow-xl flex items-center justify-center shrink-0 relative overflow-hidden group cursor-pointer z-10" onClick={() => setIsProfileModalOpen(true)}>
+                            <img 
+                                src={user?.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/notionists/svg?seed=${user?.user_metadata?.avatar_seed || user?.email || 'Felix'}&backgroundColor=e2e8f0`} 
+                                alt="Profile" 
+                                className="w-full h-full object-cover" 
+                            />
                             <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                 <span className="material-symbols-outlined text-white">photo_camera</span>
                             </div>
@@ -219,15 +227,15 @@ const Settings = () => {
                                         <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant/40 italic">Switch between light and dark themes.</p>
                                     </div>
                                     <button
-                                        onClick={() => setDarkMode(!darkMode)}
+                                        onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
                                         className={clsx(
                                             "w-11 h-6 rounded-full transition-all relative",
-                                            darkMode ? "bg-primary shadow-lg shadow-primary/20" : "bg-surface-container"
+                                            theme === 'dark' ? "bg-primary shadow-lg shadow-primary/20" : "bg-surface-container"
                                         )}
                                     >
                                         <div className={clsx(
                                             "absolute top-1 w-4 h-4 rounded-full transition-all",
-                                            darkMode ? "left-6 bg-surface shadow-sm" : "left-1 bg-on-surface-variant/30"
+                                            theme === 'dark' ? "left-6 bg-surface shadow-sm" : "left-1 bg-on-surface-variant/30"
                                         )}></div>
                                     </button>
                                 </div>
