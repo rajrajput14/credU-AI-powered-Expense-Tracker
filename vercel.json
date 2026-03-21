@@ -1,7 +1,7 @@
 {
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/((?!assets|version\\.json|dist\\.zip).*)",
       "destination": "/index.html"
     }
   ]
