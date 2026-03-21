@@ -73,7 +73,7 @@ const Layout = () => {
                         <img 
                             src={theme === 'dark' ? '/assets/branding/logo-dark.png' : '/assets/branding/logo-light.png'} 
                             alt="credU" 
-                            className="h-12 w-auto object-contain transition-transform group-hover:scale-105" 
+                            className="h-16 w-auto object-contain transition-transform group-hover:scale-105" 
                         />
                     </Link>
 
@@ -81,7 +81,7 @@ const Layout = () => {
                         <div className="space-y-6">
                             <button 
                                     onClick={handleAddTransactionClick}
-                                    className="w-full bg-on-surface text-white rounded-2xl py-4 font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 hover:bg-on-surface/90 transition-all shadow-lg shadow-on-surface/20"
+                                    className="w-full bg-on-surface text-white rounded-2xl py-4 font-black capitalize text-xs flex items-center justify-center gap-2 hover:bg-on-surface/90 transition-all shadow-lg shadow-on-surface/20"
                                 >
                                     <span className="material-symbols-outlined text-[20px]">add</span>
                                     Add transaction
@@ -144,10 +144,10 @@ const Layout = () => {
                                 </div>
                             </div>
                             <div className="flex-1 min-w-0">
-                                <p className="text-sm font-semibold text-on-surface truncate group-hover:text-primary transition-colors uppercase">{user?.email?.split('@')[0] || 'User'}</p>
+                                <p className="text-sm font-semibold text-on-surface truncate group-hover:text-primary transition-colors capitalize">{user?.email?.split('@')[0] || 'User'}</p>
                                 <div className="flex items-center justify-between">
                                     <p className={clsx(
-                                        "text-[10px] font-bold uppercase tracking-wider truncate",
+                                        "text-[10px] font-bold capitalize truncate",
                                         isPro() ? "text-primary" : "text-on-surface-variant/60"
                                     )}>
                                         {isPro() ? 'Premium member' : 'Free plan'}
@@ -159,7 +159,7 @@ const Layout = () => {
                                                 e.stopPropagation();
                                                 setPaywallOpen(true);
                                             }}
-                                            className="text-[9px] font-black text-primary uppercase tracking-widest hover:underline"
+                                            className="text-[10px] font-black text-primary capitalize hover:underline"
                                         >
                                             Upgrade
                                         </button>
@@ -196,7 +196,7 @@ const Layout = () => {
                         <img 
                             src={theme === 'dark' ? '/assets/branding/logo-dark.png' : '/assets/branding/logo-light.png'} 
                             alt="credU" 
-                            className="h-9 w-auto object-contain" 
+                            className="h-12 w-auto object-contain" 
                         />
                     </Link>
                 </div>
@@ -223,7 +223,7 @@ const Layout = () => {
                         >
                             <span className="material-symbols-outlined text-[26px] mb-0.5">{item.icon}</span>
                             <span className={clsx(
-                                "text-[10px] font-black uppercase tracking-widest transition-all",
+                                "text-[10px] font-black capitalize transition-all",
                                 isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"
                             )}>{item.name}</span>
                         </Link>
@@ -236,7 +236,7 @@ const Layout = () => {
                 animate={{ scale: 1, opacity: 1 }}
                 className="fixed bottom-[184px] right-6 lg:hidden z-50 group"
             >
-                <div className="absolute bottom-full right-0 mb-3 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap bg-on-surface text-white text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-md pointer-events-none shadow-xl border border-white/10">
+                <div className="absolute bottom-full right-0 mb-3 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap bg-on-surface text-white text-[10px] font-black capitalize px-2 py-1 rounded-md pointer-events-none shadow-xl border border-white/10">
                     Add Transaction
                 </div>
                 <button 

@@ -106,7 +106,7 @@ const Dashboard = () => {
                             key={p}
                             onClick={() => setPeriod(p)}
                             className={clsx(
-                                "px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all",
+                                "px-4 py-1.5 rounded-lg text-sm font-black capitalize transition-all",
                                 period === p ? "bg-primary/10 text-primary shadow-sm" : "text-on-surface-variant hover:text-on-surface"
                             )}
                         >
@@ -134,7 +134,7 @@ const Dashboard = () => {
                                 <div className="relative z-10 flex flex-col h-full justify-between gap-8">
                                     <div className="flex justify-between items-start">
                                         <div>
-                                            <p className="text-white/70 font-medium text-sm mb-1 uppercase tracking-wider">Total money</p>
+                                            <p className="text-white/70 font-medium text-sm mb-1 capitalize">Total money</p>
                                             <h2 className="text-4xl font-bold tracking-tight font-headline">{formatCurrency(totalBalance)}</h2>
                                         </div>
                                         <div className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20">
@@ -142,11 +142,7 @@ const Dashboard = () => {
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <span className="flex items-center text-on-secondary-container bg-secondary-container/20 px-2 py-1 rounded-lg text-xs font-bold">
-                                            <span className="material-symbols-outlined text-[14px] leading-none">trending_up</span>
-                                            +2.4%
-                                        </span>
-                                        <span className="text-white/60 text-xs text-sm">since last month</span>
+                                        <span className="text-white/60 text-xs text-sm">Updated just now</span>
                                     </div>
                                 </div>
                             </div>
@@ -157,7 +153,7 @@ const Dashboard = () => {
                             <div className="bg-surface-container-lowest rounded-3xl p-6 border border-outline-variant/10 shadow-sm flex flex-col justify-between gap-8 h-full">
                                 <div className="flex justify-between items-start">
                                     <div>
-                                        <p className="text-on-surface-variant font-medium text-sm mb-1 uppercase tracking-wider">Money spent this month</p>
+                                        <p className="text-on-surface-variant font-medium text-sm mb-1 capitalize">Money spent this month</p>
                                         <h2 className="text-3xl font-bold tracking-tight text-on-surface font-headline">{formatCurrency(monthlySpending)}</h2>
                                     </div>
                                     <div className="w-10 h-10 bg-error/10 text-error rounded-full flex items-center justify-center font-bold">
@@ -200,7 +196,7 @@ const Dashboard = () => {
                                         <h3 className="font-bold text-on-surface tracking-tight font-headline">What we noticed</h3>
                                     </div>
                                     
-                                    <p className="text-on-surface-variant text-sm leading-relaxed font-medium mb-4 italic">
+                                    <p className="text-on-surface-variant text-sm leading-relaxed font-medium mb-4">
                                         "{aiInsight}"
                                     </p>
                                     
@@ -240,7 +236,7 @@ const Dashboard = () => {
                             <div className="h-64 w-full flex items-end gap-2 text-xs text-on-surface-variant relative">
                                 {/* Y Axis */}
                                 <div className="flex flex-col justify-between h-full py-4 pr-2 text-right absolute left-0 top-0 bottom-8">
-                                    <span>100%</span><span>75%</span><span>50%</span><span>25%</span><span>0</span>
+                                    <span>Max</span><span>75%</span><span>50%</span><span>25%</span><span>0</span>
                                 </div>
                                 
                                 {/* Bars */}
@@ -323,7 +319,7 @@ const Dashboard = () => {
                             )}
                             
                             {!loading && recentTransactions.length === 0 && (
-                                <p className="text-on-surface-variant text-sm italic text-center py-4 font-medium">No transactions yet. Add your first one.</p>
+                                <p className="text-on-surface-variant text-sm text-center py-4 font-medium">No transactions yet. Add your first one.</p>
                             )}
                         </div>
                     </div>
@@ -352,7 +348,7 @@ const Dashboard = () => {
                             </div>
                             <div className="text-left">
                                 <p className="text-sm font-bold text-on-surface">Send money</p>
-                                <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Send</p>
+                                <p className="text-[10px] font-bold text-on-surface-variant capitalize">Send</p>
                             </div>
                         </motion.button>
                         <motion.button 
@@ -372,7 +368,7 @@ const Dashboard = () => {
                             </div>
                             <div className="text-left">
                                 <p className="text-sm font-bold text-on-surface">Pay bills</p>
-                                <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Bills</p>
+                                <p className="text-[10px] font-bold text-on-surface-variant capitalize">Bills</p>
                             </div>
                         </motion.button>
                     </div>
@@ -414,7 +410,7 @@ const Dashboard = () => {
                         })}
 
                         {activeGoals.length === 0 && (
-                            <p className="text-on-surface-variant text-sm italic text-center py-4 relative z-10 font-medium">Nothing here yet. What are you saving for?</p>
+                            <p className="text-on-surface-variant text-sm text-center py-4 relative z-10 font-medium">Nothing here yet. What are you saving for?</p>
                         )}
                         
                         {/* Decorative bg element */}

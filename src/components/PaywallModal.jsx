@@ -1,8 +1,10 @@
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAppStore } from '../store/useAppStore';
 
 const PaywallModal = () => {
     const { isPaywallOpen, setPaywallOpen, createCheckout, user } = useAppStore();
+    const [isLoading, setIsLoading] = useState(false);
 
     const features = [
         { icon: 'all_inclusive', text: 'Unlimited transactions' },
@@ -52,19 +54,27 @@ const PaywallModal = () => {
 
                     <div className="flex flex-col gap-3">
                         <button 
+                            disabled={isLoading}
                             onClick={async () => {
-                                const productId = import.meta.env.VITE_POLAR_PRODUCT_ID || '4ee35c5b-a988-4938-aa9f-1802173ef26b';
-                                const priceId = import.meta.env.VITE_POLAR_PRICE_ID || 'your_polar_price_id';
-                                await createCheckout(user?.id, user?.email, priceId, productId);
+                                setIsLoading(true);
+                                try {
+                                    const productId = import.meta.env.VITE_POLAR_PRODUCT_ID || '4ee35c5b-a988-4938-aa9f-1802173ef26b';
+                                    const priceId = import.meta.env.VITE_POLAR_PRICE_ID || 'your_polar_price_id';
+                                    await createCheckout(user?.id, user?.email, priceId, productId);
+                                } catch (error) {
+                                    console.error(error);
+                                } finally {
+                                    setIsLoading(false);
+                                }
                             }}
-                            className="w-full py-4 bg-primary text-surface rounded-2xl font-black uppercase tracking-widest hover:opacity-90 transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-2"
+                            className="w-full py-4 bg-primary text-surface rounded-2xl font-black capitalize hover:opacity-90 transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-2 disabled:opacity-50"
                         >
-                            <span>Upgrade Now</span>
-                            <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                            <span>{isLoading ? 'Loading...' : 'Upgrade Now'}</span>
+                            {!isLoading && <span className="material-symbols-outlined text-sm">arrow_forward</span>}
                         </button>
                         <button 
                             onClick={() => setPaywallOpen(false)}
-                            className="w-full py-4 bg-transparent text-on-surface-variant rounded-2xl font-black uppercase tracking-widest hover:bg-surface-container transition-all"
+                            className="w-full py-4 bg-transparent text-on-surface-variant rounded-2xl font-black capitalize hover:bg-surface-container transition-all"
                         >
                             Maybe later
                         </button>

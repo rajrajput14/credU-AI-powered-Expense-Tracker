@@ -25,7 +25,7 @@
   --color-error: #b41340;
   --color-error-container: #f74b6d;
 
-  --font-headline: "Manrope", sans-serif;
+  --font-headline: "Outfit", "Inter", sans-serif;
   --font-body: "Inter", sans-serif;
   
   --radius-lg: 2rem;
@@ -120,7 +120,7 @@
   }
   
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Manrope', sans-serif;
+    font-family: 'Outfit', 'Inter', sans-serif;
     letter-spacing: -0.02em;
   }
 }

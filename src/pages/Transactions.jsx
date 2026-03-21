@@ -84,7 +84,7 @@ const Transactions = () => {
             if (filter === 'Completed' && tx.status !== 'completed') return false;
             if (filter === 'Pending' && tx.status !== 'pending') return false;
             if (filter === 'Income' && tx.type !== 'income') return false;
-            if (filter === 'Transactions' && tx.type !== 'expense') return false;
+            if (filter === 'Expense' && tx.type !== 'expense') return false;
 
             // Category filter
             if (categoryFilter !== 'All' && tx.category !== categoryFilter) return false;
@@ -120,13 +120,13 @@ const Transactions = () => {
     const getStatusBadge = (status) => {
         if (status === 'pending') {
             return (
-                <span className="text-[10px] font-black uppercase tracking-widest text-tertiary bg-tertiary/10 px-2 py-1 rounded-md flex items-center gap-1 w-fit">
+                <span className="text-[10px] font-black capitalize text-tertiary bg-tertiary/10 px-2 py-1 rounded-md flex items-center gap-1 w-fit">
                     <span className="material-symbols-outlined text-[14px]">schedule</span> Pending
                 </span>
             );
         }
         return (
-            <span className="text-[10px] font-black uppercase tracking-widest text-secondary bg-secondary/10 px-2 py-1 rounded-md">Completed</span>
+            <span className="text-[10px] font-black capitalize text-secondary bg-secondary/10 px-2 py-1 rounded-md">Completed</span>
         );
     };
 
@@ -184,7 +184,7 @@ const Transactions = () => {
                                 <>
                                     <div className="fixed inset-0 z-20" onClick={() => setIsFilterOpen(false)}></div>
                                     <div className="absolute right-0 mt-2 w-48 bg-surface-container-lowest rounded-2xl border border-outline-variant/10 shadow-xl z-30 py-2 animate-in fade-in slide-in-from-top-2 duration-200">
-                                        <div className="px-4 py-2 text-[10px] font-black text-on-surface-variant/40 uppercase tracking-widest border-b border-outline-variant/5 mb-1">Filter by Category</div>
+                                        <div className="px-4 py-2 text-[10px] font-black text-on-surface-variant/40 capitalize border-b border-outline-variant/5 mb-1">Filter by Category</div>
                                         {categories.map(cat => (
                                             <button
                                                 key={cat}
@@ -224,7 +224,7 @@ const Transactions = () => {
                                 key={period}
                                 onClick={() => { setTimelinePeriod(period); setCurrentPage(1); }}
                                 className={clsx(
-                                    "py-4 text-xs font-black uppercase tracking-widest whitespace-nowrap transition-colors flex items-center gap-1",
+                                    "py-4 text-xs font-black capitalize whitespace-nowrap transition-colors flex items-center gap-1",
                                     timelinePeriod === period 
                                         ? "text-primary border-b-2 border-primary" 
                                         : "text-on-surface-variant hover:text-on-surface"
@@ -238,12 +238,12 @@ const Transactions = () => {
 
                 <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/10 shadow-sm overflow-hidden">
                     <div className="flex items-center gap-6 px-4 md:px-6 border-b border-outline-variant/5 bg-surface-container/30 overflow-x-auto no-scrollbar">
-                        {['All', 'Income', 'Transactions', 'Pending'].map((tab) => (
+                        {['All', 'Income', 'Expense', 'Pending'].map((tab) => (
                             <button 
                                 key={tab}
                                 onClick={() => { setFilter(tab); setCurrentPage(1); }}
                                 className={clsx(
-                                    "py-4 text-xs font-black uppercase tracking-widest whitespace-nowrap transition-colors flex items-center gap-1",
+                                    "py-4 text-xs font-black capitalize whitespace-nowrap transition-colors flex items-center gap-1",
                                     filter === tab 
                                         ? "text-primary border-b-2 border-primary" 
                                         : "text-on-surface-variant hover:text-on-surface"
@@ -260,7 +260,7 @@ const Transactions = () => {
                     <div className="overflow-x-auto min-h-[400px]">
                         <table className="w-full text-left border-collapse min-w-[600px]">
                             <thead>
-                                <tr className="bg-surface-container-lowest border-b border-outline-variant/5 text-[10px] uppercase tracking-widest text-on-surface-variant/40 font-black">
+                                <tr className="bg-surface-container-lowest border-b border-outline-variant/5 text-[10px] capitalize text-on-surface-variant/40 font-black">
                                     <th className="py-3 px-6">Item</th>
                                     <th className="py-3 px-6">Category</th>
                                     <th className="py-3 px-6 hidden sm:table-cell">Date</th>
@@ -304,13 +304,13 @@ const Transactions = () => {
                                                                 <p className="font-bold text-on-surface group-hover:text-primary transition-colors font-headline">
                                                                     {tx.name || tx.note || 'Transaction'}
                                                                 </p>
-                                                                <p className="text-[10px] text-on-surface-variant/60 font-black uppercase tracking-widest sm:hidden">{formatDate(tx.date)}</p>
+                                                                <p className="text-[10px] text-on-surface-variant/60 font-black capitalize sm:hidden">{formatDate(tx.date)}</p>
                                                             </div>
                                                         </div>
                                                     </td>
                                                     <td className="py-4 px-6">
                                                         <span className={clsx(
-                                                            "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-widest border",
+                                                            "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-black capitalize border",
                                                             color === 'primary' ? "bg-primary/5 text-primary border-primary/10" : 
                                                             color === 'secondary' ? "bg-secondary/5 text-secondary border-secondary/10" :
                                                             color === 'tertiary' ? "bg-tertiary/5 text-tertiary border-tertiary/10" :
@@ -325,7 +325,7 @@ const Transactions = () => {
                                                             )}></span> {tx.category || 'General'}
                                                         </span>
                                                     </td>
-                                                    <td className="py-4 px-6 text-on-surface-variant font-bold text-xs uppercase tracking-widest hidden sm:table-cell">{formatDate(tx.date)}</td>
+                                                    <td className="py-4 px-6 text-on-surface-variant font-bold text-xs capitalize hidden sm:table-cell">{formatDate(tx.date)}</td>
                                                     <td className="py-4 px-6 hidden md:table-cell">
                                                         {getStatusBadge(tx.status)}
                                                     </td>
@@ -353,7 +353,7 @@ const Transactions = () => {
 
                                 {!loading && paginatedTransactions.length === 0 && (
                                     <tr>
-                                        <td colSpan="6" className="py-12 text-center text-on-surface-variant/60 font-bold italic">
+                                        <td colSpan="6" className="py-12 text-center text-on-surface-variant/60 font-bold">
                                             Couldn't find any transactions matching your search.
                                         </td>
                                     </tr>
@@ -362,7 +362,7 @@ const Transactions = () => {
                         </table>
                     </div>
 
-                    <div className="px-6 py-4 border-t border-outline-variant/5 flex items-center justify-between text-xs font-bold uppercase tracking-widest">
+                    <div className="px-6 py-4 border-t border-outline-variant/5 flex items-center justify-between text-xs font-bold capitalize">
                         <span className="text-on-surface-variant/60">
                             Showing <span className="text-on-surface">{Math.min(filteredTransactions.length, (currentPage - 1) * itemsPerPage + 1)}</span> to <span className="text-on-surface">{Math.min(filteredTransactions.length, currentPage * itemsPerPage)}</span> of <span className="text-on-surface">{filteredTransactions.length}</span> results
                         </span>

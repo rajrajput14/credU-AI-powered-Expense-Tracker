@@ -10,10 +10,26 @@ const Success = () => {
     const { fetchInitialData, user } = useAppStore();
 
     useEffect(() => {
-        if (user) {
-            // Refresh data to show Pro status immediately if possible
-            fetchInitialData(user.id);
-        }
+        if (!user) return;
+        
+        let intervalId;
+        let attempts = 0;
+        
+        const checkProStatus = async () => {
+            await fetchInitialData(user.id);
+            attempts++;
+            const sub = useAppStore.getState().subscription;
+            if (sub && ['active', 'trialing'].includes(sub.status)) {
+                clearInterval(intervalId);
+            } else if (attempts > 5) {
+                clearInterval(intervalId);
+            }
+        };
+
+        checkProStatus(); // Check immediately
+        intervalId = setInterval(checkProStatus, 2000);
+
+        return () => clearInterval(intervalId);
     }, [user, fetchInitialData]);
 
     return (
@@ -34,7 +50,7 @@ const Success = () => {
                         <span className="material-symbols-outlined text-white text-5xl">check_circle</span>
                     </motion.div>
 
-                    <h1 className="text-3xl font-black text-on-surface mb-3 tracking-tighter uppercase italic font-headline">Welcome to Pro!</h1>
+                    <h1 className="text-3xl font-black text-on-surface mb-3 tracking-tighter capitalize font-headline">Welcome to Pro!</h1>
                     <p className="text-on-surface-variant font-medium mb-10 leading-relaxed">
                         Your subscription was successful. You now have unlimited access to AI insights and premium features.
                     </p>
@@ -42,20 +58,20 @@ const Success = () => {
                     <div className="space-y-4">
                         <Link 
                             to="/app-dashboard" 
-                            className="block w-full fluid-gradient text-white font-black uppercase tracking-widest py-4 rounded-2xl transition-all shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] text-xs"
+                            className="block w-full fluid-gradient text-white font-black capitalize py-4 rounded-2xl transition-all shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] text-sm"
                         >
                             Go to Dashboard
                         </Link>
                         <Link 
                             to="/app-dashboard/settings" 
-                            className="block w-full bg-surface-container hover:bg-surface-container-high text-on-surface font-black uppercase tracking-widest py-4 rounded-2xl transition-all text-xs"
+                            className="block w-full bg-surface-container hover:bg-surface-container-high text-on-surface font-black capitalize py-4 rounded-2xl transition-all text-sm"
                         >
                             View Subscription
                         </Link>
                     </div>
 
                     {checkoutId && (
-                        <p className="mt-8 text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant/30 leading-snug">
+                        <p className="mt-8 text-[10px] font-black capitalize text-on-surface-variant/30 leading-snug">
                             Transaction ID: {checkoutId}
                         </p>
                     )}

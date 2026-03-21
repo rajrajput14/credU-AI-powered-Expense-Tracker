@@ -108,6 +108,10 @@ export const useAppStore = create((set, get) => ({
         const sub = get().subscription;
         if (!sub) return false;
         
+        if (sub.status === 'canceled' || sub.cancel_at_period_end) {
+            return false;
+        }
+
         // Active or Trialing always have access
         if (['active', 'trialing'].includes(sub.status)) return true;
         
@@ -304,7 +308,10 @@ export const useAppStore = create((set, get) => ({
         try {
             const result = await billingService.cancelSubscription(subscriptionId);
             if (result.error) throw new Error(result.error);
-            set({ loading: false });
+            set(state => ({
+                subscription: state.subscription ? { ...state.subscription, status: 'canceled' } : null,
+                loading: false 
+            }));
             return true;
         } catch (error) {
             console.error('Cancellation error:', error);

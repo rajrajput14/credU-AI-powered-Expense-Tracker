@@ -85,7 +85,7 @@ const TransactionFormModal = ({ isOpen, onClose, transaction = null }) => {
         <Modal isOpen={isOpen} onClose={onClose} title={transaction ? 'Update transaction' : 'Add transaction'}>
             <form onSubmit={handleSubmit} className="space-y-4 font-body">
                 <div>
-                    <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60 mb-2 italic">What was this for?</label>
+                    <label className="block text-[10px] font-black capitalize text-on-surface-variant/60 mb-2">What was this for?</label>
                     <input
                         type="text"
                         required
@@ -98,14 +98,14 @@ const TransactionFormModal = ({ isOpen, onClose, transaction = null }) => {
 
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60 mb-2 italic">Amount</label>
-                        <div className="relative">
-                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/40 font-bold">{getCurrencySymbol()}</span>
+                        <label className="block text-[10px] font-black capitalize text-on-surface-variant/60 mb-2">Amount</label>
+                        <div className="flex bg-surface-container/10 border border-outline-variant/10 rounded-xl overflow-hidden focus-within:ring-1 focus-within:ring-primary focus-within:border-primary transition-all">
+                            <div className="flex items-center justify-center pl-4 pr-2 text-on-surface-variant/40 font-bold">{getCurrencySymbol()}</div>
                             <input
                                 type="number"
                                 step="0.01"
                                 required
-                                className="w-full pl-8 pr-4 py-3 rounded-xl border border-outline-variant/10 bg-surface-container/10 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all text-on-surface font-headline text-sm"
+                                className="w-full py-3 pr-4 bg-transparent outline-none text-on-surface font-headline text-sm"
                                 placeholder="0.00"
                                 value={formData.amount}
                                 onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
@@ -113,9 +113,9 @@ const TransactionFormModal = ({ isOpen, onClose, transaction = null }) => {
                         </div>
                     </div>
                     <div>
-                        <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60 mb-2 italic">Type</label>
+                        <label className="block text-[10px] font-black capitalize text-on-surface-variant/60 mb-2">Type</label>
                         <select
-                            className="w-full px-4 py-3 rounded-xl border border-outline-variant/10 bg-surface-container/10 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all text-on-surface font-black uppercase tracking-widest text-[10px] appearance-none cursor-pointer"
+                            className="w-full px-4 py-3 rounded-xl border border-outline-variant/10 bg-surface-container/10 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all text-on-surface font-black capitalize text-[10px] appearance-none cursor-pointer"
                             value={formData.type}
                             onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                         >
@@ -126,9 +126,9 @@ const TransactionFormModal = ({ isOpen, onClose, transaction = null }) => {
                 </div>
 
                 <div>
-                    <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60 mb-2 italic">Category</label>
+                    <label className="block text-[10px] font-black capitalize text-on-surface-variant/60 mb-2">Category</label>
                     <select
-                        className="w-full px-4 py-3 rounded-xl border border-outline-variant/10 bg-surface-container/10 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all text-on-surface font-black uppercase tracking-widest text-[10px] appearance-none cursor-pointer"
+                        className="w-full px-4 py-3 rounded-xl border border-outline-variant/10 bg-surface-container/10 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all text-on-surface font-black capitalize text-[10px] appearance-none cursor-pointer"
                         value={formData.category}
                         onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                     >
@@ -139,11 +139,11 @@ const TransactionFormModal = ({ isOpen, onClose, transaction = null }) => {
                 </div>
 
                 <div>
-                    <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60 mb-2 italic">Date</label>
+                    <label className="block text-[10px] font-black capitalize text-on-surface-variant/60 mb-2">Date</label>
                     <input
                         type="date"
                         required
-                        className="w-full px-4 py-3 rounded-xl border border-outline-variant/10 bg-surface-container/10 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all text-on-surface font-black uppercase tracking-widest text-[10px]"
+                        className="w-full px-4 py-3 rounded-xl border border-outline-variant/10 bg-surface-container/10 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all text-on-surface font-black capitalize text-[10px]"
                         value={formData.date}
                         onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                     />
@@ -153,7 +153,7 @@ const TransactionFormModal = ({ isOpen, onClose, transaction = null }) => {
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full py-4 bg-primary hover:bg-primary/90 text-surface font-black uppercase tracking-widest text-xs rounded-2xl transition-all shadow-lg shadow-primary/20 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full py-4 bg-primary hover:bg-primary/90 text-surface font-black capitalize text-xs rounded-2xl transition-all shadow-lg shadow-primary/20 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {isLoading ? 'Processing...' : (transaction ? 'Save Changes' : 'Save Transaction')}
                     </button>
@@ -161,7 +161,7 @@ const TransactionFormModal = ({ isOpen, onClose, transaction = null }) => {
                         <button
                             type="button"
                             onClick={handleDelete}
-                            className="w-full py-4 bg-surface-container-lowest border border-error/10 text-error hover:bg-error/5 font-black uppercase tracking-widest text-xs rounded-2xl transition-all active:scale-[0.98]"
+                            className="w-full py-4 bg-surface-container-lowest border border-error/10 text-error hover:bg-error/5 font-black capitalize text-xs rounded-2xl transition-all active:scale-[0.98]"
                         >
                             Delete
                         </button>
