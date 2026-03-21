@@ -16,6 +16,7 @@ import { useAppStore } from './store/useAppStore'
 import { SplashScreen as CapacitorSplash } from '@capacitor/splash-screen'
 import SplashScreen from './components/SplashScreen'
 import { AnimatePresence } from 'framer-motion'
+import { LiveUpdateService } from './services/LiveUpdateService'
 
 function App() {
   const [user, setUser] = useState(null)
@@ -28,6 +29,9 @@ function App() {
     
     // Initialize Theme System
     initTheme();
+
+    // Initialize OTA Updates
+    LiveUpdateService.init();
 
     const init = async () => {
       try {
