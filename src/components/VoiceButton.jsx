@@ -39,10 +39,11 @@ const VoiceButton = () => {
             
             recognition.continuous = true
             recognition.interimResults = true
-            recognition.lang = 'en-US'
+            recognition.lang = 'en-IN' // Optimized for Indian accents and Hinglish
             
-            recognition.onstart = () => {
+            recognition.onstart = async () => {
                 console.log("Recognition started")
+                await Haptics.impact({ style: ImpactStyle.Heavy })
             }
             
             recognition.onresult = (event) => {
@@ -59,13 +60,13 @@ const VoiceButton = () => {
                     if (transcriptRef.current) {
                         recognition.stop()
                     }
-                }, 1500) // 1.5 seconds of silence (slightly more on mobile)
+                }, 1800) // 1.8 seconds of silence for natural pauses
             }
 
             recognition.onerror = (event) => {
                 console.error("Speech Recognition Error:", event.error)
                 if (event.error === 'not-allowed') {
-                    handleError("Microphone access denied. Please enable it in browser settings.")
+                    handleError("Microphone access denied. Please enable it in settings.")
                 } else if (event.error === 'network') {
                     handleError("Network connection error. Try again.")
                 } else if (event.error === 'no-speech') {
@@ -79,8 +80,8 @@ const VoiceButton = () => {
                 console.log("Speech ended (Auto-Stop).")
                 if (transcriptRef.current) {
                     processVoice(transcriptRef.current)
+                    Haptics.notification({ type: NotificationType.Success })
                 } else {
-                    // Only go to idle if we were actually listening and didn't start processing
                     setUiState(prev => prev === 'LISTENING' ? 'IDLE' : prev)
                 }
             }
@@ -101,7 +102,7 @@ const VoiceButton = () => {
 
     const startVoice = async () => {
         if (!recognitionRef.current) {
-            handleError("Speech recognition is not supported in this browser or requires an HTTPS connection.")
+            handleError("Speech recognition is not supported in this browser.")
             return
         }
 
@@ -118,7 +119,7 @@ const VoiceButton = () => {
         setUiState('LISTENING')
         
         try {
-            await Haptics.impact({ style: ImpactStyle.Light })
+            await Haptics.impact({ style: ImpactStyle.Medium })
             recognitionRef.current.start()
         } catch (e) {
             console.warn("Recognition already started or error:", e)
@@ -127,22 +128,22 @@ const VoiceButton = () => {
 
     const stopVoice = async () => {
         if (recognitionRef.current) {
-            await Haptics.impact({ style: ImpactStyle.Light })
+            await Haptics.impact({ style: ImpactStyle.Medium })
             recognitionRef.current.stop()
-            // onend will handle the transition
         }
     }
 
     const speakResponse = (text) => {
         if (!window.speechSynthesis) return
-        window.speechSynthesis.cancel() // Stop any ongoing speech
+        window.speechSynthesis.cancel() 
         const utterance = new SpeechSynthesisUtterance(text)
-        utterance.rate = 1.0
+        utterance.rate = 1.1
         utterance.pitch = 1.0
         window.speechSynthesis.speak(utterance)
     }
 
     const normalizeText = (text) => {
+        // Step 2: Basic client-side clean (Fillers are better handled by Gemini but we can trim)
         return text.trim();
     }
 
@@ -152,16 +153,21 @@ const VoiceButton = () => {
         
         setUiState('PROCESSING')
         try {
-            const history = transactions.slice(0, 10).map(t => 
+            const history = transactions.slice(0, 15).map(t => 
                 `${t.name || t.category}${t.category ? ` (${t.category})` : ''}`
             ).join(', ')
             
             const response = await parseTransactionIntent(text, history, lastResult)
-            console.log("Intelligent Agent Output:", response)
+            console.log("WhisperFlow Output:", response)
 
             if (response && response.transactions?.length > 0) {
+                // Step 5: Confidence Score threshold check
+                if (response.confidence < 0.3) {
+                    handleError("I'm not exactly sure what you meant. Could you try again?")
+                    return;
+                }
+
                 setResult(response)
-                // Store the first transaction as the 'lastResult' for potential corrections
                 setLastResult(response.transactions[0])
                 setUiState('CONFIRMATION')
                 
@@ -169,11 +175,11 @@ const VoiceButton = () => {
                     speakResponse(response.voiceResponse)
                 }
             } else {
-                handleError("I couldn't find any financial commands. Try again.")
+                handleError("I couldn't detect any transaction details. Try saying 'Spent 200 on Coffee'.")
             }
         } catch (err) {
             console.error(err)
-            handleError(err.message || "I had trouble processing that.")
+            handleError(err.message || "I had trouble processing that request.")
         }
     }
 

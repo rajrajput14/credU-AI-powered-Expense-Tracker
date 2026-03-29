@@ -2,48 +2,51 @@ import axios from 'axios';
 
 export const parseTransactionIntent = async (text, history = "", lastParsed = null) => {
   const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-  const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+  const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_API_KEY}`;
   
   const now = new Date();
   const dateStr = now.toISOString().split('T')[0];
   const dayName = now.toLocaleDateString('en-US', { weekday: 'long' });
 
   const prompt = `
-    You are the credU Smart Financial Assistant. 
-    Analyze the user's voice transcript and extract one or more transactions.
-    
+    You are the "WhisperFlow" Smart Financial Engine for credU. 
+    Your task is to parse a raw voice transcript into structured financial data.
+
+    TRANSCRIPT PROCESSING RULES:
+    1. CLEAN: Remove filler words like "um", "uh", "like", "basically", "actually", "matlab", "toh", "literally", "you know".
+    2. NORMALIZE: Convert verbal numbers into integers ("to hundred" -> 200, "four ninety nine" -> 499).
+    3. HINGLISH SUPPORT: Handle Hindi/English mix. 
+       - "kal 300 kharcha kiya petrol pe" -> amount: 300, category: "Fuel", date: "yesterday".
+       - "do sau rupay khana khaaya" -> amount: 200, category: "Food".
+    4. MULTI-ENTRY: Parse multiple entries if present. "Spent 500 on groceries and gave 1000 to mom".
+    5. CORRECTIONS: If transcript indicates a correction of the 'Last Parsed Transaction' (e.g. "no make it 300"), update it.
+    6. SMART CATEGORIES: (Food, Transport, Shopping, Bills, Entertainment, Health, Education, Salary, Investment, Fuel, Subscription, Travel, Other).
+
     SYSTEM CONTEXT:
     - Today: ${dateStr} (${dayName})
-    - User History (for categorizing): ${history}
-    - Last Parsed Transaction (for corrections): ${lastParsed ? JSON.stringify(lastParsed) : 'None'}
+    - User Transactional Context: ${history}
+    - Last Parsed Transaction: ${lastParsed ? JSON.stringify(lastParsed) : 'None'}
     
-    CAPABILITIES:
-    1. MULTI-ENTRY: If user says "200 for food and 100 for taxi", extract BOTH.
-    2. CORRECTIONS: If user says "no make it 300" or "change amount to 50", update the 'Last Parsed Transaction' instead of creating a new one.
-    3. SMART DEFAULTS: merchant, category (Food, Transport, Shopping, Bills, Entertainment, Health, Education, Salary, Investment, Other), type (income/expense), date.
-    
-    VOICE FEEDBACK:
-    Generate a short, friendly confirmation sentence for Speech Synthesis.
-    Examples: "Added 2 transactions," "Updated amount to 300," "Added 500 for groceries."
-
-    Return ONLY raw JSON:
+    RETURN FORMAT (JSON ONLY):
     {
       "transactions": [
         {
-          "action": "create" | "update" | "delete",
+          "action": "create" | "update",
           "amount": number,
-          "merchant": string | null,
           "category": string,
           "type": "income" | "expense",
           "date": "YYYY-MM-DD",
-          "summary": string
+          "merchant": string | null,
+          "summary": string,
+          "notes": string | null
         }
       ],
-      "voiceResponse": string,
+      "confidence": number (0 to 1),
+      "voiceResponse": string (friendly one-liner summary),
       "isCorrection": boolean
     }
 
-    Text: "${text}"
+    Raw Transcript: "${text}"
   `
 
   try {
@@ -61,19 +64,21 @@ export const parseTransactionIntent = async (text, history = "", lastParsed = nu
                 properties: {
                   action: { type: "STRING" },
                   amount: { type: "NUMBER" },
-                  merchant: { type: "STRING", nullable: true },
                   category: { type: "STRING" },
                   type: { type: "STRING" },
                   date: { type: "STRING" },
-                  summary: { type: "STRING" }
+                  merchant: { type: "STRING", nullable: true },
+                  summary: { type: "STRING" },
+                  notes: { type: "STRING", nullable: true }
                 },
                 required: ["action", "amount", "category", "type", "date", "summary"]
               }
             },
+            confidence: { type: "NUMBER" },
             voiceResponse: { type: "STRING" },
             isCorrection: { type: "BOOLEAN" }
           },
-          required: ["transactions", "voiceResponse", "isCorrection"]
+          required: ["transactions", "confidence", "voiceResponse", "isCorrection"]
         }
       }
     })
@@ -83,12 +88,13 @@ export const parseTransactionIntent = async (text, history = "", lastParsed = nu
     
     return {
       transactions: parsed.transactions || [],
+      confidence: parsed.confidence || 0.5,
       voiceResponse: parsed.voiceResponse || "I've processed your request.",
       isCorrection: parsed.isCorrection || false
     }
 
   } catch (error) {
-    console.error("Gemini v2 Error:", error)
+    console.error("WhisperFlow Engine Error:", error)
     throw new Error(error.message || "I had trouble processing that.")
   }
 }

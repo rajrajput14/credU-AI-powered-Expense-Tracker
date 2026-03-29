@@ -2,6 +2,45 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useAppStore } from '../store/useAppStore'
 import clsx from 'clsx'
 
+const highlightTranscript = (text) => {
+    if (!text) return text;
+    
+    // RegEx for amounts (e.g., 200, 50, ₹100)
+    const amountRegex = /(\d+[,.]?\d*)/g;
+    
+    // Common categories to highlight (can be expanded)
+    const categoryKeywords = ['food', 'coffee', 'pizza', 'rent', 'salary', 'investment', 'petrol', 'fuel', 'netflix', 'groceries', 'uber', 'taxi', 'swiggy', 'zomato', 'dinner', 'lunch'];
+    const categoryRegex = new RegExp(`\\b(${categoryKeywords.join('|')})\\b`, 'gi');
+
+    let parts = [text];
+
+    // Highlight amounts (bold)
+    parts = parts.flatMap(part => {
+        if (typeof part !== 'string') return [part];
+        const subParts = part.split(amountRegex);
+        return subParts.map((subPart, i) => {
+            if (amountRegex.test(subPart)) {
+                return <span key={`amt-${i}`} className="text-primary font-black scale-110 inline-block drop-shadow-[0_0_10px_rgba(70,71,211,0.4)]">{subPart}</span>;
+            }
+            return subPart;
+        });
+    });
+
+    // Highlight categories (colored/italic)
+    parts = parts.flatMap(part => {
+        if (typeof part !== 'string') return [part];
+        const subParts = part.split(categoryRegex);
+        return subParts.map((subPart, i) => {
+            if (categoryRegex.test(subPart)) {
+                return <span key={`cat-${i}`} className="text-secondary font-black italic underline decoration-secondary/30">{subPart}</span>;
+            }
+            return subPart;
+        });
+    });
+
+    return parts;
+};
+
 const VoiceOverlay = ({ 
     state, 
     transcript, 
@@ -18,158 +57,259 @@ const VoiceOverlay = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-on-surface/95 backdrop-blur-2xl transition-colors duration-200"
+            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#050510]/95 backdrop-blur-3xl transition-all duration-500 overflow-hidden"
         >
-            <main className="flex-1 flex flex-col items-center justify-center relative z-10 p-6 w-full h-full">
+            {/* Background Glows */}
+            <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/20 rounded-full blur-[120px] animate-pulse"></div>
+            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-secondary/20 rounded-full blur-[120px] animate-pulse delay-700"></div>
+
+            <main className="flex-1 flex flex-col items-center justify-center relative z-10 p-6 w-full h-full max-w-4xl">
                 {/* Close Button */}
                 <button 
                     onClick={onCancel}
-                    className="absolute top-6 right-6 w-12 h-12 bg-surface-container/10 hover:bg-surface-container/20 backdrop-blur-md rounded-full flex items-center justify-center transition-all shadow-sm border border-outline-variant/10"
+                    className="absolute top-8 right-8 w-14 h-14 bg-white/5 hover:bg-white/10 backdrop-blur-xl rounded-full flex items-center justify-center transition-all shadow-2xl border border-white/5 group"
                 >
-                    <span className="material-symbols-outlined text-surface">close</span>
+                    <span className="material-symbols-outlined text-white/50 group-hover:text-white group-hover:rotate-90 transition-all">close</span>
                 </button>
 
-                <div className="text-center max-w-lg mx-auto w-full font-body">
-                    <p className="text-primary font-black mb-4 uppercase tracking-[0.3em] text-[10px] italic">credU Voice</p>
-                    
-                    <h1 className={clsx(
-                        "text-3xl md:text-5xl font-black tracking-tighter mb-12 font-headline uppercase",
-                        state === 'ERROR' ? "text-error" : "text-surface"
-                    )}>
-                        {state === 'LISTENING' && "I'm listening..."}
-                        {state === 'PROCESSING' && "One second..."}
-                        {state === 'CONFIRMATION' && "Is this right?"}
-                        {state === 'ERROR' && "I didn't catch that"}
-                    </h1>
+                <div className="text-center w-full font-body">
+                    <motion.div
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                    >
+                        <p className="text-primary font-black mb-6 uppercase tracking-[0.4em] text-[11px] italic drop-shadow-sm flex items-center justify-center gap-2">
+                            <span className="w-8 h-[1px] bg-primary/30"></span>
+                            WhisperFlow Engine
+                            <span className="w-8 h-[1px] bg-primary/30"></span>
+                        </p>
+                        
+                        <h1 className={clsx(
+                            "text-4xl md:text-6xl font-black tracking-tighter mb-16 font-headline uppercase leading-none",
+                            state === 'ERROR' ? "text-error" : "text-white"
+                        )}>
+                            {state === 'LISTENING' && (
+                                <span className="animate-pulse">Listening...</span>
+                            )}
+                            {state === 'PROCESSING' && (
+                                <motion.span 
+                                    animate={{ opacity: [1, 0.5, 1] }}
+                                    transition={{ repeat: Infinity, duration: 2 }}
+                                >
+                                    Analyzing context...
+                                </motion.span>
+                            )}
+                            {state === 'CONFIRMATION' && "Everything look right?"}
+                            {state === 'ERROR' && "Try being more specific"}
+                        </h1>
+                    </motion.div>
                     
                     {/* Visual State Indicator */}
-                    <div className="relative w-48 h-48 mx-auto mb-16 flex items-center justify-center">
+                    <div className="relative w-64 h-64 mx-auto mb-20 flex items-center justify-center">
                         {state === 'LISTENING' && (
                             <>
-                                <div className="absolute inset-0 bg-primary rounded-full blur-[80px] opacity-30 animate-pulse"></div>
-                                <div className="absolute inset-4 bg-gradient-to-tr from-primary to-secondary rounded-full shadow-[0_0_80px_rgba(70,71,211,0.4)] animate-[pulse_2s_infinite]"></div>
-                                
-                                <div className="relative z-10 flex items-center justify-center h-16 gap-1.5">
-                                    <div className="w-1.5 h-8 bg-surface rounded-full animate-[bounce_1s_infinite]"></div>
-                                    <div className="w-1.5 h-16 bg-surface rounded-full animate-[bounce_1.2s_infinite_0.1s]"></div>
-                                    <div className="w-1.5 h-10 bg-surface rounded-full animate-[bounce_0.9s_infinite_0.2s]"></div>
-                                    <div className="w-1.5 h-14 bg-surface rounded-full animate-[bounce_1.1s_infinite_0.3s]"></div>
-                                    <div className="w-1.5 h-8 bg-surface rounded-full animate-[bounce_1.3s_infinite_0.4s]"></div>
+                                <motion.div 
+                                    animate={{ 
+                                        scale: [1, 1.2, 1],
+                                        opacity: [0.2, 0.4, 0.2]
+                                    }}
+                                    transition={{ repeat: Infinity, duration: 3 }}
+                                    className="absolute inset-0 bg-primary rounded-full blur-[60px]"
+                                ></motion.div>
+                                <motion.div 
+                                    animate={{ rotate: 360 }}
+                                    transition={{ repeat: Infinity, duration: 10, ease: "linear" }}
+                                    className="absolute inset-2 border-[1px] border-dashed border-primary/30 rounded-full"
+                                ></motion.div>
+                                <div className="absolute inset-8 bg-gradient-to-br from-primary via-primary/80 to-secondary rounded-full shadow-[0_0_80px_rgba(70,71,211,0.6)] flex items-center justify-center">
+                                    <div className="flex items-center justify-center h-20 gap-2">
+                                        {[1, 2, 3, 4, 5, 2.5, 3.5].map((s, i) => (
+                                            <motion.div 
+                                                key={i}
+                                                animate={{ height: [20, 60, 20] }}
+                                                transition={{ 
+                                                    repeat: Infinity, 
+                                                    duration: 0.6 + (i * 0.1), 
+                                                    delay: i * 0.05,
+                                                    ease: "easeInOut"
+                                                }}
+                                                className="w-1.5 bg-white rounded-full opacity-80"
+                                            ></motion.div>
+                                        ))}
+                                    </div>
                                 </div>
                             </>
                         )}
 
                         {state === 'PROCESSING' && (
-                            <motion.div 
-                                animate={{ rotate: 360 }}
-                                transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
-                                className="h-24 w-24 rounded-full border-[2px] border-primary border-t-transparent mx-auto shadow-[0_0_40px_rgba(70,71,211,0.2)]"
-                            />
+                            <div className="relative">
+                                <motion.div 
+                                    animate={{ rotate: 360 }}
+                                    transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+                                    className="h-32 w-32 rounded-full border-[3px] border-primary border-t-transparent shadow-[0_0_50px_rgba(70,71,211,0.3)]"
+                                />
+                                <motion.div 
+                                    animate={{ rotate: -360 }}
+                                    transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+                                    className="absolute inset-4 rounded-full border-[2px] border-secondary border-b-transparent"
+                                />
+                            </div>
                         )}
 
                         {(state === 'CONFIRMATION' || state === 'ERROR') && (
                             <div className={clsx(
-                                "h-32 w-32 rounded-full flex items-center justify-center text-surface mx-auto",
-                                state === 'ERROR' ? "bg-error shadow-[0_0_60px_rgba(167,1,56,0.4)]" : "bg-primary shadow-[0_0_60px_rgba(70,71,211,0.4)]"
+                                "h-40 w-40 rounded-full flex items-center justify-center text-white mx-auto relative group",
+                                state === 'ERROR' ? "bg-error/20 border border-error/50 shadow-[0_0_60px_rgba(167,1,56,0.3)]" : "bg-primary/20 border border-primary/50 shadow-[0_0_60px_rgba(70,71,211,0.3)]"
                             )}>
-                                <span className="material-symbols-outlined text-[64px]">
-                                    {state === 'ERROR' ? 'priority_high' : 'done_all'}
+                                <span className="material-symbols-outlined text-[80px] drop-shadow-2xl">
+                                    {state === 'ERROR' ? 'warning' : 'auto_awesome'}
                                 </span>
+                                <div className="absolute inset-0 rounded-full animate-ping opacity-20 bg-inherit"></div>
                             </div>
                         )}
                     </div>
                     
                     {/* Text content area */}
-                    <div className="min-h-[150px]">
-                        {state === 'LISTENING' && transcript && (
-                            <p className="text-xl text-surface/90 font-black italic tracking-tight leading-relaxed px-4">
-                                "{transcript}"
-                            </p>
-                        )}
-                        
-                        {state === 'LISTENING' && !transcript && (
-                            <>
-                                <p className="text-surface/30 mt-2 mb-4 font-black uppercase tracking-widest text-[10px]">Try saying</p>
-                                <div className="flex flex-wrap justify-center gap-2">
-                                    <span className="bg-surface/5 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-surface/10 text-surface/60 italic">"Spent {formatCurrency(12)} on coffee at Starbucks"</span>
-                                    <span className="bg-surface/5 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-surface/10 text-surface/60 italic">"I just got paid {formatCurrency(200)}"</span>
-                                </div>
-                            </>
-                        )}
-
-                        {state === 'CONFIRMATION' && result && (
-                            <div className="rounded-[2.5rem] bg-surface-container-lowest text-on-surface p-10 shadow-[0_20px_50px_rgba(0,0,0,0.3)] mx-auto w-full max-w-sm border border-outline-variant/10 max-h-[400px] overflow-y-auto custom-scrollbar">
-                                <div className="flex items-center justify-between mb-8">
-                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary italic">
-                                        {result.isCorrection ? "Input Corrected" : "Financial Insight"}
-                                    </span>
-                                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                                        <span className="material-symbols-outlined text-primary text-sm">auto_awesome</span>
-                                    </div>
-                                </div>
-                                
-                                <div className="flex flex-col gap-6">
-                                    {result.transactions.map((tx, idx) => (
-                                        <div key={idx} className={clsx(
-                                            "flex flex-col items-start text-left gap-2",
-                                            idx !== result.transactions.length - 1 && "pb-6 border-b border-outline-variant/5"
-                                        )}>
-                                            <p className="text-lg font-bold text-on-surface tracking-tight leading-tight">
-                                                {tx.summary}
-                                            </p>
-                                            <div className="flex items-center gap-2">
-                                                <span className={clsx(
-                                                    "rounded-lg px-2 py-0.5 text-[8px] font-black uppercase tracking-widest",
-                                                    tx.type === 'income' ? "bg-primary/10 text-primary" : "bg-error/10 text-error"
-                                                )}>
-                                                    {tx.category}
-                                                </span>
-                                                {tx.merchant && (
-                                                    <span className="text-[8px] font-black uppercase tracking-widest text-on-surface-variant/40">
-                                                        {tx.merchant}
+                    <div className="min-h-[150px] px-4 max-w-2xl mx-auto">
+                        <AnimatePresence mode="wait">
+                            {state === 'LISTENING' && (
+                                <motion.div
+                                    key="listening"
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0 }}
+                                >
+                                    {transcript ? (
+                                        <p className="text-2xl md:text-3xl text-white font-medium italic tracking-tight leading-relaxed selection:bg-primary/30">
+                                            "{highlightTranscript(transcript)}"
+                                        </p>
+                                    ) : (
+                                        <div className="space-y-4">
+                                            <p className="text-white/30 font-black uppercase tracking-[0.3em] text-[10px]">Speak naturally in any language</p>
+                                            <div className="flex flex-wrap justify-center gap-3">
+                                                {['"I spent 500 on dinner today"', '"Kal 200 kharcha kiya petrol pe"', '"Electricity bill paid 1500"'].map((tip, i) => (
+                                                    <span key={i} className="bg-white/[0.03] px-5 py-3 rounded-2xl text-[10px] font-bold uppercase tracking-widest border border-white/5 text-white/40 italic hover:bg-white/10 transition-colors cursor-default">
+                                                        {tip}
                                                     </span>
-                                                )}
+                                                ))}
                                             </div>
                                         </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
+                                    )}
+                                </motion.div>
+                            )}
 
-                        {state === 'ERROR' && (
-                            <p className="text-sm text-error bg-error/10 py-4 px-8 rounded-full border border-error/20 inline-block font-black uppercase tracking-widest">
-                                {error || "I didn't understand that"}
-                            </p>
-                        )}
+                            {state === 'CONFIRMATION' && result && (
+                                <motion.div 
+                                    key="confirmation"
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    className="rounded-[3rem] bg-white/[0.03] border border-white/10 p-8 md:p-12 shadow-[0_40px_100px_rgba(0,0,0,0.5)] backdrop-blur-2xl"
+                                >
+                                    <div className="flex items-center justify-between mb-10">
+                                        <div className="flex flex-col items-start gap-1">
+                                            <span className="text-[11px] font-black uppercase tracking-[0.3em] text-primary italic">
+                                                {result.isCorrection ? "Input Refined" : "Intelligent Match"}
+                                            </span>
+                                            {result.confidence && (
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-16 h-1 bg-white/10 rounded-full overflow-hidden">
+                                                        <motion.div 
+                                                            initial={{ width: 0 }}
+                                                            animate={{ width: `${result.confidence * 100}%` }}
+                                                            className={clsx(
+                                                                "h-full",
+                                                                result.confidence > 0.8 ? "bg-green-400" : result.confidence > 0.5 ? "bg-yellow-400" : "bg-error"
+                                                            )}
+                                                        />
+                                                    </div>
+                                                    <span className="text-[8px] font-black opacity-40 uppercase">{Math.round(result.confidence * 100)}% Confidence</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 rotate-12">
+                                            <span className="material-symbols-outlined text-primary text-xl">account_balance_wallet</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="flex flex-col gap-8">
+                                        {result.transactions.map((tx, idx) => (
+                                            <div key={idx} className={clsx(
+                                                "flex items-center justify-between",
+                                                idx !== result.transactions.length - 1 && "pb-8 border-b border-white/[0.03]"
+                                            )}>
+                                                <div className="flex flex-col items-start text-left gap-2">
+                                                    <p className="text-xl md:text-2xl font-black text-white tracking-tight leading-tight">
+                                                        {tx.summary}
+                                                    </p>
+                                                    <div className="flex items-center gap-3">
+                                                        <span className={clsx(
+                                                            "rounded-full px-3 py-1 text-[9px] font-black uppercase tracking-widest",
+                                                            tx.type === 'income' ? "bg-green-500/10 text-green-400 border border-green-500/20" : "bg-orange-500/10 text-orange-400 border border-orange-500/20"
+                                                        )}>
+                                                            {tx.category}
+                                                        </span>
+                                                        <span className="text-[9px] font-black uppercase tracking-widest text-white/30 flex items-center gap-1">
+                                                            <span className="material-symbols-outlined text-[10px]">calendar_today</span>
+                                                            {tx.date}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div className="text-right flex flex-col items-end">
+                                                    <p className={clsx(
+                                                        "text-2xl md:text-3xl font-black tracking-tighter",
+                                                        tx.type === 'income' ? "text-green-400" : "text-white"
+                                                    )}>
+                                                        {tx.type === 'income' ? '+' : '-'}{formatCurrency(tx.amount)}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            {state === 'ERROR' && (
+                                <motion.div
+                                    key="error"
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    className="inline-block"
+                                >
+                                    <p className="text-sm text-error bg-error/10 py-5 px-10 rounded-3xl border border-error/30 font-black uppercase tracking-[0.2em] shadow-2xl backdrop-blur-md">
+                                        {error || "I didn't quite catch that"}
+                                    </p>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </div>
 
-                    {/* Action Buttons underneath Confirmation/Error */}
+                    {/* Action Buttons */}
                     <AnimatePresence>
                         {state === 'CONFIRMATION' && (
                             <motion.div 
-                                initial={{ opacity: 0, y: 20 }}
+                                initial={{ opacity: 0, y: 30 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, scale: 0.95 }}
-                                className="flex flex-col gap-3 w-full mt-8 max-w-sm mx-auto"
+                                exit={{ opacity: 0, y: 20 }}
+                                className="flex flex-col gap-4 w-full mt-12 max-w-md mx-auto relative z-20"
                             >
                                 <button 
                                     onClick={onConfirm}
-                                    className="w-full rounded-2xl bg-primary hover:bg-primary/90 py-5 font-black uppercase tracking-[0.2em] text-xs text-surface shadow-xl shadow-primary/20 active:scale-[0.98] transition-all flex justify-center items-center gap-3"
+                                    className="w-full rounded-[2rem] bg-primary hover:bg-primary/90 py-6 font-black uppercase tracking-[0.3em] text-sm text-white shadow-[0_20px_40px_rgba(70,71,211,0.3)] hover:shadow-primary/40 hover:-translate-y-1 active:scale-[0.98] transition-all flex justify-center items-center gap-4 group"
                                 >
-                                    Yes, save it
+                                    Confirm Entry
+                                    <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
                                 </button>
-                                <div className="flex gap-3 w-full">
+                                <div className="flex gap-4 w-full">
                                     <button 
                                         onClick={onCancel}
-                                        className="flex-1 rounded-2xl bg-surface/5 border border-surface/10 py-4 font-black uppercase tracking-widest text-[10px] text-surface hover:bg-surface/10 transition-all"
+                                        className="flex-1 rounded-[1.5rem] bg-white/[0.05] border border-white/10 py-5 font-black uppercase tracking-[0.2em] text-[10px] text-white/60 hover:text-white hover:bg-white/10 transition-all active:scale-[0.98]"
                                     >
-                                        Cancel
+                                        Dismiss
                                     </button>
                                     <button 
                                         onClick={onEdit}
-                                        className="flex-1 rounded-2xl border border-primary/30 bg-primary/10 py-4 font-black uppercase tracking-widest text-[10px] text-primary hover:bg-primary/20 transition-all"
+                                        className="flex-1 rounded-[1.5rem] border border-primary/20 bg-primary/5 py-5 font-black uppercase tracking-[0.2em] text-[10px] text-primary hover:bg-primary/10 transition-all active:scale-[0.98]"
                                     >
-                                        Edit
+                                        Edit Details
                                     </button>
                                 </div>
                             </motion.div>
@@ -177,21 +317,22 @@ const VoiceOverlay = ({
                         
                         {state === 'ERROR' && (
                             <motion.div
-                                initial={{ opacity: 0, y: 20 }}
+                                initial={{ opacity: 0, y: 30 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="flex gap-4 justify-center mt-8 max-w-sm mx-auto w-full"
+                                className="flex gap-5 justify-center mt-12 max-w-sm mx-auto w-full px-6"
                             >
                                 <button 
                                     onClick={onRetry}
-                                    className="flex-1 rounded-2xl bg-surface py-5 font-black uppercase tracking-widest text-[10px] text-on-surface hover:opacity-90 transition-all active:scale-95 flex items-center justify-center gap-2"
+                                    className="flex-1 rounded-3xl bg-white py-6 font-black uppercase tracking-[0.2em] text-[10px] text-black hover:scale-105 transition-all active:scale-95 flex items-center justify-center gap-3 shadow-xl"
                                 >
+                                    <span className="material-symbols-outlined text-sm">refresh</span>
                                     Try again
                                 </button>
                                 <button 
                                     onClick={onCancel}
-                                    className="flex-1 rounded-2xl border border-surface/10 bg-surface/5 py-5 font-black uppercase tracking-widest text-[10px] text-surface hover:bg-surface/10 transition-all"
+                                    className="flex-1 rounded-3xl border border-white/10 bg-white/5 py-6 font-black uppercase tracking-[0.2em] text-[10px] text-white hover:bg-white/10 transition-all active:scale-95"
                                 >
-                                    Close
+                                    Cancel
                                 </button>
                             </motion.div>
                         )}
@@ -199,16 +340,22 @@ const VoiceOverlay = ({
                 </div>
             </main>
 
-            {/* Bottom Action Area / Stop Listening Button */}
+            {/* Tap to Stop listening button */}
             {state === 'LISTENING' && (
-                <div className="absolute bottom-12 left-0 w-full flex justify-center z-10">
+                <motion.div 
+                    initial={{ opacity: 0, y: 100 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="absolute bottom-16 left-0 w-full flex flex-col items-center gap-6 z-20"
+                >
+                    <p className="text-white/20 font-black uppercase tracking-[0.4em] text-[9px]">Tap to process</p>
                     <button 
                         onClick={onCancel}
-                        className="w-20 h-20 bg-surface text-on-surface rounded-full flex items-center justify-center hover:scale-110 transition-all shadow-[0_0_50px_rgba(255,255,255,0.2)]"
+                        className="w-24 h-24 bg-white text-black rounded-full flex items-center justify-center hover:scale-110 active:scale-90 transition-all shadow-[0_0_80px_rgba(255,255,255,0.4)] group relative"
                     >
-                        <span className="material-symbols-outlined text-[32px]">stop_circle</span>
+                        <span className="material-symbols-outlined text-[40px] group-hover:scale-110 transition-transform">mic_off</span>
+                        <div className="absolute inset-[-8px] border border-white/20 rounded-full animate-ping"></div>
                     </button>
-                </div>
+                </motion.div>
             )}
         </motion.div>
     )
